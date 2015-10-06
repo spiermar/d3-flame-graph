@@ -1,0 +1,42 @@
+{
+  "name": "d3-flame-graph",
+  "version": "0.1.0",
+  "description": "A d3.js library to produce flame graphs.",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/spiermar/d3-flame-graph.git"
+  },
+  "keywords": [
+    "flame",
+    "graph",
+    "flamegraph",
+    "performance",
+    "d3",
+    "d3js"
+  ],
+  "author": "Martin Spier <spiermar@gmail.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/spiermar/d3-flame-graph/issues"
+  },
+  "homepage": "https://github.com/spiermar/d3-flame-graph#readme",
+  "devDependencies": {
+    "del": "^2.0.2",
+    "gulp": "^3.9.0",
+    "gulp-concat": "^2.6.0",
+    "gulp-connect": "^2.2.0",
+    "gulp-notify": "^2.2.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^1.4.1"
+  },
+  "dependencies": {
+    "d3": "^3.5.6"
+  }
+}

@@ -1,0 +1,25 @@
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+  <div>
+    <svg width="1200" height="600">
+      <g class="partition"></g>
+    </svg>
+  </div>
+  <script type="text/javascript" src="d3/d3.js"></script>
+  <script type="text/javascript" src="d3-flame-graph.js"></script>
+  <script type="text/javascript">
+  var flamegraph = d3.flameGraph().height(600).width(1200);
+
+  d3.json("stacks.json", function(error, data) {
+    if (error) return console.warn(error);
+    d3.select("svg g.partition")
+        .datum(data)
+        .call(flamegraph);
+  });
+  </script>
+</body>
+</html>

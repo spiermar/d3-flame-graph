@@ -1,0 +1,29 @@
+{
+  "name": "d3-flame-graph",
+  "version": "0.1.0",
+  "homepage": "https://github.com/spiermar/d3-flame-graph",
+  "authors": [
+    "Martin Spier <spiermar@gmail.com>"
+  ],
+  "description": "A d3.js library to produce flame graphs.",
+  "main": "dist/d3-flame-graph.min.js",
+  "keywords": [
+    "flame",
+    "graph",
+    "flamegraph",
+    "performance",
+    "d3",
+    "d3js"
+  ],
+  "license": "Apache-2.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "d3": "~3.5.6"
+  }
+}
