@@ -1,2 +1,77 @@
 # d3-flame-graph
-D3.js Plugin for Flame Graphs
+
+A d3.js library to produce flame graphs.
+
+If you don't know what flame graphs are, check [Brenda Gregg's Post](http://www.brendangregg.com/flamegraphs.html).
+
+> Flame graphs are a visualization of profiled software, allowing the most frequent code-paths to be identified quickly and accurately. They can be generated using my open source programs on [github.com/brendangregg/FlameGraph](http://github.com/brendangregg/FlameGraph), which create interactive SVGs.
+> <cite>Brendan Gregg</cite>
+
+## Disclaimer
+
+This is the first release of this plugin. As such, expect to find bugs and issues. We count on your support to find and report them!
+
+## Getting Started
+
+### Bower
+
+Make sure [Bower](http://bower.io/) installed on your system. If not, please install it using [npm](https://www.npmjs.com/).
+
+```
+$ npm install bower -g
+```
+
+Install the d3-flame-graph plugin.
+
+```
+$ cd my-project
+$ bower install --save
+```
+
+And use it!
+
+```
+<script type="text/javascript" src="bower_components/d3/d3.js"></script>
+<script type="text/javascript" src="bower_components/d3-flame-graph/dist/d3.layout.flame.js"></script>
+<script type="text/javascript">
+var flamegraph = d3.layout.flame().height(600).width(1200);
+
+d3.json("stacks.json", function(error, data) {
+  if (error) return console.warn(error);
+  d3.select("svg g.partition")
+      .datum(data)
+      .call(flamegraph);
+});
+</script>
+```
+
+## Issues
+
+For bugs, questions and discussions please use the [GitHub Issues](https://github.com/spiermar/d3-flame-graph/issues).
+
+## Contributing
+
+We love contributions! But in order to avoid total chaos, we have a few guidelines.
+
+If you found a bug, have questions or feature requests, don't hesitate to open an [issue](https://github.com/spiermar/d3-flame-graph/issues).
+
+If you're working on an issue, please comment on it so we can assign you to it.
+
+If you have code to submit, follow the general pull request format. Fork the repo, make your changes, and submit a [pull request](https://github.com/spiermar/d3-flame-graph/pulls).
+
+### Gulp.js
+
+This plugin uses Gulp.js as build system. A few tasks are already defined, including gulp-connect with a LiveReload webserver that can be used for development. To start it, just execute the default task.
+
+```
+$ cd d3-flame-graph
+$ gulp
+```
+
+## License
+
+Licensed under the Apache License, Version 2.0 (the “License”); you may not use this file except in compliance with the License. You may obtain a copy of the License at
+
+[http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an “AS IS” BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
