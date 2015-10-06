@@ -5,11 +5,14 @@ A d3.js library to produce flame graphs.
 If you don't know what flame graphs are, check [Brenda Gregg's Post](http://www.brendangregg.com/flamegraphs.html).
 
 > Flame graphs are a visualization of profiled software, allowing the most frequent code-paths to be identified quickly and accurately. They can be generated using my open source programs on [github.com/brendangregg/FlameGraph](http://github.com/brendangregg/FlameGraph), which create interactive SVGs.
+>
 > <cite>Brendan Gregg</cite>
 
 ## Disclaimer
 
-This is the first release of this plugin. As such, expect to find bugs and issues. We count on your support to find and report them!
+This is the first release of this library. As such, expect to find bugs and issues. We count on your support to find and report them!
+
+At this point, the library provides only basic flame graph functionality. Please check the [issues](https://github.com/spiermar/d3-flame-graph/issues) page for roadmap information.
 
 ## Getting Started
 
@@ -21,7 +24,7 @@ Make sure [Bower](http://bower.io/) installed on your system. If not, please ins
 $ npm install bower -g
 ```
 
-Install the d3-flame-graph plugin.
+Install the d3-flame-graph library.
 
 ```
 $ cd my-project
@@ -61,7 +64,7 @@ If you have code to submit, follow the general pull request format. Fork the rep
 
 ### Gulp.js
 
-This plugin uses Gulp.js as build system. A few tasks are already defined, including gulp-connect with a LiveReload webserver that can be used for development. To start it, just execute the default task.
+This library uses Gulp.js as build system. A few tasks are already defined, including gulp-connect with a LiveReload webserver that can be used for development. To start it, just execute the default task.
 
 ```
 $ cd d3-flame-graph
