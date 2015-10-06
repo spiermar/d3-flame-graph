@@ -29,7 +29,8 @@ $ npm install bower -g
 Install the d3-flame-graph library.
 
 ```
-$ cd my-project
+$ git clone https://github.com/spiermar/d3-flame-graph.git
+$ cd d3-flame-graph
 $ bower install --save
 ```
 
