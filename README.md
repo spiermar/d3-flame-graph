@@ -2,7 +2,7 @@
 
 A d3.js library to produce flame graphs.
 
-If you don't know what flame graphs are, check [Brenda Gregg's Post](http://www.brendangregg.com/flamegraphs.html).
+If you don't know what flame graphs are, check [Brendan Gregg's Post](http://www.brendangregg.com/flamegraphs.html).
 
 > Flame graphs are a visualization of profiled software, allowing the most frequent code-paths to be identified quickly and accurately. They can be generated using my open source programs on [github.com/brendangregg/FlameGraph](http://github.com/brendangregg/FlameGraph), which create interactive SVGs.
 >
