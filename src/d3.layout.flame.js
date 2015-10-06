@@ -1,5 +1,5 @@
-
-  module.exports = function() {
+(function() {
+  function flame() {
 
     var container = null,
       w = 1200,
@@ -113,3 +113,11 @@
 
     return flameGraph;
   }
+
+  if (typeof module !== 'undefined' && module.exports){
+		module.exports = flame;
+	}
+	else {
+		d3.layout.flame = flame;
+	}
+})();

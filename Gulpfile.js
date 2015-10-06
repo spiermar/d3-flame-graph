@@ -6,18 +6,18 @@ var gulp = require('gulp'),
   rename = require('gulp-rename'),
   del = require('del');
 
+gulp.task('clean', function() {
+  del(['dist'])
+});
+
 gulp.task('dist', function() {
   return gulp.src('src/**/*.js')
-    .pipe(concat('d3-flame-graph.js'))
+    .pipe(concat('d3.layout.flame.js'))
     .pipe(gulp.dest('dist'))
     .pipe(rename({suffix: '.min'}))
     .pipe(uglify())
     .pipe(gulp.dest('dist'))
     .pipe(notify({ message: 'Build complete.' }));
-});
-
-gulp.task('clean', function() {
-    del(['dist'])
 });
 
 gulp.task('connect', function() {

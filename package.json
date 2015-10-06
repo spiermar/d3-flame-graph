@@ -2,12 +2,12 @@
   "name": "d3-flame-graph",
   "version": "0.1.0",
   "description": "A d3.js library to produce flame graphs.",
-  "main": "index.js",
+  "main": "dist/d3.layout.flame.min.js",
   "directories": {
     "example": "example"
   },
   "scripts": {
-    "test": "make test"
+    "test": "mocha --reporter nyan"
   },
   "repository": {
     "type": "git",
@@ -34,7 +34,8 @@
     "gulp-connect": "^2.2.0",
     "gulp-notify": "^2.2.0",
     "gulp-rename": "^1.2.2",
-    "gulp-uglify": "^1.4.1"
+    "gulp-uglify": "^1.4.1",
+    "browserify": "^11.2.0"
   },
   "dependencies": {
     "d3": "^3.5.6"
