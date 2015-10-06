@@ -1,8 +1,8 @@
 # d3-flame-graph
 
-![Flame Graph](http://www.brendangregg.com/FlameGraphs/cpu-mysql-filt.svg)
-
 A d3.js library to produce flame graphs.
+
+![Flame Graph](http://www.brendangregg.com/FlameGraphs/cpu-mysql-filt.svg)
 
 If you don't know what flame graphs are, check [Brendan Gregg's post](http://www.brendangregg.com/flamegraphs.html).
 
