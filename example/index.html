@@ -4,20 +4,21 @@
   <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
-  <div>
-    <svg width="1200" height="600">
-      <g class="partition"></g>
-    </svg>
+  <div id="chart">
   </div>
   <script type="text/javascript" src="d3/d3.js"></script>
   <script type="text/javascript" src="d3-tip/index.js"></script>
-  <script type="text/javascript" src="d3.layout.flame.js"></script>
+  <script type="text/javascript" src="d3.flame.js"></script>
   <script type="text/javascript">
-  var flamegraph = d3.layout.flame().height(600).width(1200);
+  var flamegraph = d3.flame()
+    .height(600)
+    .width(1200)
+    .cellHeight(18)
+    .tooltip(true);
 
   d3.json("stacks.json", function(error, data) {
     if (error) return console.warn(error);
-    d3.select("svg g.partition")
+    d3.select("#chart")
         .datum(data)
         .call(flamegraph);
   });

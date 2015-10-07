@@ -12,7 +12,7 @@ gulp.task('clean', function() {
 
 gulp.task('dist', function() {
   return gulp.src('src/**/*.js')
-    .pipe(concat('d3.layout.flame.js'))
+    .pipe(concat('d3.flame.js'))
     .pipe(gulp.dest('dist'))
     .pipe(rename({suffix: '.min'}))
     .pipe(uglify())

@@ -1,10 +1,13 @@
 (function() {
+  'use strict';
+
   function flame() {
 
     var container = null,
-      w = 1200,
-      h = 600,
-      frameheight = 18;
+      w = 1200, // graph width
+      h = 600, // graph height
+      c = 18, // cell height
+      tooltip = true; // enable tooltip
 
     function label(d) {
       return d.name + " (" + d3.round(100 * d.dx, 3) + "%, " + d.value + " samples)";
@@ -50,7 +53,7 @@
       // Augment partitioning layout with "dummy" nodes so that internal nodes'
       // values dictate their width. Annoying, but seems to be least painful
       // option.  https://github.com/mbostock/d3/pull/574
-      if (root.children && (n = root.children.length)) {
+      if (root.children && (root.children.length > 0)) {
         root.children.forEach(augment);
         var child_values = 0;
         root.children.forEach(function(child) {
@@ -76,34 +79,42 @@
     function flameGraph(selector) {
       if (!arguments.length) return flameGraph;
         var x = d3.scale.linear().range([0, w]),
-          y = d3.scale.linear().range([0, frameheight]);
+          y = d3.scale.linear().range([0, c]);
 
         selector.each(function(data) {
-          container = d3.select(this);
+          container = d3.select(this).append("svg:svg")
+            .attr("width", w)
+            .attr("height", h)
+            .attr("id", "container")
+            .append("svg:g")
+            .attr("class", "partition");
 
           augment(data);
           var nodes = partition(data);
           var kx = w / data.dx;
 
-          var tip = d3.tip().attr('class', 'd3-tip').html(function(d) { return label(d); });
-
-          container.call(tip);
+          if (tooltip) {
+            var tip = d3.tip().attr('class', 'd3-tip').html(function(d) { return label(d); });
+            container.call(tip);
+          }
 
           var g = container.selectAll("rect")
             .data(nodes)
             .enter()
             .append("svg:g")
             .attr("width", function(d) { return d.dx * kx })
-            .attr("height", function(d) { return frameheight; })
-            .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - frameheight) + ")"; })
+            .attr("height", function(d) { return c; })
+            .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - c) + ")"; })
             .attr("class", "frame")
-            .attr("name", function(d) { return d.name; })
-            .on('mouseover', tip.show)
-            .on('mouseout', tip.hide);
+            .attr("name", function(d) { return d.name; });
 
-          rect = g.append("svg:rect")
+          if (tooltip) {
+            g.on('mouseover', tip.show).on('mouseout', tip.hide);
+          }
+
+          g.append("svg:rect")
             .attr("width", function(d) { return d.dx * kx })
-            .attr("height", function(d) { return frameheight; })
+            .attr("height", function(d) { return c; })
             .attr("fill", function(d) {return color_hash(d.name); })
             .style("opacity", function(d) {return d.dummy ? 0 : 1;})
 
@@ -114,7 +125,7 @@
               thisGroup.append("foreignObject")
                 .attr("class", "foreignObject")
                 .attr("width", function (d) { return d.dx * kx; })
-                .attr("height", function (d) { return frameheight; })
+                .attr("height", function (d) { return c; })
                 .append("xhtml:div")
                 .attr("class", "label")
                 .style("display", function (d) { return d.dx * kx < 35 ? "none" : "block";})
@@ -137,6 +148,18 @@
       return flameGraph;
     }
 
+    flameGraph.cellHeight = function (_) {
+      if (!arguments.length) { return c; }
+      c = _;
+      return flameGraph;
+    }
+
+    flameGraph.tooltip = function (_) {
+      if (!arguments.length) { return tooltip; }
+      tooltip = _;
+      return flameGraph;
+    }
+
     return flameGraph;
   }
 
@@ -144,6 +167,6 @@
 		module.exports = flame;
 	}
 	else {
-		d3.layout.flame = flame;
+		d3.flame = flame;
 	}
 })();
