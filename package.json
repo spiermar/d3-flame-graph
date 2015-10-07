@@ -28,6 +28,7 @@
   },
   "homepage": "https://github.com/spiermar/d3-flame-graph#readme",
   "devDependencies": {
+    "browser-sync": "^2.9.10",
     "browserify": "^11.2.0",
     "del": "^2.0.2",
     "gulp": "^3.9.0",

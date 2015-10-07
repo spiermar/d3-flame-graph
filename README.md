@@ -66,7 +66,7 @@ If you have code to submit, follow the general pull request format. Fork the rep
 
 ### Gulp.js
 
-This library uses Gulp.js as build system. A few tasks are already defined, including gulp-connect with a LiveReload webserver that can be used for development. To start it, just execute the default task.
+This library uses Gulp.js as build system. A few tasks are already defined, including browser-sync that can be used for development. To start it, just execute the default task.
 
 ```
 $ git clone https://github.com/spiermar/d3-flame-graph.git
