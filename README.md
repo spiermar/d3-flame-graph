@@ -43,7 +43,7 @@ var flamegraph = d3.flame().height(600).width(1200);
 
 d3.json("stacks.json", function(error, data) {
   if (error) return console.warn(error);
-  d3.select("svg g.partition")
+  d3.select("#chart")
       .datum(data)
       .call(flamegraph);
 });

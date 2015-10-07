@@ -81,7 +81,12 @@
           y = d3.scale.linear().range([0, frameheight]);
 
         selector.each(function(data) {
-          container = d3.select(this);
+          container = d3.select(this).append("svg:svg")
+            .attr("width", w)
+            .attr("height", h)
+            .attr("id", "container")
+            .append("svg:g")
+            .attr("class", "partition");
 
           augment(data);
           var nodes = partition(data);
