@@ -4,9 +4,9 @@
   function flame() {
 
     var container = null,
-      w = 1200,
-      h = 600,
-      frameheight = 18;
+      w = 1200, // graph width
+      h = 600, // graph height
+      c = 18; // cell height
 
     function label(d) {
       return d.name + " (" + d3.round(100 * d.dx, 3) + "%, " + d.value + " samples)";
@@ -78,7 +78,7 @@
     function flameGraph(selector) {
       if (!arguments.length) return flameGraph;
         var x = d3.scale.linear().range([0, w]),
-          y = d3.scale.linear().range([0, frameheight]);
+          y = d3.scale.linear().range([0, c]);
 
         selector.each(function(data) {
           container = d3.select(this).append("svg:svg")
@@ -101,8 +101,8 @@
             .enter()
             .append("svg:g")
             .attr("width", function(d) { return d.dx * kx })
-            .attr("height", function(d) { return frameheight; })
-            .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - frameheight) + ")"; })
+            .attr("height", function(d) { return c; })
+            .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - c) + ")"; })
             .attr("class", "frame")
             .attr("name", function(d) { return d.name; })
             .on('mouseover', tip.show)
@@ -110,7 +110,7 @@
 
           g.append("svg:rect")
             .attr("width", function(d) { return d.dx * kx })
-            .attr("height", function(d) { return frameheight; })
+            .attr("height", function(d) { return c; })
             .attr("fill", function(d) {return color_hash(d.name); })
             .style("opacity", function(d) {return d.dummy ? 0 : 1;})
 
@@ -121,7 +121,7 @@
               thisGroup.append("foreignObject")
                 .attr("class", "foreignObject")
                 .attr("width", function (d) { return d.dx * kx; })
-                .attr("height", function (d) { return frameheight; })
+                .attr("height", function (d) { return c; })
                 .append("xhtml:div")
                 .attr("class", "label")
                 .style("display", function (d) { return d.dx * kx < 35 ? "none" : "block";})
@@ -141,6 +141,12 @@
     flameGraph.width = function (_) {
       if (!arguments.length) { return w; }
       w = _;
+      return flameGraph;
+    }
+
+    flameGraph.cellHeight = function (_) {
+      if (!arguments.length) { return c; }
+      c = _;
       return flameGraph;
     }
 
