@@ -1,6 +1,12 @@
 rect {
-  stroke: #eee;
+  stroke: #EEEEEE;
   fill-opacity: .8;
+}
+
+rect:hover {
+  stroke: #474747;
+  stroke-width: 0.5;
+  cursor: pointer;
 }
 
 rect.parent {
