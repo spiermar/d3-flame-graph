@@ -13,7 +13,8 @@
   var flamegraph = d3.flame()
     .height(600)
     .width(1200)
-    .cellHeight(18);
+    .cellHeight(18)
+    .tooltip(true);
 
   d3.json("stacks.json", function(error, data) {
     if (error) return console.warn(error);

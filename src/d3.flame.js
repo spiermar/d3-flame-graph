@@ -6,7 +6,8 @@
     var container = null,
       w = 1200, // graph width
       h = 600, // graph height
-      c = 18; // cell height
+      c = 18, // cell height
+      tooltip = true; // enable tooltip
 
     function label(d) {
       return d.name + " (" + d3.round(100 * d.dx, 3) + "%, " + d.value + " samples)";
@@ -92,9 +93,10 @@
           var nodes = partition(data);
           var kx = w / data.dx;
 
-          var tip = d3.tip().attr('class', 'd3-tip').html(function(d) { return label(d); });
-
-          container.call(tip);
+          if (tooltip) {
+            var tip = d3.tip().attr('class', 'd3-tip').html(function(d) { return label(d); });
+            container.call(tip);
+          }
 
           var g = container.selectAll("rect")
             .data(nodes)
@@ -104,9 +106,11 @@
             .attr("height", function(d) { return c; })
             .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - c) + ")"; })
             .attr("class", "frame")
-            .attr("name", function(d) { return d.name; })
-            .on('mouseover', tip.show)
-            .on('mouseout', tip.hide);
+            .attr("name", function(d) { return d.name; });
+
+          if (tooltip) {
+            g.on('mouseover', tip.show).on('mouseout', tip.hide);
+          }
 
           g.append("svg:rect")
             .attr("width", function(d) { return d.dx * kx })
@@ -147,6 +151,12 @@
     flameGraph.cellHeight = function (_) {
       if (!arguments.length) { return c; }
       c = _;
+      return flameGraph;
+    }
+
+    flameGraph.tooltip = function (_) {
+      if (!arguments.length) { return tooltip; }
+      tooltip = _;
       return flameGraph;
     }
 
