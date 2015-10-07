@@ -9,6 +9,9 @@
     function label(d) {
       return d.name + " (" + d3.round(100 * d.dx, 3) + "%, " + d.value + " samples)";
     }
+    function name(d) {
+      return d.name;
+    }
 
     function hash(name) {
       // Return a vector (0.0->1.0) that is a hash of the input string.
@@ -114,7 +117,7 @@
                 .append("xhtml:div")
                 .attr("class", "label")
                 .style("display", function (d) { return d.dx * kx < 25 ? "none" : "block";})
-                .text(label)
+                .text(name)
             }
           });
         });
