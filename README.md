@@ -1,6 +1,6 @@
 # d3-flame-graph
 
-A d3.js library to produce flame graphs.
+A D3.js library that produces flame graphs from hierarchical data.
 
 ![Flame Graph example](screenshot.png)
 
