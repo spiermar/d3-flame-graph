@@ -1,6 +1,6 @@
 {
   "name": "d3-flame-graph",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A d3.js library to produce flame graphs.",
   "main": "dist/d3.layout.flame.min.js",
   "directories": {
@@ -28,6 +28,7 @@
   },
   "homepage": "https://github.com/spiermar/d3-flame-graph#readme",
   "devDependencies": {
+    "browser-sync": "^2.9.10",
     "browserify": "^11.2.0",
     "del": "^2.0.2",
     "gulp": "^3.9.0",

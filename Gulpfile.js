@@ -2,9 +2,9 @@ var gulp = require('gulp'),
   uglify = require('gulp-uglify'),
   connect = require('gulp-connect'),
   notify = require("gulp-notify"),
-  concat = require('gulp-concat'),
   rename = require('gulp-rename'),
-  del = require('del');
+  del = require('del'),
+  browserSync = require('browser-sync').create();
 
 gulp.task('clean', function() {
   del(['dist'])
@@ -20,26 +20,12 @@ gulp.task('dist', function() {
     .pipe(notify({ message: 'Build complete.' }));
 });
 
-gulp.task('connect', function() {
-  connect.server({
-    root: ['example', 'src', 'bower_components'],
-    livereload: true
-  });
+gulp.task('browser-sync', function() {
+    browserSync.init({
+        server: {
+            baseDir: ['example', 'src', 'bower_components']
+        }
+    });
 });
 
-gulp.task('html', function () {
-  gulp.src('./example/*.html')
-    .pipe(connect.reload());
-});
-
-gulp.task('js', function () {
-  gulp.src('./src/*.js')
-    .pipe(connect.reload());
-});
-
-gulp.task('watch', function () {
-  gulp.watch(['./example/*.html'], ['html']);
-  gulp.watch(['./src/*.js'], ['js']);
-});
-
-gulp.task('default', ['connect', 'watch']);
+gulp.task('default', ['browser-sync']);

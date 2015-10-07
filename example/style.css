@@ -1,17 +1,11 @@
-body {
-  font-size: 11px;
-}
-
-.searchbar {
-  font-size: 12px;
-}
-
 rect {
-  stroke: #eee;
+  stroke: #EEEEEE;
   fill-opacity: .8;
 }
 
-rect.parent {
+rect:hover {
+  stroke: #474747;
+  stroke-width: 0.5;
   cursor: pointer;
 }
 
@@ -19,11 +13,26 @@ rect.parent {
   pointer-events: none;
   white-space: nowrap;
   text-overflow: ellipsis;
-  font-size: 11;
+  overflow: hidden;
+  font-size: 12px;
+  font-family: Verdana;
   margin-left: 4px;
   margin-right: 4px;
+  line-height: 1.5;
 }
 
+.d3-tip {
+  line-height: 1;
+  font-family: Verdana;
+  font-size: 12px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+<<<<<<< HEAD
 .d3-tip {
   line-height: 1;
   font-weight: bold;
@@ -34,6 +43,8 @@ rect.parent {
   pointer-events: none;
 }
 
+=======
+>>>>>>> upstream/master
 /* Creates a small triangle extender for the tooltip */
 .d3-tip:after {
   box-sizing: border-box;

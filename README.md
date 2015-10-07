@@ -2,7 +2,7 @@
 
 A d3.js library to produce flame graphs.
 
-![Flame Graph](http://www.brendangregg.com/FlameGraphs/cpu-mysql-filt.svg)
+![Flame Graph example](screenshot.png)
 
 If you don't know what flame graphs are, check [Brendan Gregg's post](http://www.brendangregg.com/flamegraphs.html).
 
@@ -14,7 +14,7 @@ If you don't know what flame graphs are, check [Brendan Gregg's post](http://www
 
 This is the first release of this library. As such, expect to find bugs and issues. We count on your support to find and report them!
 
-At this point, the library provides only basic flame graph functionality. Please check the [issues](https://github.com/spiermar/d3-flame-graph/issues) page for roadmap information.
+**At this point, the library provides only basic flame graph functionality. Please check the [issues](https://github.com/spiermar/d3-flame-graph/issues) page for roadmap information.**
 
 ## Getting Started
 
@@ -66,7 +66,7 @@ If you have code to submit, follow the general pull request format. Fork the rep
 
 ### Gulp.js
 
-This library uses Gulp.js as build system. A few tasks are already defined, including gulp-connect with a LiveReload webserver that can be used for development. To start it, just execute the default task.
+This library uses Gulp.js as build system. A few tasks are already defined, including browser-sync that can be used for development. To start it, just execute the default task.
 
 ```
 $ git clone https://github.com/spiermar/d3-flame-graph.git
@@ -77,6 +77,8 @@ $ gulp
 ```
 
 ## License
+
+Copyright 2015 Martin Spier. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the “License”); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 

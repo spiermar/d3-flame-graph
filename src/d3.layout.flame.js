@@ -9,6 +9,9 @@
     function label(d) {
       return d.name + " (" + d3.round(100 * d.dx, 3) + "%, " + d.value + " samples)";
     }
+    function name(d) {
+      return d.name;
+    }
 
     function hash(name) {
       // Return a vector (0.0->1.0) that is a hash of the input string.
@@ -55,15 +58,16 @@
         });
         if (child_values < root.value) {
           root.children.push(
-            {"name": null,
-            "value": root.value - child_values,
-            "dummy": true}
+            {
+              "name": null,
+              "value": root.value - child_values,
+              "dummy": true
+            }
           )
         }
       }
     }
 
-    // Support more concise JSON keys
     var partition = d3.layout.partition()
       .sort(function(a, b) {return d3.ascending(a.name, b.name)})
       .value(function(d) {return d.v || d.value;})
@@ -91,7 +95,7 @@
             .append("svg:g")
             .attr("width", function(d) { return d.dx * kx })
             .attr("height", function(d) { return frameheight; })
-            .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth)) + ")"; })
+            .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - frameheight) + ")"; })
             .attr("class", "frame")
             .attr("name", function(d) { return d.name; })
             .on('mouseover', tip.show)
@@ -113,8 +117,8 @@
                 .attr("height", function (d) { return frameheight; })
                 .append("xhtml:div")
                 .attr("class", "label")
-                .style("display", function (d) { return d.dx * kx < 25 ? "none" : "block";})
-                .text(label)
+                .style("display", function (d) { return d.dx * kx < 35 ? "none" : "block";})
+                .text(name)
             }
           });
         });
