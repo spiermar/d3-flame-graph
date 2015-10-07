@@ -14,7 +14,7 @@ If you don't know what flame graphs are, check [Brendan Gregg's post](http://www
 
 This is the first release of this library. As such, expect to find bugs and issues. We count on your support to find and report them!
 
-At this point, the library provides only basic flame graph functionality. Please check the [issues](https://github.com/spiermar/d3-flame-graph/issues) page for roadmap information.
+**At this point, the library provides only basic flame graph functionality. Please check the [issues](https://github.com/spiermar/d3-flame-graph/issues) page for roadmap information.**
 
 ## Getting Started
 
