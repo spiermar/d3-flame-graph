@@ -71,6 +71,7 @@ This library uses Gulp.js as build system. A few tasks are already defined, incl
 ```
 $ git clone https://github.com/spiermar/d3-flame-graph.git
 $ cd d3-flame-graph
+$ npm install
 $ gulp
 ```
 
