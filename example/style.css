@@ -17,6 +17,7 @@ rect.parent {
   pointer-events: none;
   white-space: nowrap;
   text-overflow: ellipsis;
+  overflow: hidden;
   font-size: 12px;
   font-family: Verdana;
   margin-left: 4px;

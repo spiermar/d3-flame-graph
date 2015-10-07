@@ -116,7 +116,7 @@
                 .attr("height", function (d) { return frameheight; })
                 .append("xhtml:div")
                 .attr("class", "label")
-                .style("display", function (d) { return d.dx * kx < 25 ? "none" : "block";})
+                .style("display", function (d) { return d.dx * kx < 35 ? "none" : "block";})
                 .text(name)
             }
           });
