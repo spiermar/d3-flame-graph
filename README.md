@@ -2,7 +2,7 @@
 
 A d3.js library to produce flame graphs.
 
-![Flame Graph](http://www.brendangregg.com/FlameGraphs/cpu-mysql-filt.svg)
+![Flame Graph example](screenshot.png)
 
 If you don't know what flame graphs are, check [Brendan Gregg's post](http://www.brendangregg.com/flamegraphs.html).
 
