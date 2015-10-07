@@ -65,6 +65,10 @@
           var nodes = partition(data);
           var kx = w / data.dx;
 
+          var tip = d3.tip().attr('class', 'd3-tip').html(function(d) { return label(d); });
+
+          container.call(tip);
+
           var g = container.selectAll("rect")
             .data(nodes)
             .enter()
@@ -73,7 +77,9 @@
             .attr("height", function(d) { return frameheight; })
             .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth)) + ")"; })
             .attr("class", "frame")
-            .attr("name", function(d) { return d.name; });
+            .attr("name", function(d) { return d.name; })
+            .on('mouseover', tip.show)
+            .on('mouseout', tip.hide);
 
           rect = g.append("svg:rect")
             .attr("width", function(d) { return d.dx * kx })
