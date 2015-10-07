@@ -10,21 +10,37 @@
       return d.name + " (" + d3.round(100 * d.dx, 3) + "%, " + d.value + " samples)";
     }
 
-    function color(name) {
-
-      var hash = 0, i, chr, len;
+    function hash(name) {
+      // Return a vector (0.0->1.0) that is a hash of the input string.
+      // The hash is computed to favor early characters over later ones, so
+      // that strings with similar starts have similar vectors. Only the first
+      // 6 characters are considered.
+      var hash = 0, weight = 1, max_hash = 0, mod = 10, max_char = 6;
       if (name) {
-        for (i = 0, len = name.length; i < len; i++) {
-          if (name[i] == '(') { break; }
-          chr = name.charCodeAt(i);
-          hash  = ((hash << 5) - hash) + chr;
-          hash |= 0; // Convert to 32bit integer
+        for (var i = 0; i < name.length; i++) {
+          if (i > max_char) { break; }
+          hash += weight * (name.charCodeAt(i) % mod);
+          max_hash += weight * (mod - 1);
+          weight *= 0.70;
         }
+        if (max_hash > 0) { hash = hash / max_hash; }
       }
-      hash = Math.abs((hash % 256) / 256.);
-      var r = 50 + Math.round(60 * hash);
-      var gb = 135 + Math.round(90 * hash);
-      return "rgb(" + r + "," + gb + "," + gb + ")";
+      return hash;
+    }
+
+    function color_hash(name) {
+      // Return an rgb() color string that is a hash of the provided name,
+      // and with a warm palette.
+      var vector = 0;
+      if (name) {
+        name = name.replace(/.*`/, "");		// drop module name if present
+        name = name.replace(/\(.*/, "");	// drop extra info
+        vector = hash(name);
+      }
+      var r = 200 + Math.round(55 * vector);
+      var g = 0 + Math.round(230 * (1 - vector));
+      var b = 0 + Math.round(55 * (1 - vector));
+      return "rgb(" + r + "," + g + "," + b + ")";
     }
 
     function augment(root) {
@@ -78,7 +94,7 @@
           rect = g.append("svg:rect")
             .attr("width", function(d) { return d.dx * kx })
             .attr("height", function(d) { return frameheight; })
-            .attr("fill", function(d) {return color(d.name); })
+            .attr("fill", function(d) {return color_hash(d.name); })
             .style("opacity", function(d) {return d.dummy ? 0 : 1;})
 
           g.each(function(d) {
