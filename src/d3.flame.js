@@ -1,4 +1,6 @@
 (function() {
+  'use strict';
+
   function flame() {
 
     var container = null,
@@ -50,7 +52,7 @@
       // Augment partitioning layout with "dummy" nodes so that internal nodes'
       // values dictate their width. Annoying, but seems to be least painful
       // option.  https://github.com/mbostock/d3/pull/574
-      if (root.children && (n = root.children.length)) {
+      if (root.children && (root.children.length > 0)) {
         root.children.forEach(augment);
         var child_values = 0;
         root.children.forEach(function(child) {
@@ -101,7 +103,7 @@
             .on('mouseover', tip.show)
             .on('mouseout', tip.hide);
 
-          rect = g.append("svg:rect")
+          g.append("svg:rect")
             .attr("width", function(d) { return d.dx * kx })
             .attr("height", function(d) { return frameheight; })
             .attr("fill", function(d) {return color_hash(d.name); })
@@ -144,6 +146,6 @@
 		module.exports = flame;
 	}
 	else {
-		d3.layout.flame = flame;
+		d3.flame = flame;
 	}
 })();

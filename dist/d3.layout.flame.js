@@ -118,6 +118,6 @@
 		module.exports = flame;
 	}
 	else {
-		d3.layout.flame = flame;
+		d3.flame = flame;
 	}
 })();

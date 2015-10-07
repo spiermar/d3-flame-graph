@@ -6,7 +6,7 @@
     "Martin Spier <spiermar@gmail.com>"
   ],
   "description": "A d3.js library to produce flame graphs.",
-  "main": "dist/d3.layout.flame.min.js",
+  "main": "dist/d3.flame.min.js",
   "keywords": [
     "flame",
     "graph",
