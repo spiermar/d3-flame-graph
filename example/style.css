@@ -9,10 +9,6 @@ rect:hover {
   cursor: pointer;
 }
 
-rect.parent {
-  cursor: pointer;
-}
-
 .label {
   pointer-events: none;
   white-space: nowrap;
