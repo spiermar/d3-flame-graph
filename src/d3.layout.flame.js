@@ -58,15 +58,16 @@
         });
         if (child_values < root.value) {
           root.children.push(
-            {"name": null,
-            "value": root.value - child_values,
-            "dummy": true}
+            {
+              "name": null,
+              "value": root.value - child_values,
+              "dummy": true
+            }
           )
         }
       }
     }
 
-    // Support more concise JSON keys
     var partition = d3.layout.partition()
       .sort(function(a, b) {return d3.ascending(a.name, b.name)})
       .value(function(d) {return d.v || d.value;})
@@ -94,7 +95,7 @@
             .append("svg:g")
             .attr("width", function(d) { return d.dx * kx })
             .attr("height", function(d) { return frameheight; })
-            .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth)) + ")"; })
+            .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - frameheight) + ")"; })
             .attr("class", "frame")
             .attr("name", function(d) { return d.name; })
             .on('mouseover', tip.show)
