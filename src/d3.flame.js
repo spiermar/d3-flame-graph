@@ -94,8 +94,49 @@
 
           augment(data);
 
+          function hide(d) {
+            if(!d.original) {
+              d.original = d.value;
+            }
+            d.value = 0;
+            if(d.children) {
+              d.children.forEach(hide);
+            }
+          }
+
+          function show(d) {
+            if(d.original) {
+              d.value = d.original
+            }
+            if(d.children) {
+              d.children.forEach(show);
+            }
+          }
+
+          function getSiblings(d) {
+            var siblings = []
+            if (d.parent) {
+              var me = d.parent.children.indexOf(d);
+              siblings = d.parent.children.slice(0);
+              siblings.splice(me, 1);
+            }
+            return siblings;
+          }
+
+          function hideSiblings(d) {
+            var siblings = getSiblings(d);
+            siblings.forEach(function(s) {
+              hide(s);
+            })
+            if(d.parent) {
+              hideSiblings(d.parent);
+            }
+          }
+
           function zoom(d) {
-            update(d);
+            hideSiblings(d);
+            show(d);
+            update(data);
           }
 
           function update(root) {
@@ -117,7 +158,7 @@
              .attr("width", function(d) { return d.dx * kx; })
              .attr("height", function(d) { return c; })
              .attr("fill", function(d) {return colorHash(d.name); })
-             .style("opacity", function(d) {return d.dummy ? 0 : 1;});
+             .style("visibility", function(d) {return d.dummy ? "hidden" : "visible";});
 
             svg.select("title").text(label);
 
@@ -126,7 +167,7 @@
               .attr("height", function (d) { return c; })
               .select("div")
               .attr("class", "label")
-              .style("display", function (d) { return d.dx * kx < 35 ? "none" : "block";})
+              .style("display", function(d) { return (d.dx * kx < 35) || d.dummy ? "none" : "block";})
               .text(name);
 
             // and join new data with old elements, if any.
