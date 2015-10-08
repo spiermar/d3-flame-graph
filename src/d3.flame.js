@@ -142,7 +142,7 @@
               .attr("width", function(d) { return d.dx * kx; })
               .attr("height", function(d) { return c; })
               .attr("fill", function(d) {return colorHash(d.name); })
-              .style("opacity", function(d) {return d.dummy ? 0 : 1;});
+              .style("visibility", function(d) {return d.dummy ? "hidden" : "visible";});
 
             g.append("svg:title")
               .text(label);
