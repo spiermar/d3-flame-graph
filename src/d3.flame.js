@@ -86,8 +86,6 @@
           container = d3.select(this).append("svg:svg")
             .attr("width", w)
             .attr("height", h)
-            .attr("id", "container")
-            .append("svg:g")
             .attr("class", "partition");
 
           augment(data);
@@ -102,48 +100,48 @@
                 kx = w / root.dx;
 
             // create new elements as needed
-            var g = container.selectAll("g").data(nodes);
+            var svg = container.selectAll("g").data(nodes);
 
-            g.attr("width", function(d) { return d.dx * kx; })
+            svg.attr("width", function(d) { return d.dx * kx; })
              .attr("height", function(d) { return c; })
              .attr("name", function(d) { return d.name; })
              .attr("class", "frame")
              .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - c) + ")"; });
 
-            g.select("rect")
+            svg.select("rect")
              .attr("width", function(d) { return d.dx * kx; })
              .attr("height", function(d) { return c; })
              .attr("fill", function(d) {return color_hash(d.name); })
              .style("opacity", function(d) {return d.dummy ? 0 : 1;});
 
-            g.select("title").text(label);
+            svg.select("title").text(label);
 
-            g.select("foreignObject")
+            svg.select("foreignObject")
               .attr("width", function (d) { return d.dx * kx; })
               .attr("height", function (d) { return c; })
-              .append("xhtml:div")
+              .select("div")
               .attr("class", "label")
               .style("display", function (d) { return d.dx * kx < 35 ? "none" : "block";})
               .text(name)
 
             // and join new data with old elements, if any.
-            g.enter().append("svg:g")
+            var g = svg.enter().append("svg:g")
               .attr("width", function(d) { return d.dx * kx; })
               .attr("height", function(d) { return c; })
               .attr("name", function(d) { return d.name; })
               .attr("class", "frame")
               .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - c) + ")"; })
-              .on('click', zoom);
+              .on('click', zoom)
 
-            var rect = g.append("svg:rect")
+            g.append("svg:rect")
               .attr("width", function(d) { return d.dx * kx; })
               .attr("height", function(d) { return c; })
               .attr("fill", function(d) {return color_hash(d.name); })
-              .style("opacity", function(d) {return d.dummy ? 0 : 1;});
+              .style("opacity", function(d) {return d.dummy ? 0 : 1;})
 
-            var title = g.append("svg:title").text(label);
+            g.append("svg:title").text(label);
 
-            var foreignObject = g.append("foreignObject")
+            g.append("foreignObject")
               .attr("width", function (d) { return d.dx * kx; })
               .attr("height", function (d) { return c; })
               .append("xhtml:div")
@@ -151,14 +149,14 @@
               .style("display", function (d) { return d.dx * kx < 35 ? "none" : "block";})
               .text(name)
 
-            /*if (tooltip) {
+            if (tooltip) {
               var tip = d3.tip().attr('class', 'd3-tip').html(function(d) { return label(d); });
               container.call(tip);
               g.on('mouseover', tip.show).on('mouseout', tip.hide);
-            }*/
+            }
 
             // remove old elements as needed.
-            g.exit().remove();
+            svg.exit().remove();
 
           }
 
