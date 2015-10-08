@@ -12,6 +12,7 @@
     function label(d) {
       return d.name + " (" + d3.round(100 * d.dx, 3) + "%, " + d.value + " samples)";
     }
+
     function name(d) {
       return d.name;
     }
@@ -79,61 +80,90 @@
     function flameGraph(selector) {
       if (!arguments.length) return flameGraph;
         var x = d3.scale.linear().range([0, w]),
-          y = d3.scale.linear().range([0, c]);
+            y = d3.scale.linear().range([0, c]);
 
         selector.each(function(data) {
           container = d3.select(this).append("svg:svg")
             .attr("width", w)
             .attr("height", h)
-            .attr("id", "container")
-            .append("svg:g")
             .attr("class", "partition");
 
           augment(data);
-          var nodes = partition(data);
-          var kx = w / data.dx;
 
-          if (tooltip) {
-            var tip = d3.tip().attr('class', 'd3-tip').html(function(d) { return label(d); });
-            container.call(tip);
+          function zoom(d) {
+            update(d);
           }
 
-          var g = container.selectAll("rect")
-            .data(nodes)
-            .enter()
-            .append("svg:g")
-            .attr("width", function(d) { return d.dx * kx })
-            .attr("height", function(d) { return c; })
-            .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - c) + ")"; })
-            .attr("class", "frame")
-            .attr("name", function(d) { return d.name; });
+          function update(root) {
 
-          if (tooltip) {
-            g.on('mouseover', tip.show).on('mouseout', tip.hide);
-          }
+            var nodes = partition(root),
+                kx = w / root.dx;
 
-          g.append("svg:rect")
-            .attr("width", function(d) { return d.dx * kx })
-            .attr("height", function(d) { return c; })
-            .attr("fill", function(d) {return color_hash(d.name); })
-            .style("opacity", function(d) {return d.dummy ? 0 : 1;})
+            // create new elements as needed
+            var svg = container.selectAll("g").data(nodes);
 
-          g.each(function(d) {
-            if (!d.dummy) {
-              var thisGroup = d3.select(this);
-              thisGroup.append("svg:title").text(label);
-              thisGroup.append("foreignObject")
-                .attr("class", "foreignObject")
-                .attr("width", function (d) { return d.dx * kx; })
-                .attr("height", function (d) { return c; })
-                .append("xhtml:div")
-                .attr("class", "label")
-                .style("display", function (d) { return d.dx * kx < 35 ? "none" : "block";})
-                .text(name)
+            svg.attr("width", function(d) { return d.dx * kx; })
+             .attr("height", function(d) { return c; })
+             .attr("name", function(d) { return d.name; })
+             .attr("class", "frame")
+             .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - c) + ")"; });
+
+            svg.select("rect")
+             .attr("width", function(d) { return d.dx * kx; })
+             .attr("height", function(d) { return c; })
+             .attr("fill", function(d) {return color_hash(d.name); })
+             .style("opacity", function(d) {return d.dummy ? 0 : 1;});
+
+            svg.select("title").text(label);
+
+            svg.select("foreignObject")
+              .attr("width", function (d) { return d.dx * kx; })
+              .attr("height", function (d) { return c; })
+              .select("div")
+              .attr("class", "label")
+              .style("display", function (d) { return d.dx * kx < 35 ? "none" : "block";})
+              .text(name)
+
+            // and join new data with old elements, if any.
+            var g = svg.enter().append("svg:g")
+              .attr("width", function(d) { return d.dx * kx; })
+              .attr("height", function(d) { return c; })
+              .attr("name", function(d) { return d.name; })
+              .attr("class", "frame")
+              .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - c) + ")"; })
+              .on('click', zoom)
+
+            g.append("svg:rect")
+              .attr("width", function(d) { return d.dx * kx; })
+              .attr("height", function(d) { return c; })
+              .attr("fill", function(d) {return color_hash(d.name); })
+              .style("opacity", function(d) {return d.dummy ? 0 : 1;})
+
+            g.append("svg:title").text(label);
+
+            g.append("foreignObject")
+              .attr("width", function (d) { return d.dx * kx; })
+              .attr("height", function (d) { return c; })
+              .append("xhtml:div")
+              .attr("class", "label")
+              .style("display", function (d) { return d.dx * kx < 35 ? "none" : "block";})
+              .text(name)
+
+            if (tooltip) {
+              var tip = d3.tip().attr('class', 'd3-tip').html(function(d) { return label(d); });
+              container.call(tip);
+              g.on('mouseover', tip.show).on('mouseout', tip.hide);
             }
-          });
-        });
 
+            // remove old elements as needed.
+            svg.exit().remove();
+
+          }
+
+          // first draw
+          update(data);
+
+        });
     }
 
     flameGraph.height = function (_) {
