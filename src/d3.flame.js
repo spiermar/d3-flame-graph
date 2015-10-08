@@ -10,7 +10,11 @@
       tooltip = true; // enable tooltip
 
     function label(d) {
-      return d.name + " (" + d3.round(100 * d.dx, 3) + "%, " + d.value + " samples)";
+      if (!d.dummy) {
+        return d.name + " (" + d3.round(100 * d.dx, 3) + "%, " + d.value + " samples)";
+      } else {
+        return "";
+      }
     }
 
     function name(d) {
@@ -102,6 +106,7 @@
             // create new elements as needed
             var svg = container.selectAll("g").data(nodes);
 
+            // update old elements with new data
             svg.attr("width", function(d) { return d.dx * kx; })
              .attr("height", function(d) { return c; })
              .attr("name", function(d) { return d.name; })
@@ -139,25 +144,33 @@
               .attr("fill", function(d) {return colorHash(d.name); })
               .style("opacity", function(d) {return d.dummy ? 0 : 1;});
 
-            g.append("svg:title").text(label);
+            g.append("svg:title")
+              .text(label);
 
             g.append("foreignObject")
-              .attr("width", function (d) { return d.dx * kx; })
-              .attr("height", function (d) { return c; })
+              .attr("width", function(d) { return d.dx * kx; })
+              .attr("height", function(d) { return c; })
               .append("xhtml:div")
               .attr("class", "label")
-              .style("display", function (d) { return d.dx * kx < 35 ? "none" : "block";})
+              .style("display", function(d) { return (d.dx * kx < 35) || d.dummy ? "none" : "block";})
               .text(name);
-
-            if (tooltip) {
-              var tip = d3.tip().attr('class', 'd3-tip').html(function(d) { return label(d); });
-              container.call(tip);
-              g.on('mouseover', tip.show).on('mouseout', tip.hide);
-            }
 
             // remove old elements as needed.
             svg.exit().remove();
 
+            // including tooltip
+            if (tooltip) {
+              var tip = d3.tip()
+                .attr('class', 'd3-tip')
+                .html(function(d) { return label(d); });
+              container.call(tip);
+              g.on('mouseover', function(d) {
+                if(!d.dummy) { tip.show(d); }
+
+              }).on('mouseout', function(d) {
+                if(!d.dummy) { tip.hide(d); }
+              });
+            }
           }
 
           // first draw
