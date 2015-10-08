@@ -105,6 +105,7 @@
           }
 
           function show(d) {
+            d.flag = false;
             if(d.original) {
               d.value = d.original
             }
@@ -133,9 +134,17 @@
             }
           }
 
+          function flagAncestors(d) {
+            if(d.parent) {
+              d.parent.flag = true;
+              flagAncestors(d.parent);
+            }
+          }
+
           function zoom(d) {
             hideSiblings(d);
             show(d);
+            flagAncestors(d);
             update(data);
           }
 
@@ -151,14 +160,14 @@
             svg.attr("width", function(d) { return d.dx * kx; })
              .attr("height", function(d) { return c; })
              .attr("name", function(d) { return d.name; })
-             .attr("class", "frame")
+             .attr("class", function(d) { return d.flag ? "frame flag" : "frame"; })
              .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - c) + ")"; });
 
             svg.select("rect")
              .attr("width", function(d) { return d.dx * kx; })
              .attr("height", function(d) { return c; })
-             .attr("fill", function(d) {return colorHash(d.name); })
-             .style("visibility", function(d) {return d.dummy ? "hidden" : "visible";});
+             .attr("fill", function(d) { return colorHash(d.name); })
+             .style("visibility", function(d) { return d.dummy ? "hidden" : "visible";});
 
             svg.select("title").text(label);
 
@@ -175,7 +184,7 @@
               .attr("width", function(d) { return d.dx * kx; })
               .attr("height", function(d) { return c; })
               .attr("name", function(d) { return d.name; })
-              .attr("class", "frame")
+              .attr("class", function(d) { return d.flag ? "frame flag" : "frame"; })
               .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - c) + ")"; })
               .on('click', zoom);
 
