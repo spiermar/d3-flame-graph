@@ -7,7 +7,8 @@
       w = 1200, // graph width
       h = 600, // graph height
       c = 18, // cell height
-      tooltip = true; // enable tooltip
+      tooltip = true, // enable tooltip
+      title = ""; // graph title
 
     function label(d) {
       if (!d.dummy) {
@@ -87,12 +88,6 @@
             y = d3.scale.linear().range([0, c]);
 
         selector.each(function(data) {
-          container = d3.select(this).append("svg:svg")
-            .attr("width", w)
-            .attr("height", h)
-            .attr("class", "partition");
-
-          augment(data);
 
           function hide(d) {
             if(!d.original) {
@@ -147,6 +142,21 @@
             flagAncestors(d);
             update(data);
           }
+
+          container = d3.select(this).append("svg:svg")
+            .attr("width", w)
+            .attr("height", h)
+            .attr("class", "partition");
+
+          container.append("svg:text")
+            .attr("class", "title")
+            .attr("text-anchor", "middle")
+            .attr("y", "25")
+            .attr("x", w/2)
+            .attr("fill", "#808080")
+            .text(title);
+
+          augment(data);
 
           function update(root) {
 
@@ -250,6 +260,12 @@
     flameGraph.tooltip = function (_) {
       if (!arguments.length) { return tooltip; }
       tooltip = _;
+      return flameGraph;
+    };
+
+    flameGraph.title = function (_) {
+      if (!arguments.length) { return title; }
+      title = _;
       return flameGraph;
     };
 

@@ -14,7 +14,8 @@
     .height(600)
     .width(1200)
     .cellHeight(18)
-    .tooltip(true);
+    .tooltip(true)
+    .title("d3-flame-graph");
 
   d3.json("stacks.json", function(error, data) {
     if (error) return console.warn(error);
