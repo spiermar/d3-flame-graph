@@ -21,6 +21,10 @@ rect:hover {
   line-height: 1.5;
 }
 
+.flag {
+  opacity: 0.6 !important;
+}
+
 .d3-tip {
   line-height: 1;
   font-family: Verdana;

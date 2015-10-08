@@ -1,6 +1,6 @@
 {
   "name": "d3-flame-graph",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "A d3.js library to produce flame graphs.",
   "main": "src/d3.flame.js",
   "directories": {
@@ -33,10 +33,11 @@
     "del": "^2.0.2",
     "gulp": "^3.9.0",
     "gulp-concat": "^2.6.0",
-    "gulp-connect": "^2.2.0",
+    "gulp-jshint": "^1.11.2",
     "gulp-notify": "^2.2.0",
     "gulp-rename": "^1.2.2",
     "gulp-uglify": "^1.4.1",
+    "jshint-stylish": "^2.0.1",
     "mocha": "^2.3.3"
   },
   "dependencies": {
