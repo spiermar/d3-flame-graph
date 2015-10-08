@@ -67,7 +67,7 @@
         if (childValues < root.value) {
           root.children.push(
             {
-              "name": null,
+              "name": "",
               "value": root.value - childValues,
               "dummy": true
             }
