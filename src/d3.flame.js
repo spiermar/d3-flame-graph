@@ -8,7 +8,9 @@
       h = 600, // graph height
       c = 18, // cell height
       tooltip = true, // enable tooltip
-      title = ""; // graph title
+      title = "", // graph title
+      tooltipDirection = "s", // tooltip direction
+      tooltipOffset = [26, 0]; // tooltip offset
 
     function label(d) {
       if (!d.dummy) {
@@ -221,8 +223,8 @@
             // including tooltip
             if (tooltip) {
               var tip = d3.tip()
-                .direction('s')
-                .offset([c + 8, 0])
+                .direction(tooltipDirection)
+                .offset(tooltipOffset)
                 .attr('class', 'd3-tip')
                 .html(function(d) { return label(d); });
               container.call(tip);
@@ -268,6 +270,18 @@
     flameGraph.title = function (_) {
       if (!arguments.length) { return title; }
       title = _;
+      return flameGraph;
+    };
+
+    flameGraph.tooltipDirection = function (_) {
+      if (!arguments.length) { return tooltipDirection; }
+      tooltipDirection = _;
+      return flameGraph;
+    };
+
+    flameGraph.tooltipOffset = function (_) {
+      if (!arguments.length) { return tooltipOffset; }
+      tooltipOffset = _;
       return flameGraph;
     };
 
