@@ -173,6 +173,9 @@
              .attr("height", function(d) { return c; })
              .attr("name", function(d) { return d.name; })
              .attr("class", function(d) { return d.flag ? "frame flag" : "frame"; })
+             .transition()
+             .duration(750)
+             .ease('linear')
              .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - c) + ")"; });
 
             svg.select("rect")
