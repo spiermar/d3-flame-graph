@@ -2,7 +2,7 @@
 
 A D3.js plugin that produces flame graphs from hierarchical data.
 
-![Flame Graph example](screenshot.png)
+![Flame Graph GIF](http://giant.gfycat.com/DelectableResponsibleHart.gif)
 
 If you don't know what flame graphs are, check [Brendan Gregg's post](http://www.brendangregg.com/flamegraphs.html).
 
