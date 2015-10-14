@@ -17,6 +17,8 @@
     .tooltip(true)
     .tooltipDirection("s")
     .tooltipOffset([26, 0])
+    .transitionDuration(750)
+    .transitionEase('cubic-in-out')
     .title("d3-flame-graph");
 
   d3.json("stacks.json", function(error, data) {
