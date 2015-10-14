@@ -171,8 +171,7 @@
             var svg = container.selectAll("g").data(nodes);
 
             // update old elements with new data
-            svg.attr("width", function(d) { return d.dx * kx; })
-             .attr("height", function(d) { return c; })
+            svg.attr("height", function(d) { return c; })
              .attr("name", function(d) { return d.name; })
              .attr("class", function(d) { return d.flag ? "frame flag" : "frame"; })
              .transition()
@@ -181,10 +180,13 @@
              .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - c) + ")"; });
 
             svg.select("rect")
-             .attr("width", function(d) { return d.dx * kx; })
              .attr("height", function(d) { return c; })
              .attr("fill", function(d) { return colorHash(d.name); })
-             .style("visibility", function(d) { return d.dummy ? "hidden" : "visible";});
+             .style("visibility", function(d) { return d.dummy ? "hidden" : "visible";})
+             .transition()
+             .duration(transitionDuration)
+             .ease(transitionEase)
+             .attr("width", function(d) { return d.dx * kx; });
 
             svg.select("title").text(label);
 
