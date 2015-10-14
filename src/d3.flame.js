@@ -10,7 +10,9 @@
       tooltip = true, // enable tooltip
       title = "", // graph title
       tooltipDirection = "s", // tooltip direction
-      tooltipOffset = [26, 0]; // tooltip offset
+      tooltipOffset = [26, 0],
+      transitionDuration = 750,
+      transitionEase = "cubic-in-out"; // tooltip offset
 
     function label(d) {
       if (!d.dummy) {
@@ -174,8 +176,8 @@
              .attr("name", function(d) { return d.name; })
              .attr("class", function(d) { return d.flag ? "frame flag" : "frame"; })
              .transition()
-             .duration(750)
-             .ease('linear')
+             .duration(transitionDuration)
+             .ease(transitionEase)
              .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - c) + ")"; });
 
             svg.select("rect")
@@ -285,6 +287,18 @@
     flameGraph.tooltipOffset = function (_) {
       if (!arguments.length) { return tooltipOffset; }
       tooltipOffset = _;
+      return flameGraph;
+    };
+
+    flameGraph.transitionDuration = function (_) {
+      if (!arguments.length) { return transitionDuration; }
+      transitionDuration = _;
+      return flameGraph;
+    };
+
+    flameGraph.transitionEase = function (_) {
+      if (!arguments.length) { return transitionEase; }
+      transitionEase = _;
       return flameGraph;
     };
 
