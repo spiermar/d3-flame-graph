@@ -81,10 +81,27 @@
       }
     }
 
+    function searchTree(d, term) {
+      var re = new RegExp(term),
+          label = d.name;
+
+      if (d.children) {
+        d.children.forEach(function(child) {
+          searchTree(child, term);
+        });
+      }
+
+      if (label.match(re)) {
+        d.highlight = true;
+      }
+    }
+
     var partition = d3.layout.partition()
       .sort(function(a, b) {return d3.ascending(a.name, b.name);})
       .value(function(d) {return d.v || d.value;})
       .children(function(d) {return d.c || d.children;});
+
+    var testData = null;
 
     function flameGraph(selector) {
       if (!arguments.length) return flameGraph;
@@ -97,7 +114,11 @@
           .attr('class', 'd3-tip')
           .html(function(d) { return label(d); });
 
+        //TODO: switch to var data = selector.data()
+
         selector.each(function(data) {
+
+          testData = data;
 
           function hide(d) {
             if(!d.original) {
@@ -191,7 +212,7 @@
 
             g.select("rect")
              .attr("height", function(d) { return c; })
-             .attr("fill", function(d) { return colorHash(d.name); })
+             .attr("fill", function(d) { return d.highlight ? "red" : colorHash(d.name); })
              .style("visibility", function(d) { return d.dummy ? "hidden" : "visible";})
              .transition()
              .duration(transitionDuration)
@@ -306,6 +327,11 @@
       if (!arguments.length) { return transitionEase; }
       transitionEase = _;
       return flameGraph;
+    };
+
+    flameGraph.search = function(term) {
+      searchTree(testData, term);
+      // TODO: update chart
     };
 
     return flameGraph;

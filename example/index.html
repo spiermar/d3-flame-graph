@@ -27,6 +27,10 @@
         .datum(data)
         .call(flamegraph);
   });
+
+  window.setTimeout(function() {
+    flamegraph.search("genunix");
+  }, 3000);
   </script>
 </body>
 </html>
