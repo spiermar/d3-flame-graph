@@ -168,10 +168,11 @@
                 kx = w / root.dx;
 
             // create new elements as needed
-            var svg = container.selectAll("g").data(nodes);
+            var g = container.selectAll("g").data(nodes);
 
             // update old elements with new data
-            svg.attr("height", function(d) { return c; })
+            g.attr("width", function(d) { return d.dx * kx; })
+             .attr("height", function(d) { return c; })
              .attr("name", function(d) { return d.name; })
              .attr("class", function(d) { return d.flag ? "frame flag" : "frame"; })
              .transition()
@@ -179,7 +180,8 @@
              .ease(transitionEase)
              .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - c) + ")"; });
 
-            svg.select("rect")
+
+            g.select("rect")
              .attr("height", function(d) { return c; })
              .attr("fill", function(d) { return colorHash(d.name); })
              .style("visibility", function(d) { return d.dummy ? "hidden" : "visible";})
@@ -188,9 +190,9 @@
              .ease(transitionEase)
              .attr("width", function(d) { return d.dx * kx; });
 
-            svg.select("title").text(label);
+            g.select("title").text(label);
 
-            svg.select("foreignObject")
+            g.select("foreignObject")
               .attr("width", function (d) { return d.dx * kx; })
               .attr("height", function (d) { return c; })
               .select("div")
@@ -199,7 +201,7 @@
               .text(name);
 
             // and join new data with old elements, if any.
-            var g = svg.enter().append("svg:g")
+            var node = g.enter().append("svg:g")
               .attr("width", function(d) { return d.dx * kx; })
               .attr("height", function(d) { return c; })
               .attr("name", function(d) { return d.name; })
@@ -207,16 +209,16 @@
               .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - c) + ")"; })
               .on('click', zoom);
 
-            g.append("svg:rect")
-              .attr("width", function(d) { return d.dx * kx; })
+            node.append("svg:rect")
               .attr("height", function(d) { return c; })
               .attr("fill", function(d) {return colorHash(d.name); })
-              .style("visibility", function(d) {return d.dummy ? "hidden" : "visible";});
+              .style("visibility", function(d) {return d.dummy ? "hidden" : "visible";})
+              .attr("width", function(d) { return d.dx * kx; });
 
-            g.append("svg:title")
+            node.append("svg:title")
               .text(label);
 
-            g.append("foreignObject")
+            node.append("foreignObject")
               .attr("width", function(d) { return d.dx * kx; })
               .attr("height", function(d) { return c; })
               .append("xhtml:div")
@@ -225,7 +227,7 @@
               .text(name);
 
             // remove old elements as needed.
-            svg.exit().remove();
+            g.exit().remove();
 
             // including tooltip
             if (tooltip) {
