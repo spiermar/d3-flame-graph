@@ -160,6 +160,7 @@
             }
           }
 
+          // TODO; rename flag to something more explicit
           function flagAncestors(d) {
             if(d.parent) {
               d.parent.flag = true;
