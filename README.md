@@ -1,6 +1,6 @@
 # d3-flame-graph
 
-A D3.js library that produces flame graphs from hierarchical data.
+A D3.js plugin that produces flame graphs from hierarchical data.
 
 ![Flame Graph example](screenshot.png)
 
@@ -12,9 +12,9 @@ If you don't know what flame graphs are, check [Brendan Gregg's post](http://www
 
 ## Disclaimer
 
-This is the first release of this library. As such, expect to find bugs and issues. We count on your support to find and report them!
+This is the first release of this plugin. As such, expect to find bugs and issues. We count on your support to find and report them!
 
-**At this point, the library provides only basic flame graph functionality. Please check the [issues](https://github.com/spiermar/d3-flame-graph/issues) page for roadmap information.**
+**At this point, the plugin provides only basic flame graph functionality. Please check the [issues](https://github.com/spiermar/d3-flame-graph/issues) page for roadmap information.**
 
 ## Getting Started
 
@@ -26,7 +26,7 @@ Make sure [Bower](http://bower.io/) installed on your system. If not, please ins
 $ npm install bower -g
 ```
 
-Install the d3-flame-graph library.
+Install the d3-flame-graph plugin.
 
 ```
 $ cd your-project
@@ -66,7 +66,7 @@ If you have code to submit, follow the general pull request format. Fork the rep
 
 ### Gulp.js
 
-This library uses Gulp.js as build system. A few tasks are already defined, including browser-sync that can be used for development. To start it, just execute the default task.
+This plugin uses Gulp.js as build system. A few tasks are already defined, including browser-sync that can be used for development. To start it, just execute the default task.
 
 ```
 $ git clone https://github.com/spiermar/d3-flame-graph.git
