@@ -91,6 +91,12 @@
         var x = d3.scale.linear().range([0, w]),
             y = d3.scale.linear().range([0, c]);
 
+        var tip = d3.tip()
+          .direction(tooltipDirection)
+          .offset(tooltipOffset)
+          .attr('class', 'd3-tip')
+          .html(function(d) { return label(d); });
+
         selector.each(function(data) {
 
           function hide(d) {
@@ -141,6 +147,7 @@
           }
 
           function zoom(d) {
+            tip.hide(d);
             hideSiblings(d);
             show(d);
             flagAncestors(d);
@@ -150,7 +157,8 @@
           container = d3.select(this).append("svg:svg")
             .attr("width", w)
             .attr("height", h)
-            .attr("class", "partition");
+            .attr("class", "partition")
+            .call(tip);
 
           container.append("svg:text")
             .attr("class", "title")
@@ -231,12 +239,6 @@
 
             // including tooltip
             if (tooltip) {
-              var tip = d3.tip()
-                .direction(tooltipDirection)
-                .offset(tooltipOffset)
-                .attr('class', 'd3-tip')
-                .html(function(d) { return label(d); });
-              container.call(tip);
               g.on('mouseover', function(d) {
                 if(!d.dummy) { tip.show(d); }
 
