@@ -81,6 +81,53 @@
       }
     }
 
+    function hide(d) {
+      if(!d.original) {
+        d.original = d.value;
+      }
+      d.value = 0;
+      if(d.children) {
+        d.children.forEach(hide);
+      }
+    }
+
+    function show(d) {
+      d.fade = false;
+      if(d.original) {
+        d.value = d.original
+      }
+      if(d.children) {
+        d.children.forEach(show);
+      }
+    }
+
+    function getSiblings(d) {
+      var siblings = []
+      if (d.parent) {
+        var me = d.parent.children.indexOf(d);
+        siblings = d.parent.children.slice(0);
+        siblings.splice(me, 1);
+      }
+      return siblings;
+    }
+
+    function hideSiblings(d) {
+      var siblings = getSiblings(d);
+      siblings.forEach(function(s) {
+        hide(s);
+      })
+      if(d.parent) {
+        hideSiblings(d.parent);
+      }
+    }
+
+    function fadeAncestors(d) {
+      if(d.parent) {
+        d.parent.fade = true;
+        fadeAncestors(d.parent);
+      }
+    }
+
     function searchTree(d, term) {
       var re = new RegExp(term),
           label = d.name;
@@ -119,53 +166,6 @@
         selector.each(function(data) {
 
           testData = data;
-
-          function hide(d) {
-            if(!d.original) {
-              d.original = d.value;
-            }
-            d.value = 0;
-            if(d.children) {
-              d.children.forEach(hide);
-            }
-          }
-
-          function show(d) {
-            d.fade = false;
-            if(d.original) {
-              d.value = d.original
-            }
-            if(d.children) {
-              d.children.forEach(show);
-            }
-          }
-
-          function getSiblings(d) {
-            var siblings = []
-            if (d.parent) {
-              var me = d.parent.children.indexOf(d);
-              siblings = d.parent.children.slice(0);
-              siblings.splice(me, 1);
-            }
-            return siblings;
-          }
-
-          function hideSiblings(d) {
-            var siblings = getSiblings(d);
-            siblings.forEach(function(s) {
-              hide(s);
-            })
-            if(d.parent) {
-              hideSiblings(d.parent);
-            }
-          }
-
-          function fadeAncestors(d) {
-            if(d.parent) {
-              d.parent.fade = true;
-              fadeAncestors(d.parent);
-            }
-          }
 
           function zoom(d) {
             tip.hide(d);
