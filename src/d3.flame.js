@@ -131,7 +131,7 @@
           }
 
           function show(d) {
-            d.flag = false;
+            d.fade = false;
             if(d.original) {
               d.value = d.original
             }
@@ -160,11 +160,10 @@
             }
           }
 
-          // TODO; rename flag to something more explicit
-          function flagAncestors(d) {
+          function fadeAncestors(d) {
             if(d.parent) {
-              d.parent.flag = true;
-              flagAncestors(d.parent);
+              d.parent.fade = true;
+              fadeAncestors(d.parent);
             }
           }
 
@@ -172,7 +171,7 @@
             tip.hide(d);
             hideSiblings(d);
             show(d);
-            flagAncestors(d);
+            fadeAncestors(d);
             update(data);
           }
 
@@ -204,7 +203,7 @@
             g.attr("width", function(d) { return d.dx * kx; })
              .attr("height", function(d) { return c; })
              .attr("name", function(d) { return d.name; })
-             .attr("class", function(d) { return d.flag ? "frame flag" : "frame"; })
+             .attr("class", function(d) { return d.fade ? "frame fade" : "frame"; })
              .transition()
              .duration(transitionDuration)
              .ease(transitionEase)
@@ -235,7 +234,7 @@
               .attr("width", function(d) { return d.dx * kx; })
               .attr("height", function(d) { return c; })
               .attr("name", function(d) { return d.name; })
-              .attr("class", function(d) { return d.flag ? "frame flag" : "frame"; })
+              .attr("class", function(d) { return d.fade ? "frame fade" : "frame"; })
               .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - c) + ")"; })
               .on('click', zoom);
 
