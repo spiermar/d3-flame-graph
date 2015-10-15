@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  function flame() {
+  function flameGraph() {
 
     var container = null,
       w = 1200, // graph width
@@ -103,8 +103,8 @@
 
     var testData = null;
 
-    function flameGraph(selector) {
-      if (!arguments.length) return flameGraph;
+    function chart(selector) {
+      if (!arguments.length) return chart;
         var x = d3.scale.linear().range([0, w]),
             y = d3.scale.linear().range([0, c]);
 
@@ -275,72 +275,72 @@
         });
     }
 
-    flameGraph.height = function (_) {
+    chart.height = function (_) {
       if (!arguments.length) { return h; }
       h = _;
-      return flameGraph;
+      return chart;
     };
 
-    flameGraph.width = function (_) {
+    chart.width = function (_) {
       if (!arguments.length) { return w; }
       w = _;
-      return flameGraph;
+      return chart;
     };
 
-    flameGraph.cellHeight = function (_) {
+    chart.cellHeight = function (_) {
       if (!arguments.length) { return c; }
       c = _;
-      return flameGraph;
+      return chart;
     };
 
-    flameGraph.tooltip = function (_) {
+    chart.tooltip = function (_) {
       if (!arguments.length) { return tooltip; }
       tooltip = _;
-      return flameGraph;
+      return chart;
     };
 
-    flameGraph.title = function (_) {
+    chart.title = function (_) {
       if (!arguments.length) { return title; }
       title = _;
-      return flameGraph;
+      return chart;
     };
 
-    flameGraph.tooltipDirection = function (_) {
+    chart.tooltipDirection = function (_) {
       if (!arguments.length) { return tooltipDirection; }
       tooltipDirection = _;
-      return flameGraph;
+      return chart;
     };
 
-    flameGraph.tooltipOffset = function (_) {
+    chart.tooltipOffset = function (_) {
       if (!arguments.length) { return tooltipOffset; }
       tooltipOffset = _;
-      return flameGraph;
+      return chart;
     };
 
-    flameGraph.transitionDuration = function (_) {
+    chart.transitionDuration = function (_) {
       if (!arguments.length) { return transitionDuration; }
       transitionDuration = _;
-      return flameGraph;
+      return chart;
     };
 
-    flameGraph.transitionEase = function (_) {
+    chart.transitionEase = function (_) {
       if (!arguments.length) { return transitionEase; }
       transitionEase = _;
-      return flameGraph;
+      return chart;
     };
 
-    flameGraph.search = function(term) {
+    chart.search = function(term) {
       searchTree(testData, term);
       // TODO: update chart
     };
 
-    return flameGraph;
+    return chart;
   }
 
   if (typeof module !== 'undefined' && module.exports){
-		module.exports = flame;
+		module.exports = flameGraph;
 	}
 	else {
-		d3.flame = flame;
+		d3.flameGraph = flameGraph;
 	}
 })();

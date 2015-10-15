@@ -10,7 +10,7 @@
   <script type="text/javascript" src="d3-tip/index.js"></script>
   <script type="text/javascript" src="d3.flame.js"></script>
   <script type="text/javascript">
-  var flamegraph = d3.flame()
+  var flameGraph = d3.flameGraph()
     .height(600)
     .width(1200)
     .cellHeight(18)
@@ -25,11 +25,11 @@
     if (error) return console.warn(error);
     d3.select("#chart")
         .datum(data)
-        .call(flamegraph);
+        .call(flameGraph);
   });
 
   window.setTimeout(function() {
-    flamegraph.search("genunix");
+    flameGraph.search("genunix");
   }, 3000);
   </script>
 </body>
