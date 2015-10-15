@@ -3,16 +3,25 @@
 
   function flameGraph() {
 
-    var container = null,
-      w = 1200, // graph width
+    var w = 1200, // graph width
       h = 600, // graph height
       c = 18, // cell height
+      selection = null, // selection
       tooltip = true, // enable tooltip
       title = "", // graph title
       tooltipDirection = "s", // tooltip direction
       tooltipOffset = [26, 0],
       transitionDuration = 750,
       transitionEase = "cubic-in-out"; // tooltip offset
+
+    var tip = d3.tip()
+      .direction(tooltipDirection)
+      .offset(tooltipOffset)
+      .attr('class', 'd3-tip')
+      .html(function(d) { return label(d); });
+
+    var x = d3.scale.linear().range([0, w]),
+        y = d3.scale.linear().range([0, c]);
 
     function label(d) {
       if (!d.dummy) {
@@ -128,6 +137,21 @@
       }
     }
 
+    function getRoot(d) {
+      if(d.parent) {
+        return getRoot(d.parent);
+      }
+      return d;
+    }
+
+    function zoom(d) {
+      tip.hide(d);
+      hideSiblings(d);
+      show(d);
+      fadeAncestors(d);
+      update();
+    }
+
     function searchTree(d, term) {
       var re = new RegExp(term),
           label = d.name;
@@ -148,131 +172,115 @@
       .value(function(d) {return d.v || d.value;})
       .children(function(d) {return d.c || d.children;});
 
-    var testData = null;
+    function update() {
 
-    function chart(selector) {
+      selection.each(function(data) {
+
+        var container = d3.select(this).select("svg");
+
+        var nodes = partition(data),
+            kx = w / data.dx;
+
+        // create new elements as needed
+        var g = container.selectAll("g").data(nodes);
+
+        // update old elements with new data
+        g.attr("width", function(d) { return d.dx * kx; })
+         .attr("height", function(d) { return c; })
+         .attr("name", function(d) { return d.name; })
+         .attr("class", function(d) { return d.fade ? "frame fade" : "frame"; })
+         .transition()
+         .duration(transitionDuration)
+         .ease(transitionEase)
+         .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - c) + ")"; });
+
+
+        g.select("rect")
+         .attr("height", function(d) { return c; })
+         .attr("fill", function(d) { return d.highlight ? "red" : colorHash(d.name); })
+         .style("visibility", function(d) { return d.dummy ? "hidden" : "visible";})
+         .transition()
+         .duration(transitionDuration)
+         .ease(transitionEase)
+         .attr("width", function(d) { return d.dx * kx; });
+
+        g.select("title").text(label);
+
+        g.select("foreignObject")
+          .attr("width", function (d) { return d.dx * kx; })
+          .attr("height", function (d) { return c; })
+          .select("div")
+          .attr("class", "label")
+          .style("display", function(d) { return (d.dx * kx < 35) || d.dummy ? "none" : "block";})
+          .text(name);
+
+        // and join new data with old elements, if any.
+        var node = g.enter().append("svg:g")
+          .attr("width", function(d) { return d.dx * kx; })
+          .attr("height", function(d) { return c; })
+          .attr("name", function(d) { return d.name; })
+          .attr("class", function(d) { return d.fade ? "frame fade" : "frame"; })
+          .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - c) + ")"; })
+          .on('click', zoom);
+
+        node.append("svg:rect")
+          .attr("height", function(d) { return c; })
+          .attr("fill", function(d) {return colorHash(d.name); })
+          .style("visibility", function(d) {return d.dummy ? "hidden" : "visible";})
+          .attr("width", function(d) { return d.dx * kx; });
+
+        node.append("svg:title")
+          .text(label);
+
+        node.append("foreignObject")
+          .attr("width", function(d) { return d.dx * kx; })
+          .attr("height", function(d) { return c; })
+          .append("xhtml:div")
+          .attr("class", "label")
+          .style("display", function(d) { return (d.dx * kx < 35) || d.dummy ? "none" : "block";})
+          .text(name);
+
+        // remove old elements as needed.
+        g.exit().remove();
+
+        // including tooltip
+        if (tooltip) {
+          g.on('mouseover', function(d) {
+            if(!d.dummy) { tip.show(d); }
+
+          }).on('mouseout', function(d) {
+            if(!d.dummy) { tip.hide(d); }
+          });
+        }
+      });
+    }
+
+    function chart(s) {
+      selection = s;
+
       if (!arguments.length) return chart;
-        var x = d3.scale.linear().range([0, w]),
-            y = d3.scale.linear().range([0, c]);
 
-        var tip = d3.tip()
-          .direction(tooltipDirection)
-          .offset(tooltipOffset)
-          .attr('class', 'd3-tip')
-          .html(function(d) { return label(d); });
+      selection.each(function(data) {
+        augment(data);
 
-        //TODO: switch to var data = selector.data()
+        var container = d3.select(this)
+          .append("svg:svg")
+          .attr("width", w)
+          .attr("height", h)
+          .attr("class", "partition")
+          .call(tip);
 
-        selector.each(function(data) {
+        container.append("svg:text")
+          .attr("class", "title")
+          .attr("text-anchor", "middle")
+          .attr("y", "25")
+          .attr("x", w/2)
+          .attr("fill", "#808080")
+          .text(title);
 
-          testData = data;
+        update();
 
-          function zoom(d) {
-            tip.hide(d);
-            hideSiblings(d);
-            show(d);
-            fadeAncestors(d);
-            update(data);
-          }
-
-          container = d3.select(this).append("svg:svg")
-            .attr("width", w)
-            .attr("height", h)
-            .attr("class", "partition")
-            .call(tip);
-
-          container.append("svg:text")
-            .attr("class", "title")
-            .attr("text-anchor", "middle")
-            .attr("y", "25")
-            .attr("x", w/2)
-            .attr("fill", "#808080")
-            .text(title);
-
-          augment(data);
-
-          function update(root) {
-
-            var nodes = partition(root),
-                kx = w / root.dx;
-
-            // create new elements as needed
-            var g = container.selectAll("g").data(nodes);
-
-            // update old elements with new data
-            g.attr("width", function(d) { return d.dx * kx; })
-             .attr("height", function(d) { return c; })
-             .attr("name", function(d) { return d.name; })
-             .attr("class", function(d) { return d.fade ? "frame fade" : "frame"; })
-             .transition()
-             .duration(transitionDuration)
-             .ease(transitionEase)
-             .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - c) + ")"; });
-
-
-            g.select("rect")
-             .attr("height", function(d) { return c; })
-             .attr("fill", function(d) { return d.highlight ? "red" : colorHash(d.name); })
-             .style("visibility", function(d) { return d.dummy ? "hidden" : "visible";})
-             .transition()
-             .duration(transitionDuration)
-             .ease(transitionEase)
-             .attr("width", function(d) { return d.dx * kx; });
-
-            g.select("title").text(label);
-
-            g.select("foreignObject")
-              .attr("width", function (d) { return d.dx * kx; })
-              .attr("height", function (d) { return c; })
-              .select("div")
-              .attr("class", "label")
-              .style("display", function(d) { return (d.dx * kx < 35) || d.dummy ? "none" : "block";})
-              .text(name);
-
-            // and join new data with old elements, if any.
-            var node = g.enter().append("svg:g")
-              .attr("width", function(d) { return d.dx * kx; })
-              .attr("height", function(d) { return c; })
-              .attr("name", function(d) { return d.name; })
-              .attr("class", function(d) { return d.fade ? "frame fade" : "frame"; })
-              .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - c) + ")"; })
-              .on('click', zoom);
-
-            node.append("svg:rect")
-              .attr("height", function(d) { return c; })
-              .attr("fill", function(d) {return colorHash(d.name); })
-              .style("visibility", function(d) {return d.dummy ? "hidden" : "visible";})
-              .attr("width", function(d) { return d.dx * kx; });
-
-            node.append("svg:title")
-              .text(label);
-
-            node.append("foreignObject")
-              .attr("width", function(d) { return d.dx * kx; })
-              .attr("height", function(d) { return c; })
-              .append("xhtml:div")
-              .attr("class", "label")
-              .style("display", function(d) { return (d.dx * kx < 35) || d.dummy ? "none" : "block";})
-              .text(name);
-
-            // remove old elements as needed.
-            g.exit().remove();
-
-            // including tooltip
-            if (tooltip) {
-              g.on('mouseover', function(d) {
-                if(!d.dummy) { tip.show(d); }
-
-              }).on('mouseout', function(d) {
-                if(!d.dummy) { tip.hide(d); }
-              });
-            }
-          }
-
-          // first draw
-          update(data);
-
-        });
+      });
     }
 
     chart.height = function (_) {
@@ -330,8 +338,10 @@
     };
 
     chart.search = function(term) {
-      searchTree(testData, term);
-      // TODO: update chart
+      selection.each(function(data) {
+        searchTree(data, term);
+        update();
+      });
     };
 
     return chart;
