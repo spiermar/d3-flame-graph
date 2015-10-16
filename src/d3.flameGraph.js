@@ -3,8 +3,8 @@
 
   function flameGraph() {
 
-    var w = 1200, // graph width
-      h = 600, // graph height
+    var w = 960, // graph width
+      h = 540, // graph height
       c = 18, // cell height
       selection = null, // selection
       tooltip = true, // enable tooltip
@@ -211,7 +211,7 @@
 
         g.select("rect")
           .attr("height", function(d) { return c; })
-          .attr("fill", function(d) {return colorHash(d.name); })
+          .attr("fill", function(d) {return d.highlight ? "blue" : colorHash(d.name); })
           .style("visibility", function(d) {return d.dummy ? "hidden" : "visible";});
 
         g.select("title")

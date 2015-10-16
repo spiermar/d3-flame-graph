@@ -19,6 +19,10 @@ rect:hover {
   margin-left: 4px;
   margin-right: 4px;
   line-height: 1.5;
+  padding: 0 0 0;
+  font-weight: 400;
+  color: black;
+  text-align: left;
 }
 
 .fade {
