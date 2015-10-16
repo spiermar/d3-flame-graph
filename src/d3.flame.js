@@ -68,26 +68,30 @@
       return "rgb(" + r + "," + g + "," + b + ")";
     }
 
-    function augment(root) {
+    // TODO: call update only when finished augmenting the data
+
+    function augment(data, callback) {
       // Augment partitioning layout with "dummy" nodes so that internal nodes'
       // values dictate their width. Annoying, but seems to be least painful
       // option.  https://github.com/mbostock/d3/pull/574
-      if (root.children && (root.children.length > 0)) {
-        root.children.forEach(augment);
+      if (data.children && (data.children.length > 0)) {
+        data.children.forEach(augment);
         var childValues = 0;
-        root.children.forEach(function(child) {
+        data.children.forEach(function(child) {
           childValues += child.value;
         });
-        if (childValues < root.value) {
-          root.children.push(
+        if (childValues < data.value) {
+          data.children.push(
             {
-              "name": "",
-              "value": root.value - childValues,
+              "name": "dummy",
+              "value": data.value - childValues,
               "dummy": true
             }
           );
         }
       }
+
+      // update();
     }
 
     function hide(d) {
@@ -181,69 +185,43 @@
         var nodes = partition(data),
             kx = w / data.dx;
 
-        // create new elements as needed
         var g = container.selectAll("g").data(nodes);
 
-        // update old elements with new data
+        var node = g.enter()
+          .append("svg:g");
+
+        node.append("svg:rect");
+        node.append("svg:title");
+        node.append("foreignObject")
+          .append("xhtml:div");
+
         g.attr("width", function(d) { return d.dx * kx; })
-         .attr("height", function(d) { return c; })
-         .attr("name", function(d) { return d.name; })
-         .attr("class", function(d) { return d.fade ? "frame fade" : "frame"; })
-         .transition()
-         .duration(transitionDuration)
-         .ease(transitionEase)
-         .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - c) + ")"; });
-
-
-        g.select("rect")
-         .attr("height", function(d) { return c; })
-         .attr("fill", function(d) { return d.highlight ? "red" : colorHash(d.name); })
-         .style("visibility", function(d) { return d.dummy ? "hidden" : "visible";})
-         .transition()
-         .duration(transitionDuration)
-         .ease(transitionEase)
-         .attr("width", function(d) { return d.dx * kx; });
-
-        g.select("title").text(label);
-
-        g.select("foreignObject")
-          .attr("width", function (d) { return d.dx * kx; })
-          .attr("height", function (d) { return c; })
-          .select("div")
-          .attr("class", "label")
-          .style("display", function(d) { return (d.dx * kx < 35) || d.dummy ? "none" : "block";})
-          .text(name);
-
-        // and join new data with old elements, if any.
-        var node = g.enter().append("svg:g")
-          .attr("width", function(d) { return d.dx * kx; })
           .attr("height", function(d) { return c; })
           .attr("name", function(d) { return d.name; })
           .attr("class", function(d) { return d.fade ? "frame fade" : "frame"; })
           .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - c) + ")"; })
           .on('click', zoom);
 
-        node.append("svg:rect")
+        g.select("rect")
           .attr("height", function(d) { return c; })
           .attr("fill", function(d) {return colorHash(d.name); })
           .style("visibility", function(d) {return d.dummy ? "hidden" : "visible";})
           .attr("width", function(d) { return d.dx * kx; });
 
-        node.append("svg:title")
+        g.select("title")
           .text(label);
 
-        node.append("foreignObject")
+        g.select("foreignObject")
           .attr("width", function(d) { return d.dx * kx; })
           .attr("height", function(d) { return c; })
-          .append("xhtml:div")
+          .select("div")
           .attr("class", "label")
           .style("display", function(d) { return (d.dx * kx < 35) || d.dummy ? "none" : "block";})
           .text(name);
 
-        // remove old elements as needed.
         g.exit().remove();
 
-        // including tooltip
+        // tooltip
         if (tooltip) {
           g.on('mouseover', function(d) {
             if(!d.dummy) { tip.show(d); }
@@ -261,7 +239,6 @@
       if (!arguments.length) return chart;
 
       selection.each(function(data) {
-        augment(data);
 
         var container = d3.select(this)
           .append("svg:svg")
@@ -278,7 +255,7 @@
           .attr("fill", "#808080")
           .text(title);
 
-        update();
+        augment(data, update);
 
       });
     }
