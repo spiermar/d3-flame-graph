@@ -10,7 +10,7 @@
       tooltip = true, // enable tooltip
       title = "", // graph title
       tooltipDirection = "s", // tooltip direction
-      tooltipOffset = [26, 0],
+      tooltipOffset = [8, 0],
       transitionDuration = 750,
       transitionEase = "cubic-in-out"; // tooltip offset
 
@@ -103,7 +103,7 @@
     function show(d) {
       d.fade = false;
       if(d.original) {
-        d.value = d.original
+        d.value = d.original;
       }
       if(d.children) {
         d.children.forEach(show);
@@ -111,7 +111,7 @@
     }
 
     function getSiblings(d) {
-      var siblings = []
+      var siblings = [];
       if (d.parent) {
         var me = d.parent.children.indexOf(d);
         siblings = d.parent.children.slice(0);
@@ -124,7 +124,7 @@
       var siblings = getSiblings(d);
       siblings.forEach(function(s) {
         hide(s);
-      })
+      });
       if(d.parent) {
         hideSiblings(d.parent);
       }
