@@ -68,9 +68,7 @@
       return "rgb(" + r + "," + g + "," + b + ")";
     }
 
-    // TODO: call update only when finished augmenting the data
-
-    function augment(data, callback) {
+    function augment(data) {
       // Augment partitioning layout with "dummy" nodes so that internal nodes'
       // values dictate their width. Annoying, but seems to be least painful
       // option.  https://github.com/mbostock/d3/pull/574
@@ -83,15 +81,13 @@
         if (childValues < data.value) {
           data.children.push(
             {
-              "name": "dummy",
+              "name": "",
               "value": data.value - childValues,
               "dummy": true
             }
           );
         }
       }
-
-      // update();
     }
 
     function hide(d) {
@@ -180,12 +176,13 @@
 
       selection.each(function(data) {
 
-        var container = d3.select(this).select("svg");
+        var nodes = partition(data);
 
-        var nodes = partition(data),
-            kx = w / data.dx;
+        console.info(data);
 
-        var g = container.selectAll("g").data(nodes);
+        var kx = w / data.dx;
+
+        var g = d3.select(this).select("svg").selectAll("g").data(nodes);
 
         var node = g.enter()
           .append("svg:g");
@@ -240,14 +237,14 @@
 
       selection.each(function(data) {
 
-        var container = d3.select(this)
+        var svg = d3.select(this)
           .append("svg:svg")
           .attr("width", w)
           .attr("height", h)
           .attr("class", "partition")
           .call(tip);
 
-        container.append("svg:text")
+        svg.append("svg:text")
           .attr("class", "title")
           .attr("text-anchor", "middle")
           .attr("y", "25")
@@ -255,7 +252,13 @@
           .attr("fill", "#808080")
           .text(title);
 
-        augment(data, update);
+        augment(data);
+
+        // "creative" fix for node ordering when partition is called for the first time
+        partition(data);
+
+        // first draw
+        update();
 
       });
     }
