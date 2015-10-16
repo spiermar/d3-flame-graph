@@ -20,6 +20,12 @@
       .attr('class', 'd3-tip')
       .html(function(d) { return label(d); });
 
+
+    function setDetails(t) {
+      document.getElementById("details").innerHTML = t;
+    }
+
+
     var x = d3.scale.linear().range([0, w]),
         y = d3.scale.linear().range([0, c]);
 
@@ -164,6 +170,8 @@
 
       if (label.match(re)) {
         d.highlight = true;
+      } else {
+        d.highlight = false;
       }
     }
 
@@ -211,7 +219,7 @@
 
         g.select("rect")
           .attr("height", function(d) { return c; })
-          .attr("fill", function(d) {return d.highlight ? "blue" : colorHash(d.name); })
+          .attr("fill", function(d) {return d.highlight ? "#E600E6" : colorHash(d.name); })
           .style("visibility", function(d) {return d.dummy ? "hidden" : "visible";});
 
         g.select("title")
@@ -227,17 +235,21 @@
 
         g.on('click', zoom);
 
+
+
         g.exit().remove();
 
-        // tooltip
-        if (tooltip) {
-          g.on('mouseover', function(d) {
-            if(!d.dummy) { tip.show(d); }
-
-          }).on('mouseout', function(d) {
-            if(!d.dummy) { tip.hide(d); }
-          });
-        }
+        g.on('mouseover', function(d) {
+          if(!d.dummy) {
+            if (tooltip) tip.show(d);
+            setDetails("Function: " + label(d));
+          }
+        }).on('mouseout', function(d) {
+          if(!d.dummy) {
+            if (tooltip) tip.hide(d);
+            setDetails("");
+          }
+        });
       });
     }
 
@@ -334,6 +346,12 @@
         update();
       });
     };
+
+    chart.reset = function() {
+      selection.each(function(data) {
+
+      });
+    }
 
     return chart;
   }
