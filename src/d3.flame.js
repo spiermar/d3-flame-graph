@@ -178,32 +178,41 @@
 
         var nodes = partition(data);
 
-        console.info(data);
-
         var kx = w / data.dx;
 
         var g = d3.select(this).select("svg").selectAll("g").data(nodes);
 
-        var node = g.enter()
-          .append("svg:g");
+        g.transition()
+          .duration(transitionDuration)
+          .ease(transitionEase)
+          .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - c) + ")"; });
 
-        node.append("svg:rect");
+        g.select("rect").transition()
+          .duration(transitionDuration)
+          .ease(transitionEase)
+          .attr("width", function(d) { return d.dx * kx; });
+
+        var node = g.enter()
+          .append("svg:g")
+          .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - c) + ")"; });
+
+        node.append("svg:rect")
+          .attr("width", function(d) { return d.dx * kx; });
+
         node.append("svg:title");
+
         node.append("foreignObject")
           .append("xhtml:div");
 
         g.attr("width", function(d) { return d.dx * kx; })
           .attr("height", function(d) { return c; })
           .attr("name", function(d) { return d.name; })
-          .attr("class", function(d) { return d.fade ? "frame fade" : "frame"; })
-          .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - c) + ")"; })
-          .on('click', zoom);
+          .attr("class", function(d) { return d.fade ? "frame fade" : "frame"; });
 
         g.select("rect")
           .attr("height", function(d) { return c; })
           .attr("fill", function(d) {return colorHash(d.name); })
-          .style("visibility", function(d) {return d.dummy ? "hidden" : "visible";})
-          .attr("width", function(d) { return d.dx * kx; });
+          .style("visibility", function(d) {return d.dummy ? "hidden" : "visible";});
 
         g.select("title")
           .text(label);
@@ -215,6 +224,8 @@
           .attr("class", "label")
           .style("display", function(d) { return (d.dx * kx < 35) || d.dummy ? "none" : "block";})
           .text(name);
+
+        g.on('click', zoom);
 
         g.exit().remove();
 
