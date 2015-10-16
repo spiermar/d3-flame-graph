@@ -162,7 +162,7 @@
       var re = new RegExp(term),
           label = d.name;
 
-      if (d.children) {
+      if(d.children) {
         d.children.forEach(function(child) {
           searchTree(child, term);
         });
@@ -172,6 +172,15 @@
         d.highlight = true;
       } else {
         d.highlight = false;
+      }
+    }
+
+    function clear(d) {
+      d.highlight = false;
+      if(d.children) {
+        d.children.forEach(function(child) {
+          clear(child, term);
+        });
       }
     }
 
@@ -347,9 +356,10 @@
       });
     };
 
-    chart.reset = function() {
+    chart.clear = function() {
       selection.each(function(data) {
-
+        clear(data);
+        update();
       });
     }
 

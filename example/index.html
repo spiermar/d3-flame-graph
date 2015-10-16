@@ -51,6 +51,7 @@
         <nav>
           <div class="pull-right">
             <form class="form-inline" id="form">
+              <a class="btn" href="javascript: clear();">Clear</a>
               <div class="form-group">
                 <input type="text" class="form-control" id="term">
               </div>
@@ -98,6 +99,11 @@
     function search() {
       var term = document.getElementById("term").value;
       flameGraph.search(term);
+    }
+
+    function clear() {
+      document.getElementById('term').value = '';
+      flameGraph.clear();
     }
     </script>
   </body>
