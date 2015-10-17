@@ -361,7 +361,7 @@
         clear(data);
         update();
       });
-    }
+    };
 
     return chart;
   }

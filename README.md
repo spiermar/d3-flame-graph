@@ -16,6 +16,10 @@ This is the first release of this plugin. As such, expect to find bugs and issue
 
 **At this point, the plugin provides only basic flame graph functionality. Please check the [issues](https://github.com/spiermar/d3-flame-graph/issues) page for roadmap information.**
 
+## Demo
+
+Click [here](http://spiermar.github.io/d3-flame-graph/) to check the demo!
+
 ## Getting Started
 
 ### Bower
