@@ -54,6 +54,22 @@ d3.json("stacks.json", function(error, data) {
 </script>
 ```
 
+### Format
+
+Input stack is a simple hierarchical data structure in JSON format.
+
+```
+{
+  "name": "<name>",
+  "value": <value>,
+  "children": [
+    <Object>
+  ]
+}
+```
+
+JSON format can be converted from the folded stack format using the [node-stack-convert](https://github.com/spiermar/node-stack-convert) CLI tool.
+
 ## Issues
 
 For bugs, questions and discussions please use the [GitHub Issues](https://github.com/spiermar/d3-flame-graph/issues).
