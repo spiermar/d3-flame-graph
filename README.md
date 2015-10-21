@@ -43,7 +43,9 @@ And use it!
 <script type="text/javascript" src="bower_components/d3/d3.js"></script>
 <script type="text/javascript" src="bower_components/d3-flame-graph/dist/d3.layout.flame.js"></script>
 <script type="text/javascript">
-var flamegraph = d3.flame().height(600).width(1200);
+var flamegraph = d3.flameGraph()
+  .width(960)
+  .height(540);
 
 d3.json("stacks.json", function(error, data) {
   if (error) return console.warn(error);
@@ -54,7 +56,7 @@ d3.json("stacks.json", function(error, data) {
 </script>
 ```
 
-### Format
+### Input Format
 
 Input stack is a simple hierarchical data structure in JSON format.
 
@@ -69,6 +71,85 @@ Input stack is a simple hierarchical data structure in JSON format.
 ```
 
 JSON format can be converted from the folded stack format using the [node-stack-convert](https://github.com/spiermar/node-stack-convert) CLI tool.
+
+## API Reference
+
+<a name="flameGraph" href="#flameGraph">#</a> d3.flameGraph()
+
+Create a new Flame Graph.
+
+<a name="width" href="#width">#</a> flameGraph.<b>width</b>(<i>[size<]/i>)
+
+Graph width in px. Defaults to 960px if not set. If <i>size</i> is specified, it will set de graph width, otherwise it will return the flameGraph object.
+
+<a name="height" href="#height">#</a> flameGraph.<b>height</b>(<i>[size]</i>)
+
+Graph height in px. Defaults to 540px if not set. If <i>size</i> is specified, it will set de graph height, otherwise it will return the flameGraph object.
+
+<a name="cellHeight" href="#cellHeight">#</a> flameGraph.<b>cellHeight</b>(<i>[size]</i>)
+
+Cell height in px. Defaults to 18px if not set. If <i>size</i> is specified, it will set de cell height, otherwise it will return the flameGraph object.
+
+<a name="title" href="#title">#</a> flameGraph.<b>title</b>(<i>[title]</i>)
+
+Title displayed on top of graph. Defaults to empty if not set. If <i>title</i> is specified, it will set de title displayed on the graph, otherwise it will return the flameGraph object.
+
+<a name="tooltip" href="#tooltip">#</a> flameGraph.<b>tooltip</b>(<i>[enabled]</i>)
+
+Enables/disables display of tooltips on frames. Defaults to <i>true</i> if not set. If a boolean value is specified, it will enable/disable tooltips, otherwise it will return the flameGraph object.
+
+<a name="tooltipDirection" href="#tooltipDirection">#</a> flameGraph.<b>tooltipDirection</b>(<i>[direction]</i>)
+
+Sets the position of a tooltip relative to a target element. <i>direction</i> can be n, s, e, w, nw, ne, sw or se. The direction will also automatically be included as a classname on the tooltip element which allows for different style hooks based on the direction.
+
+```
+.tooltipDirection('n') // Position the tooltip to the top of a target element
+.tooltipDirection('s') // Position the tooltip to the bottom of a target element
+.tooltipDirection('e') // Position the tooltip to the right of a target element
+.tooltipDirection('w') // Position the tooltip to the left of a target element
+```
+
+See [d3-tip.direction](https://github.com/Caged/d3-tip/blob/master/docs/positioning-tooltips.md#tipdirectiondirection).
+
+<a name="tooltipOffset" href="#tooltipOffset">#</a> flameGraph.<b>tooltipOffset</b>(<i>[offset]</i>)
+
+Offset a tooltip relative to its calculated position. Offset is computed from [top, left].
+
+```
+.tooltipOffset([10, -10])
+```
+
+See [d3-tip.offset](https://github.com/Caged/d3-tip/blob/master/docs/positioning-tooltips.md#tipoffsetvalues).
+
+<a name="transitionDuration" href="#transitionDuration">#</a> flameGraph.<b>transitionDuration</b>(<i>[duration]</i>)
+
+Specifies transition duration in milliseconds. The default duration is 750ms. If <i>duration</i> is not specified, returns the flameGraph object.
+
+See [d3.duration](https://github.com/mbostock/d3/wiki/Transitions#duration).
+
+<a name="transitionEase" href="#transitionEase">#</a> flameGraph.<b>transitionEase</b>(<i>[ease]</i>)
+
+Specifies the transition easing function. The default easing function is "cubic-in-out". If ease is not specified, returns the flameGraph object. The following easing types are supported:
+
+* linear - the identity function, t.
+* poly(k) - raises t to the specified power k (e.g., 3).
+* quad - equivalent to poly(2).
+* cubic - equivalent to poly(3).
+* sin - applies the trigonometric function sin.
+* exp - raises 2 to a power based on t.
+* circle - the quarter circle.
+* elastic(a, p) - simulates an elastic band; may extend slightly beyond 0 and 1.
+* back(s) - simulates backing into a parking space.
+* bounce - simulates a bouncy collision.
+
+These built-in types may be extended using a variety of modes:
+
+* in - the identity function.
+* out - reverses the easing direction to [1,0].
+* in-out - copies and mirrors the easing function from [0,.5] and [.5,1].
+* out-in - copies and mirrors the easing function from [1,.5] and [.5,0].
+
+See [d3.ease](https://github.com/mbostock/d3/wiki/Transitions#d3_ease).
 
 ## Issues
 
