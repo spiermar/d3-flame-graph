@@ -25,10 +25,6 @@
       document.getElementById("details").innerHTML = t;
     }
 
-
-    var x = d3.scale.linear().range([0, w]),
-        y = d3.scale.linear().range([0, c]);
-
     function label(d) {
       if (!d.dummy) {
         return d.name + " (" + d3.round(100 * d.dx, 3) + "%, " + d.value + " samples)";
@@ -193,6 +189,9 @@
 
       selection.each(function(data) {
 
+        var x = d3.scale.linear().range([0, w]),
+            y = d3.scale.linear().range([0, c]);
+
         var nodes = partition(data);
 
         var kx = w / data.dx;
@@ -263,6 +262,7 @@
     }
 
     function chart(s) {
+
       selection = s;
 
       if (!arguments.length) return chart;
