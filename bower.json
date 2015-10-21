@@ -1,6 +1,6 @@
 {
   "name": "d3-flame-graph",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "homepage": "https://github.com/spiermar/d3-flame-graph",
   "authors": [
     "Martin Spier <spiermar@gmail.com>"
