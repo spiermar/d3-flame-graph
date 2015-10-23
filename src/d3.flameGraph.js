@@ -215,7 +215,8 @@
         node.append("svg:rect")
           .attr("width", function(d) { return d.dx * kx; });
 
-        node.append("svg:title");
+        if (!tooltip)
+          node.append("svg:title");
 
         node.append("foreignObject")
           .append("xhtml:div");
@@ -230,8 +231,9 @@
           .attr("fill", function(d) {return d.highlight ? "#E600E6" : colorHash(d.name); })
           .style("visibility", function(d) {return d.dummy ? "hidden" : "visible";});
 
-        g.select("title")
-          .text(label);
+        if (!tooltip)
+          g.select("title")
+            .text(label);
 
         g.select("foreignObject")
           .attr("width", function(d) { return d.dx * kx; })
