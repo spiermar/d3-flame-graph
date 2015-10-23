@@ -17,7 +17,7 @@
     var tip = d3.tip()
       .direction(tooltipDirection)
       .offset(tooltipOffset)
-      .attr('class', 'd3-tip')
+      .attr('class', 'd3-flame-graph-tip')
       .html(function(d) { return label(d); });
 
 
@@ -277,7 +277,7 @@
           .append("svg:svg")
           .attr("width", w)
           .attr("height", h)
-          .attr("class", "partition")
+          .attr("class", "partition d3-flame-graph")
           .call(tip);
 
         svg.append("svg:text")
