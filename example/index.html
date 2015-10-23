@@ -66,6 +66,9 @@
       <hr>
       <div id="details">
       </div>
+      <form class="form-inline">
+        <a href="javascript: customTooltip();" class="btn btn-default">Use custom tooltip function</a>
+      </form>
     </div>
 
     <script type="text/javascript" src="d3/d3.js"></script>
@@ -104,6 +107,12 @@
     function clear() {
       document.getElementById('term').value = '';
       flameGraph.clear();
+    }
+
+    function customTooltip() {
+      flameGraph.tooltip(function(d) {
+        return "name: " + d.name + ", value: " + d.value;
+      });
     }
     </script>
   </body>
