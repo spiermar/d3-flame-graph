@@ -82,6 +82,9 @@
       .tooltipOffset([8, 0])
       .transitionDuration(750)
       .transitionEase('cubic-in-out')
+      .sort(true)
+      //Example to sort in reverse order
+      //.sort(function(a,b){ return d3.descending(a.name, b.name);})
       .title("");
 
     d3.json("stacks.json", function(error, data) {
