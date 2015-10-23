@@ -78,7 +78,7 @@ JSON format can be converted from the folded stack format using the [node-stack-
 
 Create a new Flame Graph.
 
-<a name="width" href="#width">#</a> flameGraph.<b>width</b>(<i>[size<]/i>)
+<a name="width" href="#width">#</a> flameGraph.<b>width</b>(<i>[size]</i>)
 
 Graph width in px. Defaults to 960px if not set. If <i>size</i> is specified, it will set de graph width, otherwise it will return the flameGraph object.
 
