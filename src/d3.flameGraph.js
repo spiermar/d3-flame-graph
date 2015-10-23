@@ -22,7 +22,9 @@
 
 
     function setDetails(t) {
-      document.getElementById("details").innerHTML = t;
+      var details = document.getElementById("details");
+      if (details)
+        details.innerHTML = t;
     }
 
     function label(d) {
