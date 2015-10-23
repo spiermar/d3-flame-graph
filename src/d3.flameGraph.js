@@ -12,7 +12,8 @@
       tooltipDirection = "s", // tooltip direction
       tooltipOffset = [8, 0],
       transitionDuration = 750,
-      transitionEase = "cubic-in-out"; // tooltip offset
+      transitionEase = "cubic-in-out", // tooltip offset
+      sort = true;
 
     var tip = d3.tip()
       .direction(tooltipDirection)
@@ -180,8 +181,18 @@
       }
     }
 
+    function doSort(a, b) {
+      if (typeof sort === 'function') {
+        return sort(a, b);
+      } else if (sort) {
+        return d3.ascending(a.name, b.name);
+      } else {
+        return 0;
+      }
+    }
+
     var partition = d3.layout.partition()
-      .sort(function(a, b) {return d3.ascending(a.name, b.name);})
+      .sort(doSort)
       .value(function(d) {return d.v || d.value;})
       .children(function(d) {return d.c || d.children;});
 
@@ -346,6 +357,12 @@
     chart.transitionEase = function (_) {
       if (!arguments.length) { return transitionEase; }
       transitionEase = _;
+      return chart;
+    };
+
+    chart.sort = function (_) {
+      if (!arguments.length) { return sort; }
+      sort = _;
       return chart;
     };
 

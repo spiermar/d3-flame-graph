@@ -151,6 +151,10 @@ These built-in types may be extended using a variety of modes:
 
 See [d3.ease](https://github.com/mbostock/d3/wiki/Transitions#d3_ease).
 
+<a name="sort" href="#sort">#</a> flameGraph.<b>sort</b>(<i>[enabled]</i>)
+
+Enables/disables sorting of children frames. Defaults to <i>true</i> if not set to sort in ascending order by frame's name. If set to a function, the function takes two frames (a,b) and returns -1 if frame a is less than b, 1 if greater, or 0 if equal. If a value is specified, it will enable/disable sorting, otherwise it will return the flameGraph object.
+
 ## Issues
 
 For bugs, questions and discussions please use the [GitHub Issues](https://github.com/spiermar/d3-flame-graph/issues).
