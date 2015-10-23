@@ -1,15 +1,15 @@
-rect {
+.d3-flame-graph rect {
   stroke: #EEEEEE;
   fill-opacity: .8;
 }
 
-rect:hover {
+.d3-flame-graph rect:hover {
   stroke: #474747;
   stroke-width: 0.5;
   cursor: pointer;
 }
 
-.label {
+.d3-flame-graph .label {
   pointer-events: none;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -25,16 +25,16 @@ rect:hover {
   text-align: left;
 }
 
-.fade {
+.d3-flame-graph .fade {
   opacity: 0.6 !important;
 }
 
-.title {
+.d3-flame-graph .title {
   font-size: 20px;
   font-family: Verdana;
 }
 
-.d3-tip {
+.d3-flame-graph-tip {
   line-height: 1;
   font-family: Verdana;
   font-size: 12px;
@@ -46,7 +46,7 @@ rect:hover {
 }
 
 /* Creates a small triangle extender for the tooltip */
-.d3-tip:after {
+.d3-flame-graph-tip:after {
   box-sizing: border-box;
   display: inline;
   font-size: 10px;
@@ -58,7 +58,7 @@ rect:hover {
 }
 
 /* Northward tooltips */
-.d3-tip.n:after {
+.d3-flame-graph-tip.n:after {
   content: "\25BC";
   margin: -1px 0 0 0;
   top: 100%;
@@ -67,7 +67,7 @@ rect:hover {
 }
 
 /* Eastward tooltips */
-.d3-tip.e:after {
+.d3-flame-graph-tip.e:after {
   content: "\25C0";
   margin: -4px 0 0 0;
   top: 50%;
@@ -75,7 +75,7 @@ rect:hover {
 }
 
 /* Southward tooltips */
-.d3-tip.s:after {
+.d3-flame-graph-tip.s:after {
   content: "\25B2";
   margin: 0 0 1px 0;
   top: -8px;
@@ -84,8 +84,9 @@ rect:hover {
 }
 
 /* Westward tooltips */
-.d3-tip.w:after {
+.d3-flame-graph-tip.w:after {
   content: "\25B6";
   margin: -4px 0 0 -1px;
   top: 50%;
   left: 100%;
+}
