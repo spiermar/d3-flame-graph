@@ -96,7 +96,7 @@ Title displayed on top of graph. Defaults to empty if not set. If <i>title</i> i
 
 <a name="tooltip" href="#tooltip">#</a> flameGraph.<b>tooltip</b>(<i>[enabled]</i>)
 
-Enables/disables display of tooltips on frames. Defaults to <i>true</i> if not set. If a boolean value is specified, it will enable/disable tooltips, otherwise it will return the flameGraph object.
+Enables/disables display of tooltips on frames. Defaults to <i>true</i> if not set. If set to a function, the function takes the target node (i.e. the object with name, value, and children) and returns the string to display. Else, if a truthy value, uses a default label function. If a value is specified, it will enable/disable tooltips, otherwise it will return the flameGraph object.
 
 <a name="tooltipDirection" href="#tooltipDirection">#</a> flameGraph.<b>tooltipDirection</b>(<i>[direction]</i>)
 

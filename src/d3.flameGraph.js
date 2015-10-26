@@ -28,9 +28,17 @@
         details.innerHTML = t;
     }
 
+    function defaultLabel(d) {
+      return d.name + " (" + d3.round(100 * d.dx, 3) + "%, " + d.value + " samples)";
+    }
+
     function label(d) {
       if (!d.dummy) {
-        return d.name + " (" + d3.round(100 * d.dx, 3) + "%, " + d.value + " samples)";
+        if (typeof tooltip === "function") {
+          return tooltip(d);
+        } else if (tooltip) {
+          return defaultLabel(d);
+        }
       } else {
         return "";
       }
