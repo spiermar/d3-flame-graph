@@ -330,7 +330,7 @@
       if (typeof _ === "function") {
         tip = _;
       }
-      tooltip = _;
+      tooltip = true;
       return chart;
     };
 
