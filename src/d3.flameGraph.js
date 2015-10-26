@@ -9,18 +9,15 @@
       selection = null, // selection
       tooltip = true, // enable tooltip
       title = "", // graph title
-      tooltipDirection = "s", // tooltip direction
-      tooltipOffset = [8, 0],
       transitionDuration = 750,
       transitionEase = "cubic-in-out", // tooltip offset
       sort = true;
 
     var tip = d3.tip()
-      .direction(tooltipDirection)
-      .offset(tooltipOffset)
+      .direction("s")
+      .offset([8, 0])
       .attr('class', 'd3-flame-graph-tip')
       .html(function(d) { return label(d); });
-
 
     function setDetails(t) {
       var details = document.getElementById("details");
@@ -28,17 +25,9 @@
         details.innerHTML = t;
     }
 
-    function defaultLabel(d) {
-      return d.name + " (" + d3.round(100 * d.dx, 3) + "%, " + d.value + " samples)";
-    }
-
     function label(d) {
       if (!d.dummy) {
-        if (typeof tooltip === "function") {
-          return tooltip(d);
-        } else if (tooltip) {
-          return defaultLabel(d);
-        }
+        return d.name + " (" + d3.round(100 * d.dx, 3) + "%, " + d.value + " samples)";
       } else {
         return "";
       }
@@ -338,6 +327,9 @@
 
     chart.tooltip = function (_) {
       if (!arguments.length) { return tooltip; }
+      if (typeof _ === "function") {
+        tip = _;
+      }
       tooltip = _;
       return chart;
     };
@@ -345,18 +337,6 @@
     chart.title = function (_) {
       if (!arguments.length) { return title; }
       title = _;
-      return chart;
-    };
-
-    chart.tooltipDirection = function (_) {
-      if (!arguments.length) { return tooltipDirection; }
-      tooltipDirection = _;
-      return chart;
-    };
-
-    chart.tooltipOffset = function (_) {
-      if (!arguments.length) { return tooltipOffset; }
-      tooltipOffset = _;
       return chart;
     };
 
