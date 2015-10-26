@@ -98,6 +98,12 @@ Title displayed on top of graph. Defaults to empty if not set. If <i>title</i> i
 
 Enables/disables display of tooltips on frames. Defaults to <i>true</i> if not set. It can be set to a [d3-tip configurable function](https://github.com/Caged/d3-tip/blob/master/docs/initializing-tooltips.md), which will replace the default function and display a fully customized tooltip. Else, if a truthy value, uses a default label function. If a value is specified, it will enable/disable tooltips, otherwise it will return the flameGraph object.
 
+Class should be specified in order to correctly render the tooltip. The default "d3-flame-graph-tip" is available for use too.
+
+```
+.attr('class', 'd3-flame-graph-tip')
+```
+
 See [d3-tip](https://github.com/Caged/d3-tip/tree/master/docs) for more details.
 
 <a name="transitionDuration" href="#transitionDuration">#</a> flameGraph.<b>transitionDuration</b>(<i>[duration]</i>)
