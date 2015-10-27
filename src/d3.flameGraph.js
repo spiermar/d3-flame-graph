@@ -9,18 +9,19 @@
       selection = null, // selection
       tooltip = true, // enable tooltip
       title = "", // graph title
-      tooltipDirection = "s", // tooltip direction
-      tooltipOffset = [8, 0],
       transitionDuration = 750,
       transitionEase = "cubic-in-out", // tooltip offset
       sort = true;
 
     var tip = d3.tip()
-      .direction(tooltipDirection)
-      .offset(tooltipOffset)
+      .direction("s")
+      .offset([8, 0])
       .attr('class', 'd3-flame-graph-tip')
       .html(function(d) { return label(d); });
 
+    var labelFormat = function(d) {
+      return d.name + " (" + d3.round(100 * d.dx, 3) + "%, " + d.value + " samples)";
+    }
 
     function setDetails(t) {
       var details = document.getElementById("details");
@@ -28,17 +29,9 @@
         details.innerHTML = t;
     }
 
-    function defaultLabel(d) {
-      return d.name + " (" + d3.round(100 * d.dx, 3) + "%, " + d.value + " samples)";
-    }
-
     function label(d) {
       if (!d.dummy) {
-        if (typeof tooltip === "function") {
-          return tooltip(d);
-        } else if (tooltip) {
-          return defaultLabel(d);
-        }
+        return labelFormat(d);
       } else {
         return "";
       }
@@ -273,7 +266,7 @@
         g.on('mouseover', function(d) {
           if(!d.dummy) {
             if (tooltip) tip.show(d);
-            setDetails("Function: " + label(d));
+            setDetails(label(d));
           }
         }).on('mouseout', function(d) {
           if(!d.dummy) {
@@ -338,25 +331,16 @@
 
     chart.tooltip = function (_) {
       if (!arguments.length) { return tooltip; }
-      tooltip = _;
+      if (typeof _ === "function") {
+        tip = _;
+      }
+      tooltip = true;
       return chart;
     };
 
     chart.title = function (_) {
       if (!arguments.length) { return title; }
       title = _;
-      return chart;
-    };
-
-    chart.tooltipDirection = function (_) {
-      if (!arguments.length) { return tooltipDirection; }
-      tooltipDirection = _;
-      return chart;
-    };
-
-    chart.tooltipOffset = function (_) {
-      if (!arguments.length) { return tooltipOffset; }
-      tooltipOffset = _;
       return chart;
     };
 
@@ -378,6 +362,12 @@
       return chart;
     };
 
+    chart.label = function(_) {
+      if (!arguments.length) { return labelFormat; }
+      labelFormat = _;
+      return chart;
+    }
+
     chart.search = function(term) {
       selection.each(function(data) {
         searchTree(data, term);
@@ -391,6 +381,8 @@
         update();
       });
     };
+
+
 
     return chart;
   }

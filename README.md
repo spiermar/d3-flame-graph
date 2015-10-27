@@ -96,30 +96,15 @@ Title displayed on top of graph. Defaults to empty if not set. If <i>title</i> i
 
 <a name="tooltip" href="#tooltip">#</a> flameGraph.<b>tooltip</b>(<i>[enabled]</i>)
 
-Enables/disables display of tooltips on frames. Defaults to <i>true</i> if not set. If set to a function, the function takes the target node (i.e. the object with name, value, and children) and returns the string to display. Else, if a truthy value, uses a default label function. If a value is specified, it will enable/disable tooltips, otherwise it will return the flameGraph object.
+Enables/disables display of tooltips on frames. Defaults to <i>true</i> if not set. It can be set to a [d3-tip configurable function](https://github.com/Caged/d3-tip/blob/master/docs/initializing-tooltips.md), which will replace the default function and display a fully customized tooltip. Else, if a truthy value, uses a default label function. If a value is specified, it will enable/disable tooltips, otherwise it will return the flameGraph object.
 
-<a name="tooltipDirection" href="#tooltipDirection">#</a> flameGraph.<b>tooltipDirection</b>(<i>[direction]</i>)
-
-Sets the position of a tooltip relative to a target element. <i>direction</i> can be n, s, e, w, nw, ne, sw or se. The direction will also automatically be included as a classname on the tooltip element which allows for different style hooks based on the direction.
+Class should be specified in order to correctly render the tooltip. The default "d3-flame-graph-tip" is available for use too.
 
 ```
-.tooltipDirection('n') // Position the tooltip to the top of a target element
-.tooltipDirection('s') // Position the tooltip to the bottom of a target element
-.tooltipDirection('e') // Position the tooltip to the right of a target element
-.tooltipDirection('w') // Position the tooltip to the left of a target element
+.attr('class', 'd3-flame-graph-tip')
 ```
 
-See [d3-tip.direction](https://github.com/Caged/d3-tip/blob/master/docs/positioning-tooltips.md#tipdirectiondirection).
-
-<a name="tooltipOffset" href="#tooltipOffset">#</a> flameGraph.<b>tooltipOffset</b>(<i>[offset]</i>)
-
-Offset a tooltip relative to its calculated position. Offset is computed from [top, left].
-
-```
-.tooltipOffset([10, -10])
-```
-
-See [d3-tip.offset](https://github.com/Caged/d3-tip/blob/master/docs/positioning-tooltips.md#tipoffsetvalues).
+See [d3-tip](https://github.com/Caged/d3-tip/tree/master/docs) for more details.
 
 <a name="transitionDuration" href="#transitionDuration">#</a> flameGraph.<b>transitionDuration</b>(<i>[duration]</i>)
 
