@@ -19,6 +19,10 @@
       .attr('class', 'd3-flame-graph-tip')
       .html(function(d) { return label(d); });
 
+    var labelFormat = function(d) {
+      return d.name + " (" + d3.round(100 * d.dx, 3) + "%, " + d.value + " samples)";
+    }
+
     function setDetails(t) {
       var details = document.getElementById("details");
       if (details)
@@ -27,7 +31,7 @@
 
     function label(d) {
       if (!d.dummy) {
-        return d.name + " (" + d3.round(100 * d.dx, 3) + "%, " + d.value + " samples)";
+        return labelFormat(d);
       } else {
         return "";
       }
@@ -262,7 +266,7 @@
         g.on('mouseover', function(d) {
           if(!d.dummy) {
             if (tooltip) tip.show(d);
-            setDetails("Function: " + label(d));
+            setDetails(label(d));
           }
         }).on('mouseout', function(d) {
           if(!d.dummy) {
@@ -358,6 +362,12 @@
       return chart;
     };
 
+    chart.label = function(_) {
+      if (!arguments.length) { return labelFormat; }
+      labelFormat = _;
+      return chart;
+    }
+
     chart.search = function(term) {
       selection.each(function(data) {
         searchTree(data, term);
@@ -371,6 +381,8 @@
         update();
       });
     };
+
+
 
     return chart;
   }

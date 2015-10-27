@@ -93,6 +93,13 @@
 
     flameGraph.tooltip(tip);
 
+    // Example on how to use custom labels
+    // var label = function(d) {
+    //  return "name: " + d.name + ", value: " + d.value;
+    // }
+
+    // flameGraph.label(label);
+
     d3.json("stacks.json", function(error, data) {
       if (error) return console.warn(error);
       d3.select("#chart")
