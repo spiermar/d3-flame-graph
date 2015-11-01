@@ -21,7 +21,7 @@
 
     var labelFormat = function(d) {
       return d.name + " (" + d3.round(100 * d.dx, 3) + "%, " + d.value + " samples)";
-    }
+    };
 
     function setDetails(t) {
       var details = document.getElementById("details");
@@ -366,7 +366,7 @@
       if (!arguments.length) { return labelFormat; }
       labelFormat = _;
       return chart;
-    }
+    };
 
     chart.search = function(term) {
       selection.each(function(data) {
@@ -382,7 +382,11 @@
       });
     };
 
-
+    chart.resetZoom = function() {
+      selection.each(function (data) {
+        zoom(data); // zoom to root
+      });
+    };
 
     return chart;
   }
