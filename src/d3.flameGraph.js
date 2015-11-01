@@ -11,7 +11,8 @@
       title = "", // graph title
       transitionDuration = 750,
       transitionEase = "cubic-in-out", // tooltip offset
-      sort = true;
+      sort = true,
+      clickHandler = null;
 
     var tip = d3.tip()
       .direction("s")
@@ -156,6 +157,9 @@
       show(d);
       fadeAncestors(d);
       update();
+      if (typeof clickHandler === 'function') {
+        clickHandler(d);
+      }
     }
 
     function searchTree(d, term) {
@@ -362,6 +366,7 @@
       return chart;
     };
 
+
     chart.label = function(_) {
       if (!arguments.length) { return labelFormat; }
       labelFormat = _;
@@ -386,6 +391,14 @@
       selection.each(function (data) {
         zoom(data); // zoom to root
       });
+    };
+
+    chart.onClick = function(_) {
+      if (!arguments.length) {
+        return clickHandler;
+      }
+      clickHandler = _;
+      return chart;
     };
 
     return chart;

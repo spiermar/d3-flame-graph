@@ -83,7 +83,9 @@
       .sort(true)
       //Example to sort in reverse order
       //.sort(function(a,b){ return d3.descending(a.name, b.name);})
-      .title("");
+      .title("")
+      .onClick(onClick);
+
 
     // Example on how to use custom tooltips using d3-tip.
     var tip = d3.tip()
@@ -125,6 +127,10 @@
 
     function resetZoom() {
       flameGraph.resetZoom();
+    }
+
+    function onClick(d) {
+      console.info("Clicked on " + d.name);
     }
 
 
