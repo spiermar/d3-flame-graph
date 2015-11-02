@@ -51,6 +51,7 @@
         <nav>
           <div class="pull-right">
             <form class="form-inline" id="form">
+              <a class="btn" href="javascript: resetZoom();">Reset zoom</a>
               <a class="btn" href="javascript: clear();">Clear</a>
               <div class="form-group">
                 <input type="text" class="form-control" id="term">
@@ -108,7 +109,7 @@
     });
 
     document.getElementById("form").addEventListener("submit", function(event){
-      event.preventDefault()
+      event.preventDefault();
       search();
     });
 
@@ -121,6 +122,12 @@
       document.getElementById('term').value = '';
       flameGraph.clear();
     }
+
+    function resetZoom() {
+      flameGraph.resetZoom();
+    }
+
+
     </script>
   </body>
 </html>

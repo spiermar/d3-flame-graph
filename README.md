@@ -140,6 +140,10 @@ See [d3.ease](https://github.com/mbostock/d3/wiki/Transitions#d3_ease).
 
 Enables/disables sorting of children frames. Defaults to <i>true</i> if not set to sort in ascending order by frame's name. If set to a function, the function takes two frames (a,b) and returns -1 if frame a is less than b, 1 if greater, or 0 if equal. If a value is specified, it will enable/disable sorting, otherwise it will return the flameGraph object.
 
+<a name="resetZoom" href="#resetZoom">#</a> flameGraph.<b>resetZoom</b>()
+
+Resets the zoom so that everything is visible. 
+
 ## Issues
 
 For bugs, questions and discussions please use the [GitHub Issues](https://github.com/spiermar/d3-flame-graph/issues).
