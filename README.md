@@ -18,7 +18,9 @@ This is the first release of this plugin. As such, expect to find bugs and issue
 
 ## Demo
 
-Click [here](http://spiermar.github.io/d3-flame-graph/) to check the demo!
+Click [here](http://spiermar.github.io/d3-flame-graph/) to check the fully-featured demo!
+
+Click [here](http://bl.ocks.org/spiermar/4509343495f8d6e214cb) to check the simplified demo on bl.ocks.org!
 
 ## Getting Started
 
@@ -142,7 +144,7 @@ Enables/disables sorting of children frames. Defaults to <i>true</i> if not set 
 
 <a name="resetZoom" href="#resetZoom">#</a> flameGraph.<b>resetZoom</b>()
 
-Resets the zoom so that everything is visible. 
+Resets the zoom so that everything is visible.
 
 ## Issues
 
