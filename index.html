@@ -51,6 +51,7 @@
         <nav>
           <div class="pull-right">
             <form class="form-inline" id="form">
+              <a class="btn" href="javascript: resetZoom();">Reset zoom</a>
               <a class="btn" href="javascript: clear();">Clear</a>
               <div class="form-group">
                 <input type="text" class="form-control" id="term">
@@ -77,12 +78,28 @@
       .height(540)
       .width(960)
       .cellHeight(18)
-      .tooltip(true)
-      .tooltipDirection("s")
-      .tooltipOffset([8, 0])
       .transitionDuration(750)
       .transitionEase('cubic-in-out')
+      .sort(true)
+      //Example to sort in reverse order
+      //.sort(function(a,b){ return d3.descending(a.name, b.name);})
       .title("");
+
+    // Example on how to use custom tooltips using d3-tip.
+    var tip = d3.tip()
+      .direction("s")
+      .offset([8, 0])
+      .attr('class', 'd3-flame-graph-tip')
+      .html(function(d) { return "name: " + d.name + ", value: " + d.value; });
+
+    flameGraph.tooltip(tip);
+
+    // Example on how to use custom labels
+    // var label = function(d) {
+    //  return "name: " + d.name + ", value: " + d.value;
+    // }
+
+    // flameGraph.label(label);
 
     d3.json("stacks.json", function(error, data) {
       if (error) return console.warn(error);
@@ -92,7 +109,7 @@
     });
 
     document.getElementById("form").addEventListener("submit", function(event){
-      event.preventDefault()
+      event.preventDefault();
       search();
     });
 
@@ -105,6 +122,12 @@
       document.getElementById('term').value = '';
       flameGraph.clear();
     }
+
+    function resetZoom() {
+      flameGraph.resetZoom();
+    }
+
+
     </script>
   </body>
 </html>
