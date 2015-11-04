@@ -146,6 +146,16 @@ Enables/disables sorting of children frames. Defaults to <i>true</i> if not set 
 
 Resets the zoom so that everything is visible.
 
+<a name="onClick" href="#onClick">#</a> flameGraph.<b>onClick</b>(<i>[function]</i>)
+
+Adds a function that will be called when the user clicks on a frame. Example:
+
+    flameGraph.onClick(function (d) {
+        console.info("You clicked on frame "+ d.name);
+    });
+
+If called with no arguments, `onClick` will return the click handler. 
+
 ## Issues
 
 For bugs, questions and discussions please use the [GitHub Issues](https://github.com/spiermar/d3-flame-graph/issues).
