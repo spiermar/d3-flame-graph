@@ -164,19 +164,27 @@
 
     function searchTree(d, term) {
       var re = new RegExp(term),
-          label = d.name;
+          searchResults = [];
 
-      if(d.children) {
-        d.children.forEach(function(child) {
-          searchTree(child, term);
-        });
+      function searchInner(d) {
+        var label = d.name;
+
+        if (d.children) {
+          d.children.forEach(function (child) {
+            searchInner(child);
+          });
+        }
+
+        if (label.match(re)) {
+          d.highlight = true;
+          searchResults.push(d);
+        } else {
+          d.highlight = false;
+        }
       }
 
-      if (label.match(re)) {
-        d.highlight = true;
-      } else {
-        d.highlight = false;
-      }
+      searchInner(d);
+      return searchResults;
     }
 
     function clear(d) {
@@ -374,10 +382,12 @@
     };
 
     chart.search = function(term) {
+      var searchResults = [];
       selection.each(function(data) {
-        searchTree(data, term);
+        searchResults = searchTree(data, term);
         update();
       });
+      return searchResults;
     };
 
     chart.clear = function() {
@@ -385,6 +395,10 @@
         clear(data);
         update();
       });
+    };
+
+    chart.zoomTo = function(d) {
+      zoom(d);
     };
 
     chart.resetZoom = function() {
