@@ -12,6 +12,7 @@
       transitionDuration = 750,
       transitionEase = "cubic-in-out", // tooltip offset
       sort = true,
+      reversed = false, // reverse the graph direction
       clickHandler = null;
 
     var tip = d3.tip()
@@ -227,7 +228,8 @@
         g.transition()
           .duration(transitionDuration)
           .ease(transitionEase)
-          .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - c) + ")"; });
+          .attr("transform", function(d) { return "translate(" + x(d.x) + ","
+            + (reversed ? y(d.depth) : (h - y(d.depth) - c)) + ")"; });
 
         g.select("rect").transition()
           .duration(transitionDuration)
@@ -236,7 +238,8 @@
 
         var node = g.enter()
           .append("svg:g")
-          .attr("transform", function(d) { return "translate(" + x(d.x) + "," + (h - y(d.depth) - c) + ")"; });
+          .attr("transform", function(d) { return "translate(" + x(d.x) + ","
+            + (reversed ? y(d.depth) : (h - y(d.depth) - c)) + ")"; });
 
         node.append("svg:rect")
           .attr("width", function(d) { return d.dx * kx; });
@@ -374,6 +377,11 @@
       return chart;
     };
 
+    chart.reversed = function (_) {
+      if (!arguments.length) { return reversed; }
+      reversed = _;
+      return chart;
+    };
 
     chart.label = function(_) {
       if (!arguments.length) { return labelFormat; }
