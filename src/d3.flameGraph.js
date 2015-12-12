@@ -305,10 +305,10 @@
         // "creative" fix for node ordering when partition is called for the first time
         partition(data);
 
-        // first draw
-        update();
-
       });
+
+      // first draw
+      update();
     }
 
     chart.height = function (_) {
@@ -387,6 +387,14 @@
         zoom(data); // zoom to root
       });
     };
+
+    chart.update = function() {
+      selection.each(function(data) {
+        augment(data);
+        partition(data);
+      });
+      update();
+    }
 
     return chart;
   }
