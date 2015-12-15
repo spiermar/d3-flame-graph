@@ -275,6 +275,26 @@
       });
     }
 
+    function merge(data, samples) {
+      samples.forEach(function (sample) {
+        var node = _.find(data, function (element) {
+          return element.name === sample.name;
+        });
+
+        if (node) {
+          node.value += sample.value;
+          if (sample.children) {
+            if (!node.children) {
+              node.children = [];
+            }
+            merge(node.children, sample.children)
+          }
+        } else {
+          data.push(sample);
+        }
+      });
+    }
+
     function chart(s) {
 
       selection = s;
@@ -307,26 +327,6 @@
 
       // first draw
       update();
-    }
-
-    function merge(data, samples) {
-      samples.forEach(function (sample) {
-        var node = _.find(data, function (element) {
-          return element.name === sample.name;
-        });
-
-        if (node) {
-          node.value += sample.value;
-          if (sample.children) {
-            if (!node.children) {
-              node.children = [];
-            }
-            merge(node.children, sample.children)
-          }
-        } else {
-          data.push(sample);
-        }
-      })
     }
 
     chart.height = function (_) {
@@ -406,17 +406,10 @@
       });
     };
 
-    chart.update = function() {
-      selection.each(function (data) {
-        augment(data);
-      });
-      update();
-    }
-
     chart.merge = function(samples) {
       selection.each(function (data) {
         merge([data], [samples]);
-        augment(data); // TODO: This should be a callback.
+        augment(data);
       });
       update();
     }
