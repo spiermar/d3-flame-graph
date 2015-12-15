@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="d3.flameGraph.css">
+
+    <style>
+
+    /* Space out content a bit */
+    body {
+      padding-top: 20px;
+      padding-bottom: 20px;
+    }
+
+    /* Custom page header */
+    .header {
+      padding-bottom: 20px;
+      padding-right: 15px;
+      padding-left: 15px;
+      border-bottom: 1px solid #e5e5e5;
+    }
+
+    /* Make the masthead heading the same height as the navigation */
+    .header h3 {
+      margin-top: 0;
+      margin-bottom: 0;
+      line-height: 40px;
+    }
+
+    /* Customize container */
+    .container {
+      max-width: 990px;
+    }
+    </style>
+
+    <title>d3-flame-graph</title>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="container">
+      <div class="header clearfix">
+        <nav>
+          <div class="pull-right">
+            <form class="form-inline" id="form">
+              <a class="btn" href="javascript: resetZoom();">Reset zoom</a>
+              <a class="btn" href="javascript: clear();">Clear</a>
+              <div class="form-group">
+                <input type="text" class="form-control" id="term">
+              </div>
+              <a class="btn btn-primary" href="javascript: search();">Search</a>
+            </form>
+          </div>
+        </nav>
+        <h3 class="text-muted">d3-flame-graph</h3>
+      </div>
+      <div id="chart">
+      </div>
+      <hr>
+      <div id="details">
+      </div>
+    </div>
+
+    <script type="text/javascript" src="d3/d3.js"></script>
+    <script type="text/javascript" src="d3-tip/index.js"></script>
+    <script type="text/javascript" src="lodash/lodash.js"></script>
+    <script type="text/javascript" src="d3.flameGraph.js"></script>
+
+    <script type="text/javascript">
+    var flameGraph = d3.flameGraph()
+      .height(1080)
+      .width(960)
+      .cellHeight(18)
+      .transitionDuration(0)
+      .transitionEase('cubic-in-out')
+      .sort(true)
+      //Example to sort in reverse order
+      //.sort(function(a,b){ return d3.descending(a.name, b.name);})
+      .title("");
+
+    // Example on how to use custom tooltips using d3-tip.
+    var tip = d3.tip()
+      .direction("s")
+      .offset([8, 0])
+      .attr('class', 'd3-flame-graph-tip')
+      .html(function(d) { return "name: " + d.name + ", value: " + d.value; });
+
+    flameGraph.tooltip(tip);
+
+    // Example on how to use custom labels
+    // var label = function(d) {
+    //  return "name: " + d.name + ", value: " + d.value;
+    // }
+
+    // flameGraph.label(label);
+
+    var start = {
+      "name": "root",
+      "value": 1,
+      "children": []
+    }
+
+    d3.select("#chart")
+      .datum(start)
+      .call(flameGraph);
+
+    d3.json("live.json", function(error, data) {
+      if (error) return console.warn(error);
+      var i = 1;
+      for (var value in data) {
+        setTimeout(function(timestamp) {
+          flameGraph.merge(data[timestamp]);
+        }, 1000 * i, value);
+        i++;
+      }
+    });
+
+    document.getElementById("form").addEventListener("submit", function(event){
+      event.preventDefault();
+      search();
+    });
+
+    function search() {
+      var term = document.getElementById("term").value;
+      flameGraph.search(term);
+    }
+
+    function clear() {
+      document.getElementById('term').value = '';
+      flameGraph.clear();
+    }
+
+    function resetZoom() {
+      flameGraph.resetZoom();
+    }
+    </script>
+  </body>
+</html>

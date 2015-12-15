@@ -274,8 +274,6 @@
 
         g.on('click', zoom);
 
-
-
         g.exit().remove();
 
         g.on('mouseover', function(d) {
@@ -289,6 +287,26 @@
             setDetails("");
           }
         });
+      });
+    }
+
+    function merge(data, samples) {
+      samples.forEach(function (sample) {
+        var node = _.find(data, function (element) {
+          return element.name === sample.name;
+        });
+
+        if (node) {
+          node.value += sample.value;
+          if (sample.children) {
+            if (!node.children) {
+              node.children = [];
+            }
+            merge(node.children, sample.children)
+          }
+        } else {
+          data.push(sample);
+        }
       });
     }
 
@@ -320,10 +338,10 @@
         // "creative" fix for node ordering when partition is called for the first time
         partition(data);
 
-        // first draw
-        update();
-
       });
+
+      // first draw
+      update();
     }
 
     chart.height = function (_) {
@@ -422,6 +440,14 @@
       clickHandler = _;
       return chart;
     };
+    
+    chart.merge = function(samples) {
+      selection.each(function (data) {
+        merge([data], [samples]);
+        augment(data);
+      });
+      update();
+    }
 
     return chart;
   }
