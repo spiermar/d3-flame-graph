@@ -71,6 +71,7 @@
 
     <script type="text/javascript" src="d3/d3.js"></script>
     <script type="text/javascript" src="d3-tip/index.js"></script>
+    <script type="text/javascript" src="lodash/lodash.js"></script>
     <script type="text/javascript" src="d3.flameGraph.js"></script>
 
     <script type="text/javascript">
@@ -116,12 +117,9 @@
       var i = 1;
       for (var value in data) {
         setTimeout(function(timestamp) {
-          console.log("Updating: " + timestamp);
-          d3.select("#chart").datum(data[timestamp]);
-          flameGraph.update();
+          flameGraph.merge(data[timestamp]);
         }, 1000 * i, value);
         i++;
-        if (i > 3) break;
       }
     });
 

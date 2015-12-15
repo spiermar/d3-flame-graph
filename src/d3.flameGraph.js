@@ -259,8 +259,6 @@
 
         g.on('click', zoom);
 
-
-
         g.exit().remove();
 
         g.on('mouseover', function(d) {
@@ -309,6 +307,26 @@
 
       // first draw
       update();
+    }
+
+    function merge(data, samples) {
+      samples.forEach(function (sample) {
+        var node = _.find(data, function (element) {
+          return element.name === sample.name;
+        });
+
+        if (node) {
+          node.value += sample.value;
+          if (sample.children) {
+            if (!node.children) {
+              node.children = [];
+            }
+            merge(node.children, sample.children)
+          }
+        } else {
+          data.push(sample);
+        }
+      })
     }
 
     chart.height = function (_) {
@@ -389,7 +407,16 @@
     };
 
     chart.update = function() {
-      selection.each(function(data) {
+      selection.each(function (data) {
+        augment(data);
+        partition(data);
+      });
+      update();
+    }
+
+    chart.merge = function(samples) {
+      selection.each(function (data) {
+        merge([data], [samples]);
         augment(data);
         partition(data);
       });
