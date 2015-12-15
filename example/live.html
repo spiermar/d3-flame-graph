@@ -112,7 +112,7 @@
       .datum(start)
       .call(flameGraph);
 
-    d3.json("animate.json", function(error, data) {
+    d3.json("live.json", function(error, data) {
       if (error) return console.warn(error);
       var i = 1;
       for (var value in data) {
