@@ -409,7 +409,6 @@
     chart.update = function() {
       selection.each(function (data) {
         augment(data);
-        partition(data);
       });
       update();
     }
@@ -417,8 +416,7 @@
     chart.merge = function(samples) {
       selection.each(function (data) {
         merge([data], [samples]);
-        augment(data);
-        partition(data);
+        augment(data); // TODO: This should be a callback.
       });
       update();
     }
