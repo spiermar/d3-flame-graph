@@ -42,6 +42,10 @@
     function name(d) {
       return d.name;
     }
+    
+    var colorMapper = function(d) {
+    	return d.highlight ? "#E600E6" : colorHash(d.name); 
+    };
 
     function generateHash(name) {
       // Return a vector (0.0->1.0) that is a hash of the input string.
@@ -257,7 +261,7 @@
 
         g.select("rect")
           .attr("height", function(d) { return c; })
-          .attr("fill", function(d) {return d.highlight ? "#E600E6" : colorHash(d.name); })
+          .attr("fill", function(d) { return colorMapper(d); })
           .style("visibility", function(d) {return d.dummy ? "hidden" : "visible";});
 
         if (!tooltip)
@@ -448,6 +452,12 @@
       });
       update();
     }
+    
+    chart.color = function(_) {
+      if (!arguments.length) { return colorMapper; }
+      colorMapper = _;
+      return chart;
+    };
 
     return chart;
   }
