@@ -196,7 +196,7 @@
       d.highlight = false;
       if(d.children) {
         d.children.forEach(function(child) {
-          clear(child, term);
+          clear(child);
         });
       }
     }
