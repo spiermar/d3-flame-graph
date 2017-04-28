@@ -79,6 +79,7 @@ JSON format can be converted from the folded stack format using the [node-stack-
 Internally, the data is transformed into a d3 **hierarchy**.
 Functions like `onClick`, `label` and `zoom` expose individual entries as hierarchy Nodes, which wrap the provided data and add more properties:
 
+```
 {
   "data": <original user-provided object>,
   "parent": <another hierarchy node>,
@@ -86,8 +87,9 @@ Functions like `onClick`, `label` and `zoom` expose individual entries as hierar
     <hierarchy node>
   ],
   "x1": <double>,  // x2 - x1 is the size of this node, as a fraction of the root.
-  "x2": <double>,
-},
+  "x2": <double>
+}
+```
 
 **This is a breaking change from previous versions of d3-flame-graph, which were based on version 3 of the d3 library***
 
