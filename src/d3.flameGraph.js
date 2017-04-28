@@ -10,7 +10,7 @@
       tooltip = true, // enable tooltip
       title = "", // graph title
       transitionDuration = 750,
-      transitionEase = "cubic-in-out", // tooltip offset
+      transitionEase = d3.easeCubic, // tooltip offset
       sort = true,
       reversed = false, // reverse the graph direction
       clickHandler = null;
@@ -21,8 +21,8 @@
       .attr('class', 'd3-flame-graph-tip')
       .html(function(d) { return label(d); });
 
-    var labelFormat = function(d) {
-      return d.name + " (" + d3.round(100 * d.dx, 3) + "%, " + d.value + " samples)";
+    var label = function(d) {
+      return d.data.name + " (" + d3.format(".3f")(100 * (d.x1 - d.x0), 3) + "%, " + d.data.value + " samples)";
     };
 
     function setDetails(t) {
@@ -31,20 +31,12 @@
         details.innerHTML = t;
     }
 
-    function label(d) {
-      if (!d.dummy) {
-        return labelFormat(d);
-      } else {
-        return "";
-      }
+    function name(d) {
+      return d.data.name;
     }
 
-    function name(d) {
-      return d.name;
-    }
-    
     var colorMapper = function(d) {
-    	return d.highlight ? "#E600E6" : colorHash(d.name); 
+      return d.highlight ? "#E600E6" : colorHash(d.data.name);
     };
 
     function generateHash(name) {
@@ -80,42 +72,20 @@
       return "rgb(" + r + "," + g + "," + b + ")";
     }
 
-    function augment(data) {
-      // Augment partitioning layout with "dummy" nodes so that internal nodes'
-      // values dictate their width. Annoying, but seems to be least painful
-      // option.  https://github.com/mbostock/d3/pull/574
-      if (data.children && (data.children.length > 0)) {
-        data.children.forEach(augment);
-        var childValues = 0;
-        data.children.forEach(function(child) {
-          childValues += child.value;
-        });
-        if (childValues < data.value) {
-          data.children.push(
-            {
-              "name": "",
-              "value": data.value - childValues,
-              "dummy": true
-            }
-          );
-        }
-      }
-    }
-
     function hide(d) {
-      if(!d.original) {
-        d.original = d.value;
+      if(!d.data.original) {
+        d.data.original = d.data.value;
       }
-      d.value = 0;
+      d.data.value = 0;
       if(d.children) {
         d.children.forEach(hide);
       }
     }
 
     function show(d) {
-      d.fade = false;
-      if(d.original) {
-        d.value = d.original;
+      d.data.fade = false;
+      if(d.data.original) {
+        d.data.value = d.data.original;
       }
       if(d.children) {
         d.children.forEach(show);
@@ -144,7 +114,7 @@
 
     function fadeAncestors(d) {
       if(d.parent) {
-        d.parent.fade = true;
+        d.parent.data.fade = true;
         fadeAncestors(d.parent);
       }
     }
@@ -172,7 +142,7 @@
           searchResults = [];
 
       function searchInner(d) {
-        var label = d.name;
+        var label = d.data.name;
 
         if (d.children) {
           d.children.forEach(function (child) {
@@ -205,48 +175,58 @@
       if (typeof sort === 'function') {
         return sort(a, b);
       } else if (sort) {
-        return d3.ascending(a.name, b.name);
+        return d3.ascending(a.data.name, b.data.name);
       } else {
         return 0;
       }
     }
 
-    var partition = d3.layout.partition()
-      .sort(doSort)
-      .value(function(d) {return d.v || d.value;})
-      .children(function(d) {return d.c || d.children;});
+    var partition = d3.partition();
 
     function update() {
 
-      selection.each(function(data) {
+      selection.each(function(root) {
+        var x = d3.scaleLinear().range([0, w]),
+            y = d3.scaleLinear().range([0, c]);
 
-        var x = d3.scale.linear().range([0, w]),
-            y = d3.scale.linear().range([0, c]);
+        root.sort(doSort);
+        root.sum(function(d) {
+          if (d.fade) {
+            return 0;
+          }
+          // The node's self value is its total value minus all children.
+          var v = d.v || d.value || 0;
+          if (d.children) {
+            for (var i = 0; i < d.children.length; i++) {
+              v -= d.children[i].value;
+            }
+          }
+          return v;
+        });
+        partition(root);
 
-        var nodes = partition(data);
+        var kx = w / (root.x1 - root.x0);
+        function width(d) { return (d.x1 - d.x0) * kx; }
 
-        var kx = w / data.dx;
-
-        var g = d3.select(this).select("svg").selectAll("g").data(nodes);
+        var g = d3.select(this).select("svg").selectAll("g").data(root.descendants());
 
         g.transition()
           .duration(transitionDuration)
           .ease(transitionEase)
-          .attr("transform", function(d) { return "translate(" + x(d.x) + ","
+          .attr("transform", function(d) { return "translate(" + x(d.x0) + ","
             + (reversed ? y(d.depth) : (h - y(d.depth) - c)) + ")"; });
 
         g.select("rect").transition()
           .duration(transitionDuration)
           .ease(transitionEase)
-          .attr("width", function(d) { return d.dx * kx; });
+          .attr("width", width);
 
         var node = g.enter()
           .append("svg:g")
-          .attr("transform", function(d) { return "translate(" + x(d.x) + ","
+          .attr("transform", function(d) { return "translate(" + x(d.x0) + ","
             + (reversed ? y(d.depth) : (h - y(d.depth) - c)) + ")"; });
 
-        node.append("svg:rect")
-          .attr("width", function(d) { return d.dx * kx; });
+        node.append("svg:rect").attr("width", width);
 
         if (!tooltip)
           node.append("svg:title");
@@ -254,26 +234,28 @@
         node.append("foreignObject")
           .append("xhtml:div");
 
-        g.attr("width", function(d) { return d.dx * kx; })
+        // XXX
+        g = d3.select(this).select("svg").selectAll("g").data(root.descendants());
+
+        g.attr("width", width)
           .attr("height", function(d) { return c; })
-          .attr("name", function(d) { return d.name; })
-          .attr("class", function(d) { return d.fade ? "frame fade" : "frame"; });
+          .attr("name", function(d) { return d.data.name; })
+          .attr("class", function(d) { return d.data.fade ? "frame fade" : "frame"; });
 
         g.select("rect")
           .attr("height", function(d) { return c; })
-          .attr("fill", function(d) { return colorMapper(d); })
-          .style("visibility", function(d) {return d.dummy ? "hidden" : "visible";});
+          .attr("fill", function(d) { return colorMapper(d); });
 
         if (!tooltip)
           g.select("title")
             .text(label);
 
         g.select("foreignObject")
-          .attr("width", function(d) { return d.dx * kx; })
+          .attr("width", width)
           .attr("height", function(d) { return c; })
           .select("div")
           .attr("class", "label")
-          .style("display", function(d) { return (d.dx * kx < 35) || d.dummy ? "none" : "block";})
+          .style("display", function(d) { return (width(d) < 35) ? "none" : "block"; })
           .text(name);
 
         g.on('click', zoom);
@@ -281,15 +263,11 @@
         g.exit().remove();
 
         g.on('mouseover', function(d) {
-          if(!d.dummy) {
-            if (tooltip) tip.show(d);
-            setDetails(label(d));
-          }
+          if (tooltip) tip.show(d);
+          setDetails(label(d));
         }).on('mouseout', function(d) {
-          if(!d.dummy) {
-            if (tooltip) tip.hide(d);
-            setDetails("");
-          }
+          if (tooltip) tip.hide(d);
+          setDetails("");
         });
       });
     }
@@ -301,7 +279,11 @@
         });
 
         if (node) {
-          node.value += sample.value;
+          if (node.original) {
+            node.original += sample.value;
+          } else {
+            node.value += sample.value;
+          }
           if (sample.children) {
             if (!node.children) {
               node.children = [];
@@ -315,13 +297,12 @@
     }
 
     function chart(s) {
-
-      selection = s;
+      var root = d3.hierarchy(s.datum(), function(d) { return d.c || d.children; });
+      selection = s.datum(root);
 
       if (!arguments.length) return chart;
 
       selection.each(function(data) {
-
         var svg = d3.select(this)
           .append("svg:svg")
           .attr("width", w)
@@ -336,12 +317,6 @@
           .attr("x", w/2)
           .attr("fill", "#808080")
           .text(title);
-
-        augment(data);
-
-        // "creative" fix for node ordering when partition is called for the first time
-        partition(data);
-
       });
 
       // first draw
@@ -406,8 +381,8 @@
     };
 
     chart.label = function(_) {
-      if (!arguments.length) { return labelFormat; }
-      labelFormat = _;
+      if (!arguments.length) { return label; }
+      label = _;
       return chart;
     };
 
@@ -446,10 +421,12 @@
     };
     
     chart.merge = function(samples) {
-      selection.each(function (data) {
-        merge([data], [samples]);
-        augment(data);
+      var newRoot;
+      selection.each(function (root) {
+        merge([root.data], [samples]);
+        newRoot = d3.hierarchy(root.data, function(d) { return d.c || d.children; });
       });
+      selection = selection.datum(newRoot);
       update();
     }
     
