@@ -74,7 +74,7 @@ Input stack is a simple hierarchical data structure in JSON format.
 
 JSON format can be converted from the folded stack format using the [node-stack-convert](https://github.com/spiermar/node-stack-convert) CLI tool.
 
-## Interacting with entries
+### Interacting with entries
 
 Internally, the data is transformed into a d3 **hierarchy**.
 Functions like `onClick`, `label` and `zoom` expose individual entries as hierarchy Nodes, which wrap the provided data and add more properties:
