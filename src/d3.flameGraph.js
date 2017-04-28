@@ -234,7 +234,7 @@
         node.append("foreignObject")
           .append("xhtml:div");
 
-        // XXX
+        // Now we have to re-select to see the new elements (why?).
         g = d3.select(this).select("svg").selectAll("g").data(root.descendants());
 
         g.attr("width", width)
@@ -255,7 +255,7 @@
           .attr("height", function(d) { return c; })
           .select("div")
           .attr("class", "label")
-          .style("display", function(d) { return (width(d) < 35) ? "none" : "block"; })
+          .style("display", function(d) { return (width(d) < 35) ? "none" : "block";})
           .text(name);
 
         g.on('click', zoom);
@@ -421,7 +421,7 @@
     };
     
     chart.merge = function(samples) {
-      var newRoot;
+      var newRoot; // Need to re-create hierarchy after data changes.
       selection.each(function (root) {
         merge([root.data], [samples]);
         newRoot = d3.hierarchy(root.data, function(d) { return d.c || d.children; });
