@@ -21,6 +21,8 @@
       .attr('class', 'd3-flame-graph-tip')
       .html(function(d) { return label(d); });
 
+    var svg;
+
     var labelFormat = function(d) {
       return d.name + " (" + d3.round(100 * d.dx, 3) + "%, " + d.value + " samples)";
     };
@@ -322,20 +324,22 @@
 
       selection.each(function(data) {
 
-        var svg = d3.select(this)
-          .append("svg:svg")
-          .attr("width", w)
-          .attr("height", h)
-          .attr("class", "partition d3-flame-graph")
-          .call(tip);
+	if (!svg) {
+          svg = d3.select(this)
+            .append("svg:svg")
+            .attr("width", w)
+            .attr("height", h)
+            .attr("class", "partition d3-flame-graph")
+            .call(tip);
 
-        svg.append("svg:text")
-          .attr("class", "title")
-          .attr("text-anchor", "middle")
-          .attr("y", "25")
-          .attr("x", w/2)
-          .attr("fill", "#808080")
-          .text(title);
+          svg.append("svg:text")
+            .attr("class", "title")
+            .attr("text-anchor", "middle")
+            .attr("y", "25")
+            .attr("x", w/2)
+            .attr("fill", "#808080")
+            .text(title);
+        }
 
         augment(data);
 
