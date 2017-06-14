@@ -41,7 +41,7 @@ $ bower install --save
 
 And use it!
 
-```
+```html
 <script type="text/javascript" src="bower_components/d3/d3.js"></script>
 <script type="text/javascript" src="bower_components/d3-flame-graph/dist/d3.layout.flame.js"></script>
 <script type="text/javascript">
@@ -62,7 +62,7 @@ d3.json("stacks.json", function(error, data) {
 
 Input stack is a simple hierarchical data structure in JSON format.
 
-```
+```js
 {
   "name": "<name>",
   "value": <value>,
@@ -102,7 +102,7 @@ Enables/disables display of tooltips on frames. Defaults to <i>true</i> if not s
 
 Class should be specified in order to correctly render the tooltip. The default "d3-flame-graph-tip" is available for use too.
 
-```
+```js
 .attr('class', 'd3-flame-graph-tip')
 ```
 
@@ -149,10 +149,11 @@ Resets the zoom so that everything is visible.
 <a name="onClick" href="#onClick">#</a> flameGraph.<b>onClick</b>(<i>[function]</i>)
 
 Adds a function that will be called when the user clicks on a frame. Example:
-
-    flameGraph.onClick(function (d) {
-        console.info("You clicked on frame "+ d.name);
-    });
+```js
+flameGraph.onClick((d) => {
+    console.info("You clicked on frame "+ d.name);
+});
+```
 
 If called with no arguments, `onClick` will return the click handler. 
 
