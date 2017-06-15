@@ -74,6 +74,27 @@ Input stack is a simple hierarchical data structure in JSON format.
 
 JSON format can be converted from the folded stack format using the [node-stack-convert](https://github.com/spiermar/node-stack-convert) CLI tool.
 
+### Interacting with entries
+
+Internally, the data is transformed into a d3 **hierarchy**.
+Functions like `onClick`, `label` and `zoom` expose individual entries as hierarchy Nodes, which wrap the provided data and add more properties:
+
+```
+{
+  "data": <original user-provided object>,
+  "parent": <another hierarchy node>,
+  "children": [
+    <hierarchy node>
+  ],
+  "x1": <double>,  // x2 - x1 is the size of this node, as a fraction of the root.
+  "x2": <double>
+}
+```
+
+**This is a breaking change from previous versions of d3-flame-graph, which were based on version 3 of the d3 library***
+
+See [d3-hierarchy](https://github.com/d3/d3-hierarchy#hierarchy).
+
 ## API Reference
 
 <a name="flameGraph" href="#flameGraph">#</a> d3.flameGraph()
@@ -116,27 +137,9 @@ See [d3.duration](https://github.com/mbostock/d3/wiki/Transitions#duration).
 
 <a name="transitionEase" href="#transitionEase">#</a> flameGraph.<b>transitionEase</b>(<i>[ease]</i>)
 
-Specifies the transition easing function. The default easing function is "cubic-in-out". If ease is not specified, returns the flameGraph object. The following easing types are supported:
+Specifies the transition easing function. The default easing function is `d3.easeCubic`.
 
-* linear - the identity function, t.
-* poly(k) - raises t to the specified power k (e.g., 3).
-* quad - equivalent to poly(2).
-* cubic - equivalent to poly(3).
-* sin - applies the trigonometric function sin.
-* exp - raises 2 to a power based on t.
-* circle - the quarter circle.
-* elastic(a, p) - simulates an elastic band; may extend slightly beyond 0 and 1.
-* back(s) - simulates backing into a parking space.
-* bounce - simulates a bouncy collision.
-
-These built-in types may be extended using a variety of modes:
-
-* in - the identity function.
-* out - reverses the easing direction to [1,0].
-* in-out - copies and mirrors the easing function from [0,.5] and [.5,1].
-* out-in - copies and mirrors the easing function from [1,.5] and [.5,0].
-
-See [d3.ease](https://github.com/mbostock/d3/wiki/Transitions#d3_ease).
+See [d3-ease](https://github.com/d3/d3-ease).
 
 <a name="sort" href="#sort">#</a> flameGraph.<b>sort</b>(<i>[enabled]</i>)
 
@@ -149,9 +152,10 @@ Resets the zoom so that everything is visible.
 <a name="onClick" href="#onClick">#</a> flameGraph.<b>onClick</b>(<i>[function]</i>)
 
 Adds a function that will be called when the user clicks on a frame. Example:
+
 ```js
-flameGraph.onClick((d) => {
-    console.info("You clicked on frame "+ d.name);
+flameGraph.onClick(function (d) {
+    console.info("You clicked on frame "+ d.data.name);
 });
 ```
 
