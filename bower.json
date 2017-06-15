@@ -1,12 +1,15 @@
 {
   "name": "d3-flame-graph",
-  "version": "0.4.2",
+  "version": "1.0.0",
   "homepage": "https://github.com/spiermar/d3-flame-graph",
   "authors": [
     "Martin Spier <spiermar@gmail.com>"
   ],
   "description": "A d3.js library to produce flame graphs.",
-  "main": "src/d3.flame.js",
+  "main": [
+    "src/d3.flameGraph.js",
+    "src/d3.flameGraph.css"
+  ],
   "keywords": [
     "flame",
     "graph",
