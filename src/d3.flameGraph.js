@@ -178,8 +178,6 @@
         return sort(a, b);
       } else if (sort) {
         return d3.ascending(a.data.name, b.data.name);
-      } else {
-        return 0;
       }
     }
 
@@ -191,7 +189,8 @@
         var x = d3.scaleLinear().range([0, w]),
             y = d3.scaleLinear().range([0, c]);
 
-        root.sort(doSort);
+        if (sort)
+            root.sort(doSort);
         root.sum(function(d) {
           if (d.fade) {
             return 0;
