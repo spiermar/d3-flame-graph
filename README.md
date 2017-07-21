@@ -36,7 +36,8 @@ Install the d3-flame-graph plugin.
 
 ```
 $ cd your-project
-$ bower install --save
+$ bower init
+$ bower install d3-flame-graph --save
 ```
 
 And use it!
