@@ -64,8 +64,11 @@
       // and with a warm palette.
       var vector = 0;
       if (name) {
-        name = name.replace(/.*`/, "");		// drop module name if present
-        name = name.replace(/\(.*/, "");	// drop extra info
+        var nameArr = name.split('`');
+        if (nameArr.length > 1) {
+          name = nameArr[nameArr.length -1]; // drop module name if present
+        }
+        name = name.split('(')[0]; // drop extra info
         vector = generateHash(name);
       }
       var r = 200 + Math.round(55 * vector);
