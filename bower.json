@@ -28,9 +28,6 @@
   "dependencies": {
     "d3": "~4",
     "d3-tip": "~0.7.1",
-    "lodash": "~3.10.1"
-  },
-  "resolutions": {
-    "d3": "4.8.0"
+    "lodash": "~4.17.4"
   }
 }
