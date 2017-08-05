@@ -353,7 +353,7 @@
       if (typeof _ === "function") {
         tip = _;
       }
-      tooltip = true;
+      tooltip = !!_;
       return chart;
     };
 
