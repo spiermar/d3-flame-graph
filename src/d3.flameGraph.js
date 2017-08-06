@@ -217,8 +217,7 @@
         g.transition()
           .duration(transitionDuration)
           .ease(transitionEase)
-          .attr("transform", function(d) { return "translate(" + x(d.x0) + ","
-            + (reversed ? y(d.depth) : (h - y(d.depth) - c)) + ")"; });
+          .attr("transform", function(d) { return "translate(" + x(d.x0) + "," + (reversed ? y(d.depth) : (h - y(d.depth) - c)) + ")"; });
 
         g.select("rect").transition()
           .duration(transitionDuration)
@@ -227,8 +226,7 @@
 
         var node = g.enter()
           .append("svg:g")
-          .attr("transform", function(d) { return "translate(" + x(d.x0) + ","
-            + (reversed ? y(d.depth) : (h - y(d.depth) - c)) + ")"; });
+          .attr("transform", function(d) { return "translate(" + x(d.x0) + "," + (reversed ? y(d.depth) : (h - y(d.depth) - c)) + ")"; });
 
         node.append("svg:rect").attr("width", width);
 
@@ -292,7 +290,7 @@
             if (!node.children) {
               node.children = [];
             }
-            merge(node.children, sample.children)
+            merge(node.children, sample.children);
           }
         } else {
           data.push(sample);
@@ -435,7 +433,7 @@
       });
       selection = selection.datum(newRoot);
       update();
-    }
+    };
     
     chart.color = function(_) {
       if (!arguments.length) { return colorMapper; }
