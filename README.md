@@ -113,9 +113,7 @@ Functions like `onClick`, `label` and `zoom` expose individual entries as hierar
 }
 ```
 
-**This is a breaking change from previous versions of d3-flame-graph, which were based on version 3 of the d3 library***
-
-See [d3-hierarchy](https://github.com/d3/d3-hierarchy#hierarchy).
+This is a breaking change from previous versions of d3-flame-graph, which were based on version 3 of the d3 library. See [d3-hierarchy](https://github.com/d3/d3-hierarchy#hierarchy).
 
 ## API Reference
 
