@@ -94,7 +94,7 @@ Input stack is a simple hierarchical data structure in JSON format.
 }
 ```
 
-JSON format can be converted from the folded stack format using the [node-stack-convert](https://github.com/spiermar/node-stack-convert) CLI tool.
+JSON format can be converted from the folded stack format using the [stacko](https://github.com/spiermar/stacko) CLI tool.
 
 ## Interacting with entries
 
