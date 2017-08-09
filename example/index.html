@@ -76,7 +76,6 @@
 
     <script type="text/javascript">
     var flameGraph = d3.flameGraph()
-      .height(540)
       .width(960)
       .cellHeight(18)
       .transitionDuration(750)
@@ -101,8 +100,10 @@
     // var label = function(d) {
     //  return "name: " + d.name + ", value: " + d.value;
     // }
-
     // flameGraph.label(label);
+
+    // Example of how to set fixed chart height
+    // flameGraph.height(540);
 
     d3.json("stacks.json", function(error, data) {
       if (error) return console.warn(error);

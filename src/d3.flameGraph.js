@@ -4,7 +4,7 @@
   function flameGraph() {
 
     var w = 960, // graph width
-      h = 540, // graph height
+      h = null, // graph height
       c = 18, // cell height
       selection = null, // selection
       tooltip = true, // enable tooltip
@@ -192,8 +192,7 @@
         var x = d3.scaleLinear().range([0, w]),
             y = d3.scaleLinear().range([0, c]);
 
-        if (sort)
-            root.sort(doSort);
+        if (sort) root.sort(doSort);
         root.sum(function(d) {
           if (d.fade) {
             return 0;
@@ -303,6 +302,10 @@
       selection = s.datum(root);
 
       if (!arguments.length) return chart;
+
+      if (!h) {
+        h = (root.height + 2) * c;
+      }
 
       selection.each(function(data) {
 
