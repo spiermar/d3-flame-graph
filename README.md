@@ -161,6 +161,16 @@ Specifies the transition easing function. The default easing function is `d3.eas
 
 See [d3-ease](https://github.com/d3/d3-ease).
 
+<a name="label" href="#label">#</a> flameGraph.<b>label</b>(<i>[function]</i>)
+
+Adds a function that returns a formatted label. Example:
+
+```js
+flameGraph.label(function(d) {
+    return "name: " + d.name + ", value: " + d.value;
+});
+```
+
 <a name="sort" href="#sort">#</a> flameGraph.<b>sort</b>(<i>[enabled]</i>)
 
 Enables/disables sorting of children frames. Defaults to <i>true</i> if not set to sort in ascending order by frame's name. If set to a function, the function takes two frames (a,b) and returns -1 if frame a is less than b, 1 if greater, or 0 if equal. If a value is specified, it will enable/disable sorting, otherwise it will return the flameGraph object.
