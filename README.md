@@ -10,11 +10,13 @@ If you don't know what flame graphs are, check [Brendan Gregg's post](http://www
 >
 > <cite>Brendan Gregg</cite>
 
-## Demo
+## Examples
 
-Click [here](http://spiermar.github.io/d3-flame-graph/) to check the fully-featured demo!
+Click [here](http://spiermar.github.io/d3-flame-graph/) to check the demo, and [source](https://github.com/spiermar/d3-flame-graph/blob/gh-pages/index.html).
 
-Click [here](http://bl.ocks.org/spiermar/4509343495f8d6e214cb) to check the simplified demo on bl.ocks.org!
+Click [here](http://spiermar.github.io/d3-flame-graph/live.htmml) to check the animated assembly demo, and [source(https://github.com/spiermar/d3-flame-graph/blob/gh-pages/live.html)
+
+Click [here](http://bl.ocks.org/spiermar/4509343495f8d6e214cb) to check the simplified demo on bl.ocks.org.
 
 ## Getting Started
 
@@ -23,21 +25,26 @@ Click [here](http://bl.ocks.org/spiermar/4509343495f8d6e214cb) to check the simp
 Just reference the CDN hosted CSS and JS files!
 
 ```html
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/spiermar/d3-flame-graph@1.0.3/dist/d3.flameGraph.min.css">
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.10.0/d3.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/spiermar/d3-flame-graph@1.0.3/dist/d3.flameGraph.min.js"></script>
-<script type="text/javascript">
-var flamegraph = d3.flameGraph()
-  .width(960);
+<head>
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/spiermar/d3-flame-graph@1.0.4/dist/d3.flameGraph.min.css">
+</head>
+<body>
+  <div id="chart"></div>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.10.0/d3.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/spiermar/d3-flame-graph@1.0.4/dist/d3.flameGraph.min.js"></script>
+  <script type="text/javascript">
+  var flamegraph = d3.flameGraph()
+    .width(960);
 
-d3.json("stacks.json", function(error, data) {
-  if (error) return console.warn(error);
-  d3.select("#chart")
+  d3.json("data.json", function(error, data) {
+    if (error) return console.warn(error);
+    d3.select("#chart")
       .datum(data)
       .call(flamegraph);
-});
-</script>
+  });
+  </script>
+</body>
 ```
 
 ### Bower
@@ -59,21 +66,26 @@ $ bower install d3-flame-graph --save
 And use it!
 
 ```html
-<link rel="stylesheet" type="text/css" href="bower_components/d3-flame-graph/dist/d3.flameGraph.css">
-<script type="text/javascript" src="bower_components/d3/d3.js"></script>
-<script type="text/javascript" src="bower_components/d3-tip/index.js"></script>
-<script type="text/javascript" src="bower_components/d3-flame-graph/dist/d3.flameGraph.js"></script>
-<script type="text/javascript">
-var flamegraph = d3.flameGraph()
-  .width(960);
+<head>
+  <link rel="stylesheet" type="text/css" href="bower_components/d3-flame-graph/dist/d3.flameGraph.css">
+</head>
+<body>
+  <div id="chart"></div>
+  <script type="text/javascript" src="bower_components/d3/d3.js"></script>
+  <script type="text/javascript" src="bower_components/d3-tip/index.js"></script>
+  <script type="text/javascript" src="bower_components/d3-flame-graph/dist/d3.flameGraph.js"></script>
+  <script type="text/javascript">
+  var flamegraph = d3.flameGraph()
+    .width(960);
 
-d3.json("stacks.json", function(error, data) {
-  if (error) return console.warn(error);
-  d3.select("#chart")
+  d3.json("data.json", function(error, data) {
+    if (error) return console.warn(error);
+    d3.select("#chart")
       .datum(data)
       .call(flamegraph);
-});
-</script>
+  });
+  </script>
+</body>
 ```
 
 More detailed examples in the [/example](/example) directory.
