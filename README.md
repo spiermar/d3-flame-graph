@@ -26,7 +26,6 @@ Just reference the CDN hosted CSS and JS files!
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/spiermar/d3-flame-graph@1.0.3/dist/d3.flameGraph.min.css">
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.10.0/d3.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
 <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/spiermar/d3-flame-graph@1.0.3/dist/d3.flameGraph.min.js"></script>
 <script type="text/javascript">
 var flamegraph = d3.flameGraph()
@@ -63,7 +62,6 @@ And use it!
 <link rel="stylesheet" type="text/css" href="bower_components/d3-flame-graph/dist/d3.flameGraph.css">
 <script type="text/javascript" src="bower_components/d3/d3.js"></script>
 <script type="text/javascript" src="bower_components/d3-tip/index.js"></script>
-<script type="text/javascript" src="bower_components/lodash/lodash.js"></script>
 <script type="text/javascript" src="bower_components/d3-flame-graph/dist/d3.flameGraph.js"></script>
 <script type="text/javascript">
 var flamegraph = d3.flameGraph()
