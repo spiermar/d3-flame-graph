@@ -1,6 +1,7 @@
 (function() {
   'use strict';
 
+  /*jshint eqnull:true */
   // https://tc39.github.io/ecma262/#sec-array.prototype.find
   if (!Array.prototype.find) {
     Object.defineProperty(Array.prototype, 'find', {
@@ -45,6 +46,7 @@
       }
     });
   }
+  /*jshint eqnull:false */
 
   function flameGraph() {
 
