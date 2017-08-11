@@ -10,19 +10,42 @@ If you don't know what flame graphs are, check [Brendan Gregg's post](http://www
 >
 > <cite>Brendan Gregg</cite>
 
-## Disclaimer
+## Examples
 
-This is the first release of this plugin. As such, expect to find bugs and issues. We count on your support to find and report them!
+Click [here](http://spiermar.github.io/d3-flame-graph/) to check the demo, and [source](https://github.com/spiermar/d3-flame-graph/blob/gh-pages/index.html).
 
-**At this point, the plugin provides only basic flame graph functionality. Please check the [issues](https://github.com/spiermar/d3-flame-graph/issues) page for roadmap information.**
+Click [here](http://spiermar.github.io/d3-flame-graph/live.html) to check the animated assembly demo, and [source](https://github.com/spiermar/d3-flame-graph/blob/gh-pages/live.html)
 
-## Demo
-
-Click [here](http://spiermar.github.io/d3-flame-graph/) to check the fully-featured demo!
-
-Click [here](http://bl.ocks.org/spiermar/4509343495f8d6e214cb) to check the simplified demo on bl.ocks.org!
+Click [here](http://bl.ocks.org/spiermar/4509343495f8d6e214cb) to check the simplified demo on bl.ocks.org.
 
 ## Getting Started
+
+### jsdelivr CDN
+
+Just reference the CDN hosted CSS and JS files!
+
+```html
+<head>
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/spiermar/d3-flame-graph@1.0.4/dist/d3.flameGraph.min.css">
+</head>
+<body>
+  <div id="chart"></div>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.10.0/d3.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/spiermar/d3-flame-graph@1.0.4/dist/d3.flameGraph.min.js"></script>
+  <script type="text/javascript">
+  var flamegraph = d3.flameGraph()
+    .width(960);
+
+  d3.json("data.json", function(error, data) {
+    if (error) return console.warn(error);
+    d3.select("#chart")
+      .datum(data)
+      .call(flamegraph);
+  });
+  </script>
+</body>
+```
 
 ### Bower
 
@@ -43,23 +66,31 @@ $ bower install d3-flame-graph --save
 And use it!
 
 ```html
-<script type="text/javascript" src="bower_components/d3/d3.js"></script>
-<script type="text/javascript" src="bower_components/d3-flame-graph/dist/d3.layout.flame.js"></script>
-<script type="text/javascript">
-var flamegraph = d3.flameGraph()
-  .width(960)
-  .height(540);
+<head>
+  <link rel="stylesheet" type="text/css" href="bower_components/d3-flame-graph/dist/d3.flameGraph.css">
+</head>
+<body>
+  <div id="chart"></div>
+  <script type="text/javascript" src="bower_components/d3/d3.js"></script>
+  <script type="text/javascript" src="bower_components/d3-tip/index.js"></script>
+  <script type="text/javascript" src="bower_components/d3-flame-graph/dist/d3.flameGraph.js"></script>
+  <script type="text/javascript">
+  var flamegraph = d3.flameGraph()
+    .width(960);
 
-d3.json("stacks.json", function(error, data) {
-  if (error) return console.warn(error);
-  d3.select("#chart")
+  d3.json("data.json", function(error, data) {
+    if (error) return console.warn(error);
+    d3.select("#chart")
       .datum(data)
       .call(flamegraph);
-});
-</script>
+  });
+  </script>
+</body>
 ```
 
-### Input Format
+More detailed examples in the [/example](/example) directory.
+
+## Input Format
 
 Input stack is a simple hierarchical data structure in JSON format.
 
@@ -73,9 +104,9 @@ Input stack is a simple hierarchical data structure in JSON format.
 }
 ```
 
-JSON format can be converted from the folded stack format using the [node-stack-convert](https://github.com/spiermar/node-stack-convert) CLI tool.
+JSON format can be converted from the folded stack format using the [stacko](https://github.com/spiermar/stacko) CLI tool.
 
-### Interacting with entries
+## Interacting with entries
 
 Internally, the data is transformed into a d3 **hierarchy**.
 Functions like `onClick`, `label` and `zoom` expose individual entries as hierarchy Nodes, which wrap the provided data and add more properties:
@@ -92,9 +123,7 @@ Functions like `onClick`, `label` and `zoom` expose individual entries as hierar
 }
 ```
 
-**This is a breaking change from previous versions of d3-flame-graph, which were based on version 3 of the d3 library***
-
-See [d3-hierarchy](https://github.com/d3/d3-hierarchy#hierarchy).
+This is a breaking change from previous versions of d3-flame-graph, which were based on version 3 of the d3 library. See [d3-hierarchy](https://github.com/d3/d3-hierarchy#hierarchy).
 
 ## API Reference
 
@@ -108,7 +137,7 @@ Graph width in px. Defaults to 960px if not set. If <i>size</i> is specified, it
 
 <a name="height" href="#height">#</a> flameGraph.<b>height</b>(<i>[size]</i>)
 
-Graph height in px. Defaults to 540px if not set. If <i>size</i> is specified, it will set de graph height, otherwise it will return the flameGraph object.
+Graph height in px. Defaults to the number of cell rows times <a name="cellHeight" href="#cellHeight"><b>cellHeight</b></a> if not set. If <i>size</i> is specified, it will set de graph height, otherwise it will return the flameGraph object.
 
 <a name="cellHeight" href="#cellHeight">#</a> flameGraph.<b>cellHeight</b>(<i>[size]</i>)
 
@@ -141,6 +170,16 @@ See [d3.duration](https://github.com/mbostock/d3/wiki/Transitions#duration).
 Specifies the transition easing function. The default easing function is `d3.easeCubic`.
 
 See [d3-ease](https://github.com/d3/d3-ease).
+
+<a name="label" href="#label">#</a> flameGraph.<b>label</b>(<i>[function]</i>)
+
+Adds a function that returns a formatted label. Example:
+
+```js
+flameGraph.label(function(d) {
+    return "name: " + d.name + ", value: " + d.value;
+});
+```
 
 <a name="sort" href="#sort">#</a> flameGraph.<b>sort</b>(<i>[enabled]</i>)
 
