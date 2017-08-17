@@ -46,6 +46,32 @@
       }
     });
   }
+
+  if (!Array.prototype.filter)
+  Array.prototype.filter = function(func, thisArg) {
+    'use strict';
+    if ( ! ((typeof func === 'Function') && this) )
+        throw new TypeError();
+    
+    var len = this.length >>> 0,
+        res = new Array(len), // preallocate array
+        c = 0, i = -1;
+    if (thisArg === undefined)
+      while (++i !== len)
+        // checks to see if the key was set
+        if (i in this)
+          if (func(t[i], i, t))
+            res[c++] = t[i];
+    else
+      while (++i !== len)
+        // checks to see if the key was set
+        if (i in this)
+          if (func.call(thisArg, t[i], i, t))
+            res[c++] = t[i];
+    
+    res.length = c; // shrink down array to proper size
+    return res;
+  };
   /*jshint eqnull:false */
 
   function flameGraph() {
@@ -58,9 +84,10 @@
       title = "", // graph title
       transitionDuration = 750,
       transitionEase = d3.easeCubic, // tooltip offset
-      sort = true,
+      sort = false,
       reversed = false, // reverse the graph direction
-      clickHandler = null;
+      clickHandler = null,
+      minFrameSize = 0;
 
     var tip = d3.tip()
       .direction("s")
@@ -233,6 +260,17 @@
 
     var partition = d3.partition();
 
+    function filterNodes(root) {
+      var nodeList = root.descendants();
+      if (minFrameSize > 0) {
+        var kx = w / (root.x1 - root.x0);
+        nodeList = nodeList.filter(function(el) {
+          return ((el.x1 - el.x0) * kx) > minFrameSize;
+        });
+      }
+      return nodeList
+    }
+
     function update() {
 
       selection.each(function(root) {
@@ -258,7 +296,9 @@
         var kx = w / (root.x1 - root.x0);
         function width(d) { return (d.x1 - d.x0) * kx; }
 
-        var g = d3.select(this).select("svg").selectAll("g").data(root.descendants());
+        var descendants = filterNodes(root);
+
+        var g = d3.select(this).select("svg").selectAll("g").data(descendants);
 
         g.transition()
           .duration(transitionDuration)
@@ -283,7 +323,7 @@
           .append("xhtml:div");
 
         // Now we have to re-select to see the new elements (why?).
-        g = d3.select(this).select("svg").selectAll("g").data(root.descendants());
+        g = d3.select(this).select("svg").selectAll("g").data(descendants);
 
         g.attr("width", width)
           .attr("height", function(d) { return c; })
@@ -488,6 +528,12 @@
     chart.color = function(_) {
       if (!arguments.length) { return colorMapper; }
       colorMapper = _;
+      return chart;
+    };
+
+    chart.minFrameSize = function (_) {
+      if (!arguments.length) { return minFrameSize; }
+      minFrameSize = _;
       return chart;
     };
 

@@ -133,19 +133,23 @@ Create a new Flame Graph.
 
 <a name="width" href="#width">#</a> flameGraph.<b>width</b>(<i>[size]</i>)
 
-Graph width in px. Defaults to 960px if not set. If <i>size</i> is specified, it will set de graph width, otherwise it will return the flameGraph object.
+Graph width in px. Defaults to 960px if not set. If <i>size</i> is specified, it will set the graph width, otherwise it will return the flameGraph object.
 
 <a name="height" href="#height">#</a> flameGraph.<b>height</b>(<i>[size]</i>)
 
-Graph height in px. Defaults to the number of cell rows times <a name="cellHeight" href="#cellHeight"><b>cellHeight</b></a> if not set. If <i>size</i> is specified, it will set de graph height, otherwise it will return the flameGraph object.
+Graph height in px. Defaults to the number of cell rows times <a name="cellHeight" href="#cellHeight"><b>cellHeight</b></a> if not set. If <i>size</i> is specified, it will set the cell height, otherwise it will return the flameGraph object.
 
 <a name="cellHeight" href="#cellHeight">#</a> flameGraph.<b>cellHeight</b>(<i>[size]</i>)
 
-Cell height in px. Defaults to 18px if not set. If <i>size</i> is specified, it will set de cell height, otherwise it will return the flameGraph object.
+Cell height in px. Defaults to 18px if not set. If <i>size</i> is specified, it will set the cell height, otherwise it will return the flameGraph object.
+
+<a name="minFrameSize" href="#minFrameSize">#</a> flameGraph.<b>minFrameSize</b>(<i>[size]</i>)
+
+Minimum size of a frame, in px, to be displayed in the flame graph. Defaults to 0px if not set. If <i>size</i> is specified, it will set the minimum frame size, otherwise it will return the flameGraph object.
 
 <a name="title" href="#title">#</a> flameGraph.<b>title</b>(<i>[title]</i>)
 
-Title displayed on top of graph. Defaults to empty if not set. If <i>title</i> is specified, it will set de title displayed on the graph, otherwise it will return the flameGraph object.
+Title displayed on top of graph. Defaults to empty if not set. If <i>title</i> is specified, it will set the title displayed on the graph, otherwise it will return the flameGraph object.
 
 <a name="tooltip" href="#tooltip">#</a> flameGraph.<b>tooltip</b>(<i>[enabled]</i>)
 
