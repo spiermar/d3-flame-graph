@@ -284,9 +284,10 @@
           }
           // The node's self value is its total value minus all children.
           var v = d.v || d.value || 0;
-          if (d.children) {
-            for (var i = 0; i < d.children.length; i++) {
-              v -= d.children[i].value;
+          if (d.c || d.children) {
+            var c = d.c || d.children;
+            for (var i = 0; i < c.length; i++) {
+              v -= c[i].value;
             }
           }
           return v;
