@@ -298,8 +298,7 @@
         function width(d) { return (d.x1 - d.x0) * kx; }
 
         var descendants = filterNodes(root);
-
-        var g = d3.select(this).select("svg").selectAll("g").data(descendants, d => !d.parent ? "root" : d.data.name + "-" + d.parent.data.name + "-" + d.depth);
+        var g = d3.select(this).select("svg").selectAll("g").data(descendants, d => d.id);
 
         g.transition()
           .duration(transitionDuration)
@@ -324,7 +323,7 @@
           .append("xhtml:div");
 
         // Now we have to re-select to see the new elements (why?).
-        g = d3.select(this).select("svg").selectAll("g").data(descendants, d => !d.parent ? "root" : d.data.name + "-" + d.parent.data.name + "-" + d.depth);
+        g = d3.select(this).select("svg").selectAll("g").data(descendants, d => d.id);
 
         g.attr("width", width)
           .attr("height", function(d) { return c; })
@@ -388,8 +387,23 @@
       });
     }
 
+    function s4() {
+      return Math.floor((1 + Math.random()) * 0x10000)
+        .toString(16)
+        .substring(1);
+    }
+
+    function injectIds(node) {
+      node.id = s4();
+      var children = node.c || node.children || [];
+      for (var i = 0; i < children.length; i++) {
+        injectIds(children[i])
+      }
+    }
+
     function chart(s) {
       var root = d3.hierarchy(s.datum(), function(d) { return d.c || d.children; });
+      injectIds(root);
       selection = s.datum(root);
 
       if (!arguments.length) return chart;
