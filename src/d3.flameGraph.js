@@ -314,7 +314,7 @@
           .append("svg:g")
           .attr("transform", function(d) { return "translate(" + x(d.x0) + "," + (reversed ? y(d.depth) : (h - y(d.depth) - c)) + ")"; });
 
-        node.append("svg:rect").attr("width", width).style("opacity",0).transition().delay(transitionDuration).transition().duration(transitionDuration).style("opacity", 1);
+        node.append("svg:rect").attr("width", width);
 
         if (!tooltip)
           node.append("svg:title");
@@ -349,9 +349,7 @@
         g.on('click', zoom);
 
         g.exit()
-        .transition()
-        .duration(transitionDuration / 2)
-        .remove();
+          .remove();
 
         g.on('mouseover', function(d) {
           if (tooltip) tip.show(d);
