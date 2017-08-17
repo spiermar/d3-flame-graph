@@ -299,7 +299,7 @@
 
         var descendants = filterNodes(root);
 
-        var g = d3.select(this).select("svg").selectAll("g").data(descendants);
+        var g = d3.select(this).select("svg").selectAll("g").data(descendants, d => !d.parent ? "root" : d.data.name + "-" + d.parent.data.name + "-" + d.depth);
 
         g.transition()
           .duration(transitionDuration)
@@ -315,7 +315,7 @@
           .append("svg:g")
           .attr("transform", function(d) { return "translate(" + x(d.x0) + "," + (reversed ? y(d.depth) : (h - y(d.depth) - c)) + ")"; });
 
-        node.append("svg:rect").attr("width", width);
+        node.append("svg:rect").attr("width", width).style("opacity",0).transition().delay(transitionDuration).transition().duration(transitionDuration).style("opacity", 1);
 
         if (!tooltip)
           node.append("svg:title");
@@ -324,7 +324,7 @@
           .append("xhtml:div");
 
         // Now we have to re-select to see the new elements (why?).
-        g = d3.select(this).select("svg").selectAll("g").data(descendants);
+        g = d3.select(this).select("svg").selectAll("g").data(descendants, d => !d.parent ? "root" : d.data.name + "-" + d.parent.data.name + "-" + d.depth);
 
         g.attr("width", width)
           .attr("height", function(d) { return c; })
@@ -349,7 +349,10 @@
 
         g.on('click', zoom);
 
-        g.exit().remove();
+        g.exit()
+        .transition()
+        .duration(transitionDuration / 2)
+        .remove();
 
         g.on('mouseover', function(d) {
           if (tooltip) tip.show(d);
