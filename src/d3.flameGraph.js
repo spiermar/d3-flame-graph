@@ -49,8 +49,7 @@
 
   if (!Array.prototype.filter)
   Array.prototype.filter = function(func, thisArg) {
-    'use strict';
-    if ( ! ((typeof func === 'Function') && this) )
+    if ( ! ((typeof func === 'function') && this) )
         throw new TypeError();
     
     var len = this.length >>> 0,
@@ -161,7 +160,7 @@
 
     function hide(d) {
       if(!d.data.original) {
-        d.data.original = value(d)
+        d.data.original = value(d);
       }
       d.data.v = 0;
       if (d.data.value) {
@@ -279,7 +278,7 @@
           return ((el.x1 - el.x0) * kx) > minFrameSize;
         });
       }
-      return nodeList
+      return nodeList;
     }
 
     function update() {
@@ -409,7 +408,7 @@
       node.id = s4();
       var children = node.c || node.children || [];
       for (var i = 0; i < children.length; i++) {
-        injectIds(children[i])
+        injectIds(children[i]);
       }
     }
 

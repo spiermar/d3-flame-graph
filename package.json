@@ -7,7 +7,8 @@
     "example": "example"
   },
   "scripts": {
-    "test": "mocha --reporter nyan"
+    "test": "mocha --reporter nyan",
+    "dist": "gulp dist && git add src/*"
   },
   "repository": {
     "type": "git",
@@ -46,5 +47,8 @@
     "d3": "^4.10.0",
     "d3-tip": "^0.7.1",
     "graceful-fs": "^4.1.11"
-  }
+  },
+  "pre-commit": [
+    "dist"
+  ]
 }
