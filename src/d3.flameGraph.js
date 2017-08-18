@@ -345,6 +345,8 @@
           .select("div")
           .attr("class", "label")
           .style("display", function(d) { return (width(d) < 35) ? "none" : "block";})
+          .transition()
+          .delay(transitionDuration)
           .text(name);
 
         g.on('click', zoom);
