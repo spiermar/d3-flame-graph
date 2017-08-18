@@ -314,7 +314,7 @@
         
         node.append("svg:rect")
           .transition()
-          .delay(transitionDuration)
+          .delay(transitionDuration / 2)
           .attr("width", width);
         
         if (!tooltip)
