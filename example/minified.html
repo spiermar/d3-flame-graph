@@ -82,7 +82,7 @@
       .transitionEase(d3.easeCubic)
       .sort(false)
       //Example to sort in reverse order
-      //.sort(function(a,b){ return d3.descending(a.name, b.name);})
+      //.sort(function(a,b){ return d3.descending(a.data.n, b.data.n);})
       .title("")
       .onClick(onClick);
 
@@ -92,13 +92,13 @@
       .direction("s")
       .offset([8, 0])
       .attr('class', 'd3-flame-graph-tip')
-      .html(function(d) { return "name: " + d.data.name + ", value: " + d.data.value; });
+      .html(function(d) { return "name: " + d.data.n + ", value: " + d.data.v; });
 
     flameGraph.tooltip(tip);
 
     // Example on how to use custom labels
     // var label = function(d) {
-    //  return "name: " + d.name + ", value: " + d.value;
+    //  return "name: " + d.data.n + ", value: " + d.data.v;
     // }
     // flameGraph.label(label);
 
