@@ -298,7 +298,7 @@
         function width(d) { return (d.x1 - d.x0) * kx; }
 
         var descendants = filterNodes(root);
-        var g = d3.select(this).select("svg").selectAll("g").data(descendants, d => d.id);
+        var g = d3.select(this).select("svg").selectAll("g").data(descendants, function(d) { return d.id; });
 
         g.transition()
           .duration(transitionDuration)
@@ -311,9 +311,12 @@
         var node = g.enter()
           .append("svg:g")
           .attr("transform", function(d) { return "translate(" + x(d.x0) + "," + (reversed ? y(d.depth) : (h - y(d.depth) - c)) + ")"; });
-
-        node.append("svg:rect").attr("width", width);
-
+        
+        node.append("svg:rect")
+          .transition()
+          .delay(transitionDuration)
+          .attr("width", width);
+        
         if (!tooltip)
           node.append("svg:title");
 
@@ -321,7 +324,7 @@
           .append("xhtml:div");
 
         // Now we have to re-select to see the new elements (why?).
-        g = d3.select(this).select("svg").selectAll("g").data(descendants, d => d.id);
+        g = d3.select(this).select("svg").selectAll("g").data(descendants, function(d) { return d.id; });
 
         g.attr("width", width)
           .attr("height", function(d) { return c; })
