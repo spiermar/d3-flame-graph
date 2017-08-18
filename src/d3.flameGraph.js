@@ -97,8 +97,20 @@
 
     var svg;
 
+    function name(d) {
+      return d.data.n || d.data.name;
+    }
+
+    function children(d) {
+      return d.c || d.children;
+    }
+
+    function value(d) {
+      return d.v || d.value;
+    }
+
     var label = function(d) {
-      return d.data.name + " (" + d3.format(".3f")(100 * (d.x1 - d.x0), 3) + "%, " + d.data.value + " samples)";
+      return name(d) + " (" + d3.format(".3f")(100 * (d.x1 - d.x0), 3) + "%, " + value(d) + " samples)";
     };
 
     function setDetails(t) {
@@ -107,12 +119,8 @@
         details.innerHTML = t;
     }
 
-    function name(d) {
-      return d.data.name;
-    }
-
     var colorMapper = function(d) {
-      return d.highlight ? "#E600E6" : colorHash(d.data.name);
+      return d.highlight ? "#E600E6" : colorHash(name(d));
     };
 
     function generateHash(name) {
@@ -153,21 +161,24 @@
 
     function hide(d) {
       if(!d.data.original) {
-        d.data.original = d.data.value;
+        d.data.original = value(d)
       }
-      d.data.value = 0;
-      if(d.children) {
-        d.children.forEach(hide);
+      d.data.v = 0;
+      if (d.data.value) {
+        delete d.data.value;
+      }
+      if(children(d)) {
+        children(d).forEach(hide);
       }
     }
 
     function show(d) {
       d.data.fade = false;
       if(d.data.original) {
-        d.data.value = d.data.original;
+        d.data.v = d.data.original;
       }
-      if(d.children) {
-        d.children.forEach(show);
+      if(children(d)) {
+        children(d).forEach(show);
       }
     }
 
@@ -221,10 +232,10 @@
           searchResults = [];
 
       function searchInner(d) {
-        var label = d.data.name;
+        var label = name(d);
 
-        if (d.children) {
-          d.children.forEach(function (child) {
+        if (children(d)) {
+          children(d).forEach(function (child) {
             searchInner(child);
           });
         }
@@ -243,8 +254,8 @@
 
     function clear(d) {
       d.highlight = false;
-      if(d.children) {
-        d.children.forEach(function(child) {
+      if(children(d)) {
+        children(d).forEach(function(child) {
           clear(child);
         });
       }
@@ -254,7 +265,7 @@
       if (typeof sort === 'function') {
         return sort(a, b);
       } else if (sort) {
-        return d3.ascending(a.data.name, b.data.name);
+        return d3.ascending(name(a), name(b));
       }
     }
 
@@ -283,9 +294,9 @@
             return 0;
           }
           // The node's self value is its total value minus all children.
-          var v = d.v || d.value || 0;
-          if (d.c || d.children) {
-            var c = d.c || d.children;
+          var v = value(d) || 0;
+          if (children(d)) {
+            var c = children(d);
             for (var i = 0; i < c.length; i++) {
               v -= c[i].value;
             }
@@ -328,7 +339,7 @@
 
         g.attr("width", width)
           .attr("height", function(d) { return c; })
-          .attr("name", function(d) { return d.data.name; })
+          .attr("name", function(d) { return name(d); })
           .attr("class", function(d) { return d.data.fade ? "frame fade" : "frame"; });
 
         g.select("rect")
@@ -367,7 +378,7 @@
     function merge(data, samples) {
       samples.forEach(function (sample) {
         var node = data.find(function (element) {
-          return element.name === sample.name;
+          return (name(element) === name(sample));
         });
 
         if (node) {
@@ -403,7 +414,7 @@
     }
 
     function chart(s) {
-      var root = d3.hierarchy(s.datum(), function(d) { return d.c || d.children; });
+      var root = d3.hierarchy(s.datum(), function(d) { return children(d); });
       injectIds(root);
       selection = s.datum(root);
 
@@ -538,7 +549,7 @@
       var newRoot; // Need to re-create hierarchy after data changes.
       selection.each(function (root) {
         merge([root.data], [samples]);
-        newRoot = d3.hierarchy(root.data, function(d) { return d.c || d.children; });
+        newRoot = d3.hierarchy(root.data, function(d) { return children(d); });
       });
       selection = selection.datum(newRoot);
       update();
