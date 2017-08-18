@@ -305,9 +305,7 @@
           .ease(transitionEase)
           .attr("transform", function(d) { return "translate(" + x(d.x0) + "," + (reversed ? y(d.depth) : (h - y(d.depth) - c)) + ")"; });
 
-        g.select("rect").transition()
-          .duration(transitionDuration)
-          .ease(transitionEase)
+        g.select("rect")
           .attr("width", width);
 
         var node = g.enter()
