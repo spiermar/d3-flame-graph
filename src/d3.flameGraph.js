@@ -405,7 +405,7 @@
     }
 
     function injectIds(node) {
-      node.id = s4();
+      node.id = s4() + "-" + s4() + "-" + "-" + s4() + "-" + s4();
       var children = node.c || node.children || [];
       for (var i = 0; i < children.length; i++) {
         injectIds(children[i]);
