@@ -92,6 +92,16 @@
   };
   /*jshint eqnull:false */
 
+  // Node/CommonJS - require D3
+  if (typeof(module) !== 'undefined' && typeof(exports) !== 'undefined' && typeof(d3) == 'undefined') {
+      var d3 = require('d3');
+  }
+
+  // Node/CommonJS - require d3-tip
+  if (typeof(module) !== 'undefined' && typeof(exports) !== 'undefined' && typeof(d3.tip) == 'undefined') {
+      d3.tip = require('d3-tip');
+  }
+
   function flameGraph() {
 
     var w = 960, // graph width
@@ -588,10 +598,10 @@
     return chart;
   }
 
-  if (typeof module !== 'undefined' && module.exports){
-		module.exports = flameGraph;
-	}
-	else {
-		d3.flameGraph = flameGraph;
-	}
+  d3.flameGraph = flameGraph;
+
+  // Node/CommonJS exports
+  if (typeof(module) !== 'undefined' && typeof(exports) !== 'undefined') {
+    module.exports = flameGraph;
+  }
 })();
