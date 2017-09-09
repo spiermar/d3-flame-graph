@@ -318,11 +318,11 @@
 
         if (sort) root.sort(doSort);
         root.sum(function(d) {
-          if (d.fade) {
+          if (d.fade || !value(d)) {
             return 0;
           }
           // The node's self value is its total value minus all children.
-          var v = value(d) || 0;
+          var v = value(d);
           if (children(d)) {
             var c = children(d);
             for (var i = 0; i < c.length; i++) {
@@ -442,7 +442,9 @@
     }
 
     function chart(s) {
-      var root = d3.hierarchy(s.datum(), function(d) { return children(d); });
+      var root = d3.hierarchy(
+        s.datum(), function(d) { return children(d); }
+      );
       injectIds(root);
       selection = s.datum(root);
 
