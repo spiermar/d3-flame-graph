@@ -218,7 +218,7 @@ Sets the element that should be updated with the focused sample details text. Ex
 flameGraph.details(document.getElementById("details"));
 ```
 
-If called with no arguments, `onClick` will return the click handler. 
+If called with no arguments, `details` will return the flameGraph object. 
 
 ## Issues
 
