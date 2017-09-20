@@ -311,7 +311,6 @@
     }
 
     function update() {
-
       selection.each(function(root) {
         var x = d3.scaleLinear().range([0, w]),
             y = d3.scaleLinear().range([0, c]);
@@ -406,7 +405,7 @@
     function merge(data, samples) {
       samples.forEach(function (sample) {
         var node = data.find(function (element) {
-          return (name(element) === name(sample));
+          return (element.name === sample.name);
         });
 
         if (node) {
@@ -580,6 +579,7 @@
       selection.each(function (root) {
         merge([root.data], [samples]);
         newRoot = d3.hierarchy(root.data, function(d) { return children(d); });
+        injectIds(newRoot);
       });
       selection = selection.datum(newRoot);
       update();
