@@ -205,6 +205,21 @@ flameGraph.onClick(function (d) {
 
 If called with no arguments, `onClick` will return the click handler. 
 
+<a name="details" href="#details">#</a> flameGraph.<b>details</b>(<i>[element]</i>)
+
+Sets the element that should be updated with the focused sample details text. Example:
+
+```html
+<div id="details">
+</div>
+```
+
+```js
+flameGraph.details(document.getElementById("details"));
+```
+
+If called with no arguments, `onClick` will return the click handler. 
+
 ## Issues
 
 For bugs, questions and discussions please use the [GitHub Issues](https://github.com/spiermar/d3-flame-graph/issues).

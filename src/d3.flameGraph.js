@@ -94,7 +94,7 @@
 
   // Node/CommonJS - require D3
   if (typeof(module) !== 'undefined' && typeof(exports) !== 'undefined' && typeof(d3) == 'undefined') {
-      var d3 = require('d3');
+      d3 = require('d3');
   }
 
   // Node/CommonJS - require d3-tip
@@ -115,7 +115,8 @@
       sort = false,
       reversed = false, // reverse the graph direction
       clickHandler = null,
-      minFrameSize = 0;
+      minFrameSize = 0,
+      details = null;
 
     var tip = d3.tip()
       .direction("s")
@@ -142,7 +143,6 @@
     };
 
     function setDetails(t) {
-      var details = document.getElementById("details");
       if (details)
         details.innerHTML = t;
     }
@@ -597,13 +597,19 @@
       return chart;
     };
 
+    chart.details = function (_) {
+      if (!arguments.length) { return details; }
+      details = _;
+      return chart;
+    };
+
     return chart;
   }
-
-  d3.flameGraph = flameGraph;
 
   // Node/CommonJS exports
   if (typeof(module) !== 'undefined' && typeof(exports) !== 'undefined') {
     module.exports = flameGraph;
+  } else {
+    d3.flameGraph = flameGraph;
   }
 })();
