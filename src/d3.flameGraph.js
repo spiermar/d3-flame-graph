@@ -373,7 +373,7 @@
           .attr("width", width)
           .attr("height", function(d) { return c; })
           .select("div")
-          .attr("class", "label")
+          .attr("class", "d3-flame-graph-label")
           .style("display", function(d) { return (width(d) < 35) ? "none" : "block";})
           .transition()
           .delay(transitionDuration)
