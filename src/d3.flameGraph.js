@@ -317,7 +317,7 @@
           if (children(d)) {
             var c = children(d);
             for (var i = 0; i < c.length; i++) {
-              v -= c[i].value;
+              v -= value(c[i]);
             }
           }
           return v;
