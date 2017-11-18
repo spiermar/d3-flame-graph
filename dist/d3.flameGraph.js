@@ -317,7 +317,7 @@
           if (children(d)) {
             var c = children(d);
             for (var i = 0; i < c.length; i++) {
-              v -= c[i].value;
+              v -= value(c[i]);
             }
           }
           return v;
@@ -373,7 +373,7 @@
           .attr("width", width)
           .attr("height", function(d) { return c; })
           .select("div")
-          .attr("class", "label")
+          .attr("class", "d3-flame-graph-label")
           .style("display", function(d) { return (width(d) < 35) ? "none" : "block";})
           .transition()
           .delay(transitionDuration)
