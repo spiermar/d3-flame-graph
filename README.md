@@ -220,6 +220,10 @@ flameGraph.details(document.getElementById("details"));
 
 If called with no arguments, `details` will return the flameGraph object. 
 
+<a name="inverted" href="#inverted">#</a> flameGraph.<b>inverted</b>(<i>[inverted]</i>)
+
+Invert the flame graph direction. A top-down visualization of the flame graph, also known as _icicle_ plot. Defaults to <i>false</i> if not set. If a value is specified, it will enable/disable the inverted flame graphs direction, otherwise it will return the flameGraph object.
+
 ## Issues
 
 For bugs, questions and discussions please use the [GitHub Issues](https://github.com/spiermar/d3-flame-graph/issues).
