@@ -224,6 +224,19 @@ If called with no arguments, `details` will return the flameGraph object.
 
 Invert the flame graph direction. A top-down visualization of the flame graph, also known as _icicle_ plot. Defaults to <i>false</i> if not set. If a value is specified, it will enable/disable the inverted flame graphs direction, otherwise it will return the flameGraph object.
 
+<a name="color" href="#color">#</a> flameGraph.<b>color</b>(<i>[function]</i>)
+
+Replaces the built-in node color hash function. Function should take a single argument, the node data structure, and returns a color string. Example:
+
+```js
+// Purple if highlighted, otherwise a static blue.
+flameGraph.color(function(d) {
+    return d.highlight ? "#E600E6" : "#0A5BC4";
+});
+```
+
+If called with no arguments, `color` will return the flameGraph object. 
+
 ## Issues
 
 For bugs, questions and discussions please use the [GitHub Issues](https://github.com/spiermar/d3-flame-graph/issues).
