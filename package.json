@@ -10,7 +10,7 @@
     "pretest": "gulp build",
     "test": "tape 'test/**/*-test.js'",
     "prepare": "npm run test",
-    "postpublish": "zip -j dist/d3-heatmap2.zip -- LICENSE README.md dist/d3-flamegraph.js dist/d3-flamegraph.min.js dist/d3-flamegraph.css"
+    "postpublish": "zip -j dist/d3-flamegraph.zip -- LICENSE README.md dist/d3-flamegraph.js dist/d3-flamegraph.min.js dist/d3-flamegraph.css"
   },
   "repository": {
     "type": "git",
