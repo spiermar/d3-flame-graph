@@ -1,7 +1,5 @@
-/* global d3 */
-
 import { select, format, ascending, partition, hierarchy, scaleLinear, easeCubic } from 'd3'
-import 'd3-tip'
+import { default as d3Tip } from 'd3-tip'
 
 export default function () {
   var w = 960 // graph width
@@ -18,7 +16,7 @@ export default function () {
   var minFrameSize = 0
   var details = null
 
-  var tip = d3.tip()
+  var tip = d3Tip()
     .direction('s')
     .offset([8, 0])
     .attr('class', 'd3-flame-graph-tip')
