@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="d3.flameGraph.css">
+    <link rel="stylesheet" type="text/css" href="d3-flamegraph.css">
 
     <style>
 
@@ -69,46 +69,51 @@
       </div>
     </div>
 
-    <script type="text/javascript" src="d3/d3.js"></script>
-    <script type="text/javascript" src="d3-tip/index.js"></script>
-    <script type="text/javascript" src="d3.flameGraph.js"></script>
+    <!-- D3.js -->
+    <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+    
+    <!-- d3-tip -->
+    <script type="text/javascript" src=https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js></script>
+
+    <!-- d3-flamegraph -->
+    <script type="text/javascript" src="d3-flamegraph.js"></script>
 
     <script type="text/javascript">
-    var flameGraph = d3.flameGraph()
+    var flameGraph = d3.flamegraph()
       .width(960)
       .cellHeight(18)
       .transitionDuration(750)
-      .minFrameSize(0)
+      .minFrameSize(5)
       .transitionEase(d3.easeCubic)
       .sort(true)
       //Example to sort in reverse order
-      //.sort(function(a,b){ return d3.descending(a.data.n, b.data.n);})
+      //.sort(function(a,b){ return d3.descending(a.name, b.name);})
       .title("")
       .onClick(onClick);
 
 
     // Example on how to use custom tooltips using d3-tip.
-    var tip = d3.tip()
-      .direction("s")
-      .offset([8, 0])
-      .attr('class', 'd3-flame-graph-tip')
-      .html(function(d) { return "name: " + d.data.n + ", value: " + d.data.v; });
+    // var tip = d3.tip()
+    //   .direction("s")
+    //   .offset([8, 0])
+    //   .attr('class', 'd3-flame-graph-tip')
+    //   .html(function(d) { return "name: " + d.data.name + ", value: " + d.data.value; });
 
-    flameGraph.tooltip(tip);
+    // flameGraph.tooltip(tip);
 
     var details = document.getElementById("details");
     flameGraph.details(details);
 
     // Example on how to use custom labels
     // var label = function(d) {
-    //  return "name: " + d.data.n + ", value: " + d.data.v;
+    //  return "name: " + d.name + ", value: " + d.value;
     // }
     // flameGraph.label(label);
 
     // Example of how to set fixed chart height
     // flameGraph.height(540);
 
-    d3.json("stacks.min.json", function(error, data) {
+    d3.json("stacks.json", function(error, data) {
       if (error) return console.warn(error);
       d3.select("#chart")
           .datum(data)

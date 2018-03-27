@@ -1,50 +1,63 @@
-var gulp = require('gulp'),
-  uglify = require('gulp-uglify'),
-  concat = require('gulp-concat'),
-  notify = require("gulp-notify"),
-  rename = require('gulp-rename'),
-  jshint = require('gulp-jshint'),
-  minifycss = require('gulp-minify-css'),
-  del = require('del'),
-  browserSync = require('browser-sync').create();
+var gulp = require('gulp')
+var rollup = require('rollup-stream')
+var source = require('vinyl-source-stream')
+var uglify = require('gulp-uglify-es').default
+var del = require('del')
+var rename = require('gulp-rename')
+var eslint = require('gulp-eslint')
+var browserSync = require('browser-sync').create()
 
-gulp.task('clean', function() {
-  del(['dist'])
-});
+gulp.task('clean', function () {
+  return del(['dist'])
+})
 
-gulp.task('lint', function() {
-  return gulp.src('./src/**/*.js')
-    .pipe(jshint())
-    .pipe(jshint.reporter('jshint-stylish'));
-});
+gulp.task('lint', function () {
+  return gulp.src(['./src/**/*.js'])
+    .pipe(eslint())
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError())
+})
 
-gulp.task('scripts', ['lint'], function() {
-  return gulp.src('src/**/*.js')
-    .pipe(concat('d3.flameGraph.js'))
-    .pipe(gulp.dest('dist'))
+gulp.task('rollup', function () {
+  return rollup('rollup.config.js')
+    .pipe(source('d3-flamegraph.js'))
+    .pipe(gulp.dest('./dist'))
+})
+
+gulp.task('uglify', function () {
+  return gulp.src('./dist/d3-flamegraph.js')
+    .pipe(gulp.dest('./dist'))
     .pipe(rename({suffix: '.min'}))
     .pipe(uglify())
-    .pipe(gulp.dest('dist'))
-    .pipe(notify({ message: 'Scripts task complete.' }));
-});
+    .pipe(gulp.dest('./dist'))
+})
 
-gulp.task('styles', function() {
-  return gulp.src('src/**/*.css', { style: 'expanded' })
-    .pipe(gulp.dest('dist'))
-    .pipe(rename({suffix: '.min'}))
-    .pipe(minifycss())
-    .pipe(gulp.dest('dist'))
-    .pipe(notify({ message: 'Styles task complete' }));
-});
+gulp.task('style', function () {
+  return gulp.src('./src/flamegraph.css')
+    .pipe(rename('d3-flamegraph.css'))
+    .pipe(gulp.dest('./dist'))
+})
 
-gulp.task('dist', ['clean', 'scripts', 'styles']);
+gulp.task('rollup-watch', gulp.series('rollup', function (done) {
+  browserSync.reload()
+  done()
+}))
 
-gulp.task('browser-sync', function() {
-    browserSync.init({
-        server: {
-            baseDir: ['example', 'src', 'bower_components']
-        }
-    });
-});
+gulp.task('style-watch', gulp.series('style', function (done) {
+  browserSync.reload()
+  done()
+}))
 
-gulp.task('default', ['browser-sync']);
+gulp.task('serve', gulp.series('lint', 'rollup', 'style', function () {
+  browserSync.init({
+    server: {
+      baseDir: ['examples', 'dist']
+    }
+  })
+  gulp.watch('./src/*.js', gulp.series('rollup-watch'))
+  gulp.watch('./src/*.css', gulp.series('style-watch'))
+}))
+
+gulp.task('build', gulp.series('clean', 'lint', 'rollup', 'uglify', 'style'))
+
+gulp.task('default', gulp.series('serve'))

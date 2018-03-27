@@ -1,26 +1,28 @@
 {
   "name": "d3-flame-graph",
-  "version": "1.0.11",
+  "version": "2.0.0-alpha1",
   "description": "A d3.js library to produce flame graphs.",
-  "main": "src/d3.flameGraph.js",
+  "main": "dist/d3-flamegraph.js",
   "directories": {
     "example": "example"
   },
   "scripts": {
-    "test": "mocha --reporter nyan",
-    "dist": "gulp dist && git add src/*"
+    "pretest": "gulp build",
+    "test": "tape 'test/**/*-test.js'",
+    "prepare": "npm run test",
+    "postpublish": "zip -j dist/d3-heatmap2.zip -- LICENSE README.md dist/d3-flamegraph.js dist/d3-flamegraph.min.js dist/d3-flamegraph.css"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/spiermar/d3-flame-graph.git"
   },
   "keywords": [
+    "d3",
+    "d3-module",
     "flame",
     "graph",
     "flamegraph",
-    "performance",
-    "d3",
-    "d3js"
+    "performance"
   ],
   "author": "Martin Spier <spiermar@gmail.com>",
   "license": "Apache-2.0",
@@ -29,26 +31,25 @@
   },
   "homepage": "https://github.com/spiermar/d3-flame-graph#readme",
   "devDependencies": {
-    "browser-sync": "^2.18.13",
-    "browserify": "^14.4.0",
+    "browser-sync": "^2.23.6",
     "del": "^3.0.0",
-    "gulp": "^3.9.1",
-    "gulp-concat": "^2.6.1",
-    "gulp-jshint": "^2.0.4",
-    "gulp-minify-css": "^1.2.4",
-    "gulp-notify": "^3.0.0",
+    "eslint-config-standard": "^11.0.0-beta.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-node": "^6.0.0",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "gulp": "^4.0.0",
+    "gulp-eslint": "^4.0.2",
     "gulp-rename": "^1.2.2",
-    "gulp-uglify": "^3.0.0",
-    "jshint": "^2.9.5",
-    "jshint-stylish": "^2.2.1",
-    "mocha": "^3.5.0"
+    "gulp-uglify-es": "^1.0.1",
+    "rollup-plugin-node-resolve": "^3.3.0",
+    "rollup-stream": "^1.24.1",
+    "tape": "4",
+    "uglify-es": "^3.3.9",
+    "vinyl-source-stream": "^2.0.0"
   },
   "dependencies": {
     "d3": "^4.10.0",
-    "d3-tip": "^0.7.1",
-    "graceful-fs": "^4.1.11"
-  },
-  "pre-commit": [
-    "dist"
-  ]
+    "d3-tip": "^0.7.1"
+  }
 }
