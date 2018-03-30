@@ -678,7 +678,7 @@ var flamegraph = function () {
         .remove();
 
       g.on('mouseover', function (d) {
-        if (tooltip) tip.show(d);
+        if (tooltip) tip.show(d, this);
         setDetails(label(d));
       }).on('mouseout', function (d) {
         if (tooltip) tip.hide(d);
