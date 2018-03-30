@@ -28,6 +28,10 @@ export default function () {
     return d.data.n || d.data.name
   }
 
+  function libtype (d) {
+    return d.data.l || d.data.libtype
+  }
+
   function children (d) {
     return d.c || d.children
   }
@@ -45,7 +49,7 @@ export default function () {
   }
 
   var colorMapper = function (d) {
-    return d.highlight ? '#E600E6' : colorHash(name(d))
+    return d.highlight ? '#E600E6' : colorHash(name(d), libtype(d))
   }
 
   function generateHash (name) {
@@ -72,21 +76,61 @@ export default function () {
     return hash
   }
 
-  function colorHash (name) {
-    // Return an rgb() color string that is a hash of the provided name,
-    // and with a warm palette.
-    var vector = 0
-    if (name) {
-      var nameArr = name.split('`')
-      if (nameArr.length > 1) {
-        name = nameArr[nameArr.length - 1] // drop module name if present
+  function colorHash (name, libtype) {
+    // Return a color for the given name and library type. The library type
+    // selects the hue, and the name is hashed to a color in that hue.
+
+    // Select hue. Order is important.
+    var hue
+    if (libtype === undefined || libtype == "") {
+      hue = "warm"        // default when libtype is not in use
+    } else {
+      hue = "red";
+      if (name.match(/::/)) {
+        hue = "yellow";
       }
-      name = name.split('(')[0] // drop extra info
-      vector = generateHash(name)
+      if (libtype == "kernel") {
+        hue = "orange";
+      } else if (libtype == "jit") {
+        hue = "green";
+      }
     }
-    var r = 200 + Math.round(55 * vector)
-    var g = 0 + Math.round(230 * (1 - vector))
-    var b = 0 + Math.round(55 * (1 - vector))
+
+    // calculate hash
+    var vector = 0;
+    if (name) {
+      var nameArr = name.split('`');
+      if (nameArr.length > 1) {
+        name = nameArr[nameArr.length - 1]; // drop module name if present
+      }
+      name = name.split('(')[0]; // drop extra info
+      vector = generateHash(name);
+    }
+
+    // calculate color
+    if (hue == "red") {
+      var r = 200 + Math.round(55 * vector);
+      var g = 50 + Math.round(80 * vector);
+      var b = g;
+    } else if (hue == "orange") {
+      var r = 190 + Math.round(65 * vector);
+      var g = 90 + Math.round(65 * vector);
+      var b = 0;
+    } else if (hue == "yellow") {
+      var r = 175 + Math.round(55 * vector);
+      var g = r;
+      var b = 50 + Math.round(20 * vector);
+    } else if (hue == "green") {
+      var r = 50 + Math.round(60 * vector);
+      var g = 200 + Math.round(55 * vector);
+      var b = r;
+    } else {
+      // original warm palette
+      var r = 200 + Math.round(55 * vector);
+      var g = 0 + Math.round(230 * (1 - vector));
+      var b = 0 + Math.round(55 * (1 - vector));
+    }
+
     return 'rgb(' + r + ',' + g + ',' + b + ')'
   }
 
