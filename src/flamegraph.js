@@ -98,8 +98,8 @@ export default function () {
         hue = 'orange'
       } else if (libtype === 'jit') {
         hue = 'green'
-      } else if (libtype == 'inlined') {
-        hue = 'aqua';
+      } else if (libtype === 'inlined') {
+        hue = 'aqua'
       }
     }
 
