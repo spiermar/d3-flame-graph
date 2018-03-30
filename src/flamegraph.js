@@ -131,10 +131,10 @@ export default function () {
       r = 50 + Math.round(60 * vector)
       g = 200 + Math.round(55 * vector)
       b = r
-    } else if (hue == 'aqua') {
-      r = 50 + Math.round(60 * vector);
-      g = 165 + Math.round(55 * vector);
-      b = g;
+    } else if (hue === 'aqua') {
+      r = 50 + Math.round(60 * vector)
+      g = 165 + Math.round(55 * vector)
+      b = g
     } else {
       // original warm palette
       r = 200 + Math.round(55 * vector)
