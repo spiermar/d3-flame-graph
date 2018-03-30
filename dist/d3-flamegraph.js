@@ -369,6 +369,10 @@ var flamegraph = function () {
     return d.data.n || d.data.name
   }
 
+  function libtype (d) {
+    return d.data.l || d.data.libtype
+  }
+
   function children (d) {
     return d.c || d.children
   }
@@ -386,7 +390,7 @@ var flamegraph = function () {
   }
 
   var colorMapper = function (d) {
-    return d.highlight ? '#E600E6' : colorHash(name(d))
+    return d.highlight ? '#E600E6' : colorHash(name(d), libtype(d))
   };
 
   function generateHash (name) {
@@ -413,9 +417,32 @@ var flamegraph = function () {
     return hash
   }
 
-  function colorHash (name) {
-    // Return an rgb() color string that is a hash of the provided name,
-    // and with a warm palette.
+  function colorHash (name, libtype) {
+    // Return a color for the given name and library type. The library type
+    // selects the hue, and the name is hashed to a color in that hue.
+
+    var r;
+    var g;
+    var b;
+
+    // Select hue. Order is important.
+    var hue;
+    if (typeof libtype === 'undefined' || libtype === '') {
+      // default when libtype is not in use
+      hue = 'warm';
+    } else {
+      hue = 'red';
+      if (name.match(/::/)) {
+        hue = 'yellow';
+      }
+      if (libtype === 'kernel') {
+        hue = 'orange';
+      } else if (libtype === 'jit') {
+        hue = 'green';
+      }
+    }
+
+    // calculate hash
     var vector = 0;
     if (name) {
       var nameArr = name.split('`');
@@ -425,9 +452,31 @@ var flamegraph = function () {
       name = name.split('(')[0]; // drop extra info
       vector = generateHash(name);
     }
-    var r = 200 + Math.round(55 * vector);
-    var g = 0 + Math.round(230 * (1 - vector));
-    var b = 0 + Math.round(55 * (1 - vector));
+
+    // calculate color
+    if (hue === 'red') {
+      r = 200 + Math.round(55 * vector);
+      g = 50 + Math.round(80 * vector);
+      b = g;
+    } else if (hue === 'orange') {
+      r = 190 + Math.round(65 * vector);
+      g = 90 + Math.round(65 * vector);
+      b = 0;
+    } else if (hue === 'yellow') {
+      r = 175 + Math.round(55 * vector);
+      g = r;
+      b = 50 + Math.round(20 * vector);
+    } else if (hue === 'green') {
+      r = 50 + Math.round(60 * vector);
+      g = 200 + Math.round(55 * vector);
+      b = r;
+    } else {
+      // original warm palette
+      r = 200 + Math.round(55 * vector);
+      g = 0 + Math.round(230 * (1 - vector));
+      b = 0 + Math.round(55 * (1 - vector));
+    }
+
     return 'rgb(' + r + ',' + g + ',' + b + ')'
   }
 
