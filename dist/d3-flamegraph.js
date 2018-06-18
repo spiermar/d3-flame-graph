@@ -432,7 +432,7 @@ var flamegraph = function () {
       hue = 'warm';
     } else {
       hue = 'red';
-      if (name.match(/::/)) {
+      if (typeof name !== 'undefined' && name && name.match(/::/)) {
         hue = 'yellow';
       }
       if (libtype === 'kernel') {
@@ -559,7 +559,7 @@ var flamegraph = function () {
         });
       }
 
-      if (label.match(re)) {
+      if (typeof label !== 'undefined' && label && label.match(re)) {
         d.highlight = true;
         searchResults.push(d);
       } else {
