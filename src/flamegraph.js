@@ -288,6 +288,13 @@ export default function () {
       var descendants = filterNodes(root)
       var g = select(this).select('svg').selectAll('g').data(descendants, function (d) { return d.id })
 
+      // if height is not set: set height on first update, after nodes were filtered by minFrameSize
+      if (!h) {
+        var maxDepth = Math.max.apply(null, descendants.map(function (n) { return n.depth }))
+        h = (maxDepth + 2) * c
+        select(this).select('svg').attr('height', h)
+      }
+
       g.transition()
         .duration(transitionDuration)
         .ease(transitionEase)
@@ -399,16 +406,12 @@ export default function () {
 
     if (!arguments.length) return chart
 
-    if (!h) {
-      h = (root.height + 2) * c
-    }
-
     selection.each(function (data) {
       if (!svg) {
         svg = select(this)
           .append('svg:svg')
           .attr('width', w)
-          .attr('height', h)
+          .attr('height', h || (root.height + 2) * c)
           .attr('class', 'partition d3-flame-graph')
           .call(tip)
 
