@@ -1,5 +1,6 @@
 import { select, format, ascending, partition, hierarchy, scaleLinear, easeCubic } from 'd3'
 import { default as d3Tip } from 'd3-tip'
+import sha1 from 'sha1'
 
 export default function () {
   var w = 960 // graph width
@@ -376,17 +377,11 @@ export default function () {
     })
   }
 
-  function s4 () {
-    return Math.floor((1 + Math.random()) * 0x10000)
-      .toString(16)
-      .substring(1)
-  }
-
-  function injectIds (node) {
-    node.id = s4() + '-' + s4() + '-' + '-' + s4() + '-' + s4()
+  function injectIds (node, parent, pos) {
+    node.id = sha1((((pos || 0) + 1) ^ 3) * (node.depth ^ 7) + node.data.n + (parent || ''))
     var children = node.c || node.children || []
     for (var i = 0; i < children.length; i++) {
-      injectIds(children[i])
+      injectIds(children[i], node.id, i)
     }
   }
 
@@ -496,6 +491,18 @@ export default function () {
       update()
     })
     return searchResults
+  }
+
+  chart.findById = function (id) {
+    var findResult = false
+    if (id !== undefined && id) {
+      selection.each(function (data) {
+        if (data.id === id) {
+          findResult = data
+        }
+      })
+    }
+    return findResult
   }
 
   chart.clear = function () {
