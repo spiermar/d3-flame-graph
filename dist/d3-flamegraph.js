@@ -572,6 +572,16 @@ var flamegraph = function () {
     return searchResults
   }
 
+  function findTree (id, data) {
+    if (data.id === id) {
+      return data
+    } else if (children(data)) {
+      return children(data).find(c => findTree(id, c))
+    } else {
+      return undefined
+    }
+  }
+
   function clear (d) {
     d.highlight = false;
     if (children(d)) {
@@ -834,23 +844,12 @@ var flamegraph = function () {
     return searchResults
   };
 
-  function findTree (id, data) {
-    if (data.id === id) {
-      return data
-    } else if (children(data)) {
-      return children(data).find(c => findTree(id, c))
-    } else {
-      return undefined
-    }
-  }
-
   chart.findById = function (id) {
     if (id === undefined) {
       return undefined
     }
     var data = selection.data();
     var found = findTree(id, data[0]);
-    console.log(found);
     return found
   };
 
