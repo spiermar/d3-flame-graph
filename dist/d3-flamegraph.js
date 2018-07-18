@@ -1,10 +1,11 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3')) :
-	typeof define === 'function' && define.amd ? define(['exports', 'd3'], factory) :
-	(factory((global.d3 = global.d3 || {}),global.d3));
-}(this, (function (exports,d3) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3'), require('sha1')) :
+	typeof define === 'function' && define.amd ? define(['exports', 'd3', 'sha1'], factory) :
+	(factory((global.d3 = global.d3 || {}),global.d3,global.sha1));
+}(this, (function (exports,d3,sha1) { 'use strict';
 
 var d3__default = 'default' in d3 ? d3['default'] : d3;
+sha1 = sha1 && sha1.hasOwnProperty('default') ? sha1['default'] : sha1;
 
 var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -717,17 +718,11 @@ var flamegraph = function () {
     });
   }
 
-  function s4 () {
-    return Math.floor((1 + Math.random()) * 0x10000)
-      .toString(16)
-      .substring(1)
-  }
-
-  function injectIds (node) {
-    node.id = s4() + '-' + s4() + '-' + '-' + s4() + '-' + s4();
+  function injectIds (node, parent, pos) {
+    node.id = sha1((((pos || 0) + 1) ^ 3) * (node.depth ^ 7) + node.data.n + (parent || ''));
     var children = node.c || node.children || [];
     for (var i = 0; i < children.length; i++) {
-      injectIds(children[i]);
+      injectIds(children[i], node.id, i);
     }
   }
 
@@ -837,6 +832,26 @@ var flamegraph = function () {
       update();
     });
     return searchResults
+  };
+
+  function findTree (id, data) {
+    if (data.id === id) {
+      return data
+    } else if (children(data)) {
+      return children(data).find(c => findTree(id, c))
+    } else {
+      return undefined
+    }
+  }
+
+  chart.findById = function (id) {
+    if (id === undefined) {
+      return undefined
+    }
+    var data = selection.data();
+    var found = findTree(id, data[0]);
+    console.log(found);
+    return found
   };
 
   chart.clear = function () {
