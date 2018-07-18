@@ -231,6 +231,16 @@ export default function () {
     return searchResults
   }
 
+  function findTree (id, data) {
+    if (data.id === id) {
+      return data
+    } else if (children(data)) {
+      return children(data).find(c => findTree(id, c))
+    } else {
+      return undefined
+    }
+  }
+
   function clear (d) {
     d.highlight = false
     if (children(d)) {
@@ -491,16 +501,6 @@ export default function () {
       update()
     })
     return searchResults
-  }
-
-  function findTree (id, data) {
-    if (data.id === id) {
-      return data
-    } else if (children(data)) {
-      return children(data).find(c => findTree(id, c))
-    } else {
-      return undefined
-    }
   }
 
   chart.findById = function (id) {
