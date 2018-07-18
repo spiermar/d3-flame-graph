@@ -6,6 +6,7 @@ import { scaleLinear } from 'd3-scale'
 import { easeCubic } from 'd3-ease'
 import { default as d3Tip } from 'd3-tip'
 import 'd3-transition'
+import sha1 from 'sha1'
 
 export default function () {
   var w = 960 // graph width
@@ -452,95 +453,11 @@ export default function () {
     })
   }
 
-  function injectIds (node, parentId, rank) {
-    function idgen (seed, salt) {
-      return parentId + '-' + rank
-      function toAlpha (rank) {
-        if (rank < 10 /* numeric */) {
-          return rank
-        } else if (rank < 10 + 25 /* + alphabet - 1 ('z') */) {
-          return String.fromCodePoint('a'.charCodeAt(0) + rank - 10)
-        } else if (rank < 10 + 25 + 25 /* + Alphabet - 1 ('Z') */) {
-          return String.fromCodePoint('A'.charCodeAt(0) + rank - 25)
-        } else {
-          console.log('Error at Id generation')
-        }
-      }
-      function multiByte (w, rank, nSibs) {
-        /* In this function, the id is generated depending on how
-         * many siblings the node has. If the number of siblings
-         * is under 60, the id is represented with additional one
-         * character.
-         * In that case, id of the (zeros-origin) 4th node is 4,
-         * 9 => 9, 10 => a, 34 => y, 35 => A,... accordingly.
-         * Note that 'z' and 'Z' are skipped here; they are used
-         * to indicate 'multiByte' id.
-         * 'multiByte' is looks like this:
-         * Za0, Z3i, ZZyi9, ZZZacdm, ....
-         * Zxx type of code can indicate a rank in 3600 children.
-         * ZZxxx supports to indicate one out of 216000, which
-         * may be reasonable to assume the "limit", but it can go
-         * beyond of this with ZZZxxxx and further.
-         */
-        if (nSibs > 60) {
-          /* We have to generate multiple bytes rank */
-          return multiByte('Z' + w + toChar(rank % 60), rank / 60, nSibs / 60)
-        } else {
-          return w + toAlpha(rank)
-        }
-      }
-
-      return parentId + multiByte('', rank, nSibs)
-    }
-    function flatten (arr) {
-      var ret = arr.reduce((acc, v) => acc.concat(v, (getChildren(v) || [])), [])
-      ret.map(x => x.adopted = true)
-      return ret
-    }
-
-    function flattenToFill (children, cur) {
-      var nGranch = (children || []).reduce((acc, v) => acc + (getChildren(v) || []).length)
-      if (cur < 100 && nGranch.length !== 0 && nGranch.length + children.length < 64) {
-
-        return flattenToFill(flatten(children), cur + 1)
-      } else {
-        return children
-      }
-      node.id = idgen(parentId, rank)
-      if (depth % 8 === 0) {
-        parentId = parentId + '-'
-      }
-
-      var myid = idgen(parentId, rank, nSibs)
-      if (idpool[myid]) {
-        console.log('ID collision!!', idpool[myid], node)
-      }
-      idpool[myid] = node
-      node.id = myid
-    }
-    /* sort shallow copy of children array for robust id naming */
-    var children = (getChildren(node) || [])
-      .slice(0)
-      .sort((a, b) => a.name > b.name)
-      .filter(x => !x.adopted)
-
-    if (children.length > 0) {
-      children = flattenToFill(children, 0)
-    }
-    var children = getChildren(node) || []
+  function injectIds (node, parent, pos) {
+    node.id = sha1((((pos || 0) + 1) ^ 3) * (node.depth ^ 7) + node.data.n + (parent || ''))
+    var children = node.c || node.children || []
     for (var i = 0; i < children.length; i++) {
       injectIds(children[i], node.id, i)
-    }
-
-    children.map(x => injectIds(x, depth + 1))
-  }
-
-  function calculateMaxDelta (node) {
-    var delta = Math.abs(getDelta(node))
-    maxDelta = delta > maxDelta ? delta : maxDelta
-    var children = getChildren(node) || []
-    for (var i = 0; i < children.length; i++) {
-      calculateMaxDelta(children[i])
     }
   }
 
@@ -692,6 +609,18 @@ export default function () {
     var data = selection.data()
     var found = findTree(data[0], id)
     return found
+  }
+
+  chart.findById = function (id) {
+    var findResult = false
+    if (id !== undefined && id) {
+      selection.each(function (data) {
+        if (data.id === id) {
+          findResult = data
+        }
+      })
+    }
+    return findResult
   }
 
   chart.clear = function () {
