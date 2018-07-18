@@ -493,16 +493,23 @@ export default function () {
     return searchResults
   }
 
-  chart.findById = function (id) {
-    var findResult = false
-    if (id !== undefined && id) {
-      selection.each(function (data) {
-        if (data.id === id) {
-          findResult = data
-        }
-      })
+  function findTree (id, data) {
+    if (data.id === id) {
+      return data
+    } else if (children(data)) {
+      return children(data).find(c => findTree(id, c))
+    } else {
+      return undefined
     }
-    return findResult
+  }
+
+  chart.findById = function (id) {
+    if (id === undefined) {
+      return undefined
+    }
+    var data = selection.data()
+    var found = findTree(id, data[0])
+    return found
   }
 
   chart.clear = function () {
