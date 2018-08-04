@@ -356,6 +356,7 @@ var flamegraph = function () {
   var clickHandler = null;
   var minFrameSize = 0;
   var details = null;
+  var selfValue = false;
 
   var tip = d3Tip()
     .direction('s')
@@ -613,7 +614,7 @@ var flamegraph = function () {
         }
         // The node's self value is its total value minus all children.
         var v = value(d);
-        if (children(d)) {
+        if (!selfValue && children(d)) {
           var c = children(d);
           for (var i = 0; i < c.length; i++) {
             v -= value(c[i]);
@@ -890,6 +891,12 @@ var flamegraph = function () {
   chart.details = function (_) {
     if (!arguments.length) { return details }
     details = _;
+    return chart
+  };
+
+  chart.selfValue = function (_) {
+    if (!arguments.length) { return selfValue }
+    selfValue = _;
     return chart
   };
 
