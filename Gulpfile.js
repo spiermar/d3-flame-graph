@@ -58,6 +58,6 @@ gulp.task('serve', gulp.series('lint', 'rollup', 'style', function () {
   gulp.watch('./src/*.css', gulp.series('style-watch'))
 }))
 
-gulp.task('build', gulp.series('clean', 'lint', 'rollup', 'uglify', 'style'))
+gulp.task('build', gulp.series('clean', 'lint', 'rollup', 'style', 'uglify'))
 
 gulp.task('default', gulp.series('serve'))
