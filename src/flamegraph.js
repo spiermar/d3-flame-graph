@@ -1,5 +1,11 @@
-import { select, format, ascending, partition, hierarchy, scaleLinear, easeCubic } from 'd3'
+import { select } from 'd3-selection'
+import { format } from 'd3-format'
+import { ascending } from 'd3-array'
+import { partition, hierarchy } from 'd3-hierarchy'
+import { scaleLinear } from 'd3-scale'
+import { easeCubic } from 'd3-ease'
 import { default as d3Tip } from 'd3-tip'
+import 'd3-transition'
 
 export default function () {
   var w = 960 // graph width
