@@ -22,7 +22,7 @@ export default {
       extensions: ['.js'],
       preferBuiltins: true,
       jail: '/',
-      only: ['d3-tip'],
+      only: ['d3-tip', 'd3-collection', 'd3-selection'],
       modulesOnly: false
     }),
     commonjs()
