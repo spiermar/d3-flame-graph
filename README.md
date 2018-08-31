@@ -26,13 +26,13 @@ Just reference the CDN hosted CSS and JS files!
 
 ```html
 <head>
-  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/spiermar/d3-flame-graph@1.0.4/dist/d3.flameGraph.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/spiermar/d3-flame-graph@2.0.0/dist/d3-flamegraph.css">
 </head>
 <body>
   <div id="chart"></div>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.10.0/d3.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/spiermar/d3-flame-graph@1.0.4/dist/d3.flameGraph.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/spiermar/d3-flame-graph@2.0.0/dist/d3-flamegraph.min.js"></script>
   <script type="text/javascript">
   var flamegraph = d3.flameGraph()
     .width(960);
@@ -47,33 +47,27 @@ Just reference the CDN hosted CSS and JS files!
 </body>
 ```
 
-### Bower
+### NPM
 
-Make sure [Bower](http://bower.io/) installed on your system. If not, please install it using [npm](https://www.npmjs.com/).
-
-```
-$ npm install bower -g
-```
+Make sure [Node]() and [npm]() installed on your system.
 
 Install the d3-flame-graph plugin.
 
 ```
-$ cd your-project
-$ bower init
-$ bower install d3-flame-graph --save
+$ npm install d3-flame-graph --save
 ```
 
 And use it!
 
 ```html
 <head>
-  <link rel="stylesheet" type="text/css" href="bower_components/d3-flame-graph/dist/d3.flameGraph.css">
+  <link rel="stylesheet" type="text/css" href="node_modules/d3-flame-graph/dist/d3-flamegraph.css">
 </head>
 <body>
   <div id="chart"></div>
-  <script type="text/javascript" src="bower_components/d3/d3.js"></script>
-  <script type="text/javascript" src="bower_components/d3-tip/index.js"></script>
-  <script type="text/javascript" src="bower_components/d3-flame-graph/dist/d3.flameGraph.js"></script>
+  <script type="text/javascript" src="node_modules/d3/d3.js"></script>
+  <script type="text/javascript" src="node_modules/d3-tip/index.js"></script>
+  <script type="text/javascript" src="node_modules/d3-flame-graph/dist/d3-flamegraph.js"></script>
   <script type="text/javascript">
   var flamegraph = d3.flameGraph()
     .width(960);
@@ -104,7 +98,7 @@ Input stack is a simple hierarchical data structure in JSON format.
 }
 ```
 
-JSON format can be converted from the folded stack format using the [burn](https://github.com/spiermar/burn) CLI tool.
+The [burn](https://github.com/spiermar/burn) CLI tool can convert multiple file formats to this hierarchical data structure.
 
 ## Interacting with entries
 
@@ -130,6 +124,10 @@ This is a breaking change from previous versions of d3-flame-graph, which were b
 <a name="flameGraph" href="#flameGraph">#</a> d3.flameGraph()
 
 Create a new Flame Graph.
+
+<a name="selfValue" href="#selfValue">#</a> flameGraph.<b>selfValue</b>(<i>[enabled]</i>)
+
+Defines if the plugin should use the self value logic to calculate the node value for the Flame Graph frame size. If set to `true`, it will assume the node value from the input callgraph represents only the internal node value, or self value, not the sum of all children. If set to `false` it will assume the value includes the chidren values too. Defaults to `false` if not explicitely set, which if the same behavior 1.x had. 
 
 <a name="width" href="#width">#</a> flameGraph.<b>width</b>(<i>[size]</i>)
 
@@ -253,19 +251,18 @@ If you have code to submit, follow the general pull request format. Fork the rep
 
 ### Gulp.js
 
-This plugin uses Gulp.js as build system. A few tasks are already defined, including browser-sync that can be used for development. To start it, just execute the default task.
+This plugin uses Gulp.js as build system. A few tasks are already defined, including browser-sync that can be used for development. To start it, just execute the `serve` task.
 
 ```
 $ git clone https://github.com/spiermar/d3-flame-graph.git
 $ cd d3-flame-graph
 $ npm install
-$ bower install
-$ gulp
+$ gulp serve
 ```
 
 ## License
 
-Copyright 2015 Martin Spier. All Rights Reserved.
+Copyright 2018 Martin Spier. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the “License”); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 
