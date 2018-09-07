@@ -97,9 +97,9 @@ export default function () {
     var b
 
     if (differential) {
-      r = 255
-      g = 255
-      b = 255
+      r = 220
+      g = 220
+      b = 220
 
       if (!delta) {
         delta = 0
