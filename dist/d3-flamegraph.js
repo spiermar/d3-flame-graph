@@ -4887,6 +4887,7 @@ var flamegraph = function () {
   var minFrameSize = 0;
   var details = null;
   var selfValue = false;
+  var differential = false;
 
   var tip = d3Tip()
     .direction('s')
@@ -4902,6 +4903,10 @@ var flamegraph = function () {
 
   function libtype (d) {
     return d.data.l || d.data.libtype
+  }
+
+  function getDelta (d) {
+    return d.data.d || d.data.delta
   }
 
   function children (d) {
@@ -4921,7 +4926,7 @@ var flamegraph = function () {
   }
 
   var colorMapper = function (d) {
-    return d.highlight ? '#E600E6' : colorHash(name(d), libtype(d))
+    return d.highlight ? '#E600E6' : colorHash(name(d), libtype(d), getDelta(d))
   };
 
   function generateHash (name) {
@@ -4948,7 +4953,7 @@ var flamegraph = function () {
     return hash
   }
 
-  function colorHash (name, libtype) {
+  function colorHash (name, libtype, delta) {
     // Return a color for the given name and library type. The library type
     // selects the hue, and the name is hashed to a color in that hue.
 
@@ -4956,62 +4961,79 @@ var flamegraph = function () {
     var g;
     var b;
 
-    // Select hue. Order is important.
-    var hue;
-    if (typeof libtype === 'undefined' || libtype === '') {
+    if (differential) {
+      r = 255;
+      g = 255;
+      b = 255;
+
+      if (!delta) {
+        delta = 0;
+      }
+
+      if (delta > 0) {
+        b = Math.round(210 * (maxDelta - delta) / maxDelta);
+        g = b;
+      } else if (delta < 0) {
+        r = Math.round(210 * (maxDelta + delta) / maxDelta);
+        g = r;
+      }
+    } else {
       // default when libtype is not in use
-      hue = 'warm';
-    } else {
-      hue = 'red';
-      if (typeof name !== 'undefined' && name && name.match(/::/)) {
-        hue = 'yellow';
-      }
-      if (libtype === 'kernel') {
-        hue = 'orange';
-      } else if (libtype === 'jit') {
-        hue = 'green';
-      } else if (libtype === 'inlined') {
-        hue = 'aqua';
-      }
-    }
+      var hue = 'warm';
 
-    // calculate hash
-    var vector = 0;
-    if (name) {
-      var nameArr = name.split('`');
-      if (nameArr.length > 1) {
-        name = nameArr[nameArr.length - 1]; // drop module name if present
+      if (!(typeof libtype === 'undefined' || libtype === '')) {
+        // Select hue. Order is important.
+        hue = 'red';
+        if (typeof name !== 'undefined' && name && name.match(/::/)) {
+          hue = 'yellow';
+        }
+        if (libtype === 'kernel') {
+          hue = 'orange';
+        } else if (libtype === 'jit') {
+          hue = 'green';
+        } else if (libtype === 'inlined') {
+          hue = 'aqua';
+        }
       }
-      name = name.split('(')[0]; // drop extra info
-      vector = generateHash(name);
-    }
 
-    // calculate color
-    if (hue === 'red') {
-      r = 200 + Math.round(55 * vector);
-      g = 50 + Math.round(80 * vector);
-      b = g;
-    } else if (hue === 'orange') {
-      r = 190 + Math.round(65 * vector);
-      g = 90 + Math.round(65 * vector);
-      b = 0;
-    } else if (hue === 'yellow') {
-      r = 175 + Math.round(55 * vector);
-      g = r;
-      b = 50 + Math.round(20 * vector);
-    } else if (hue === 'green') {
-      r = 50 + Math.round(60 * vector);
-      g = 200 + Math.round(55 * vector);
-      b = r;
-    } else if (hue === 'aqua') {
-      r = 50 + Math.round(60 * vector);
-      g = 165 + Math.round(55 * vector);
-      b = g;
-    } else {
-      // original warm palette
-      r = 200 + Math.round(55 * vector);
-      g = 0 + Math.round(230 * (1 - vector));
-      b = 0 + Math.round(55 * (1 - vector));
+      // calculate hash
+      var vector = 0;
+      if (name) {
+        var nameArr = name.split('`');
+        if (nameArr.length > 1) {
+          name = nameArr[nameArr.length - 1]; // drop module name if present
+        }
+        name = name.split('(')[0]; // drop extra info
+        vector = generateHash(name);
+      }
+
+      // calculate color
+      if (hue === 'red') {
+        r = 200 + Math.round(55 * vector);
+        g = 50 + Math.round(80 * vector);
+        b = g;
+      } else if (hue === 'orange') {
+        r = 190 + Math.round(65 * vector);
+        g = 90 + Math.round(65 * vector);
+        b = 0;
+      } else if (hue === 'yellow') {
+        r = 175 + Math.round(55 * vector);
+        g = r;
+        b = 50 + Math.round(20 * vector);
+      } else if (hue === 'green') {
+        r = 50 + Math.round(60 * vector);
+        g = 200 + Math.round(55 * vector);
+        b = r;
+      } else if (hue === 'aqua') {
+        r = 50 + Math.round(60 * vector);
+        g = 165 + Math.round(55 * vector);
+        b = g;
+      } else {
+        // original warm palette
+        r = 200 + Math.round(55 * vector);
+        g = 0 + Math.round(230 * (1 - vector));
+        b = 0 + Math.round(55 * (1 - vector));
+      }
     }
 
     return 'rgb(' + r + ',' + g + ',' + b + ')'
@@ -5269,11 +5291,27 @@ var flamegraph = function () {
     }
   }
 
+  var maxDelta = 0;
+
+  function calculateMaxDelta (node) {
+    var delta = Math.abs(getDelta(node));
+    maxDelta = delta > maxDelta ? delta : maxDelta;
+    var children = node.c || node.children || [];
+    for (var i = 0; i < children.length; i++) {
+      calculateMaxDelta(children[i]);
+    }
+  }
+
   function chart (s) {
     var root = hierarchy(
       s.datum(), function (d) { return children(d) }
     );
     injectIds(root);
+
+    if (differential) {
+      calculateMaxDelta(root);
+    }
+
     selection = s.datum(root);
 
     if (!arguments.length) return chart
@@ -5355,6 +5393,12 @@ var flamegraph = function () {
   chart.inverted = function (_) {
     if (!arguments.length) { return inverted }
     inverted = _;
+    return chart
+  };
+
+  chart.differential = function (_) {
+    if (!arguments.length) { return differential }
+    differential = _;
     return chart
   };
 
