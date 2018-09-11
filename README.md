@@ -34,7 +34,7 @@ Just reference the CDN hosted CSS and JS files!
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/spiermar/d3-flame-graph@2.0.0/dist/d3-flamegraph.min.js"></script>
   <script type="text/javascript">
-  var flamegraph = d3.flameGraph()
+  var flamegraph = d3.flamegraph()
     .width(960);
 
   d3.json("data.json", function(error, data) {
@@ -69,7 +69,7 @@ And use it!
   <script type="text/javascript" src="node_modules/d3-tip/index.js"></script>
   <script type="text/javascript" src="node_modules/d3-flame-graph/dist/d3-flamegraph.js"></script>
   <script type="text/javascript">
-  var flamegraph = d3.flameGraph()
+  var flamegraph = d3.flamegraph()
     .width(960);
 
   d3.json("data.json", function(error, data) {
