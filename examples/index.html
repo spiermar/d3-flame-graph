@@ -89,7 +89,12 @@
       //Example to sort in reverse order
       //.sort(function(a,b){ return d3.descending(a.name, b.name);})
       .title("")
-      .onClick(onClick);
+      .onClick(onClick)
+      .searchCallback(function(results, sum) {
+        console.log(sum)
+      })
+      .differential(false)
+      .selfValue(false);
 
 
     // Example on how to use custom tooltips using d3-tip.

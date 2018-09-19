@@ -4888,6 +4888,7 @@ var flamegraph = function () {
   var details = null;
   var selfValue = false;
   var differential = false;
+  var searchCallback = null;
 
   var tip = d3Tip()
     .direction('s')
@@ -5102,26 +5103,35 @@ var flamegraph = function () {
   function searchTree (d, term) {
     var re = new RegExp(term);
     var searchResults = [];
+    var searchSum = 0;
 
-    function searchInner (d) {
+    function searchInner (d, foundParent) {
       var label = name(d);
-
-      if (children(d)) {
-        children(d).forEach(function (child) {
-          searchInner(child);
-        });
-      }
+      var found = false;
 
       if (typeof label !== 'undefined' && label && label.match(re)) {
         d.highlight = true;
+        found = true;
+        if (!foundParent) {
+          searchSum += d.value;
+        }
         searchResults.push(d);
       } else {
         d.highlight = false;
       }
+
+      if (children(d)) {
+        children(d).forEach(function (child) {
+          searchInner(child, (foundParent || found));
+        });
+      }
     }
 
-    searchInner(d);
-    return searchResults
+    searchInner(d, false);
+
+    if (searchCallback && typeof searchCallback === 'function') {
+      searchCallback(searchResults, searchSum);
+    }
   }
 
   function clear (d) {
@@ -5409,12 +5419,10 @@ var flamegraph = function () {
   };
 
   chart.search = function (term) {
-    var searchResults = [];
     selection.each(function (data) {
-      searchResults = searchTree(data, term);
+      searchTree(data, term);
       update();
     });
-    return searchResults
   };
 
   chart.clear = function () {
@@ -5474,6 +5482,14 @@ var flamegraph = function () {
   chart.selfValue = function (_) {
     if (!arguments.length) { return selfValue }
     selfValue = _;
+    return chart
+  };
+
+  chart.searchCallback = function (_) {
+    if (!arguments.length) {
+      return searchCallback
+    }
+    searchCallback = _;
     return chart
   };
 
