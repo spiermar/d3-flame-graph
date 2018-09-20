@@ -203,7 +203,7 @@ flameGraph.onClick(function (d) {
 
 If called with no arguments, `onClick` will return the click handler. 
 
-<a name="details" href="#details">#</a> flameGraph.<b>details</b>(<i>[element]</i>)
+<a name="setDetailsElement" href="#setDetailsElement">#</a> flameGraph.<b>setDetailsElement</b>(<i>[element]</i>)
 
 Sets the element that should be updated with the focused sample details text. Example:
 
@@ -213,10 +213,56 @@ Sets the element that should be updated with the focused sample details text. Ex
 ```
 
 ```js
-flameGraph.details(document.getElementById("details"));
+flameGraph.setDetailsElement(document.getElementById("details"));
 ```
 
-If called with no arguments, `details` will return the flameGraph object. 
+If called with no arguments, `setDetailsElement` will return the flameGraph object.
+
+---
+
+<a name="setDetailsHandler" href="#setDetailsHandler">#</a> flameGraph.<b>setDetailsHandler</b>(<i>[function]</i>)
+
+Sets the handler function that is called when the `details` element needs to be updated. The function receives a single paramenter, the details text to be set. Example:
+
+```js
+flameGraph.setDetailsHandler(
+  function (d) {
+    if (detailsElement) {
+      if (d) {
+        detailsElement.innerHTML = d
+      } else {
+        if (searchSum) {
+          setSearchDetails()
+        } else {
+          detailsElement.innerHTML = ''
+        }
+      }
+    }
+  }
+);
+```
+
+If not set, `setDetailsHandler` will default to the above function.
+
+If called with no arguments, `setDetailsHandler` will return the flameGraph object. 
+
+<a name="setSearchHandler" href="#setSearchHandler">#</a> flameGraph.<b>setSearchHandler</b>(<i>[function]</i>)
+
+Sets the handler function that is called when search results are returned. The function receives a three paramenters, the search results array, the search sample sum, and root value, Example:
+
+```js
+flameGraph.setSearchHandler(
+  function (searchResults, searchSum, totalValue) {
+    if (detailsElement) { detailsElement.innerHTML = `${searchSum} of ${totalValue} samples (${format('.3f')(100 * (searchSum / totalValue), 3)}%)`}
+  }
+);
+```
+
+If not set, `setSearchHandler` will default to the above function.
+
+If called with no arguments, `setSearchHandler` will return the flameGraph object.
+
+---
 
 <a name="inverted" href="#inverted">#</a> flameGraph.<b>inverted</b>(<i>[inverted]</i>)
 

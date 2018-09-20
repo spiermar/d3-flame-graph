@@ -4885,10 +4885,30 @@ var flamegraph = function () {
   var inverted = false; // invert the graph direction
   var clickHandler = null;
   var minFrameSize = 0;
-  var details = null;
+  var detailsElement = null;
   var selfValue = false;
   var differential = false;
-  var searchCallback = null;
+  var searchSum = 0;
+  var totalValue = 0;
+  var maxDelta = 0;
+
+  var searchHandler = function () {
+    if (detailsElement) { setSearchDetails(); }
+  };
+
+  var detailsHandler = function (d) {
+    if (detailsElement) {
+      if (d) {
+        detailsElement.innerHTML = d;
+      } else {
+        if (searchSum) {
+          setSearchDetails();
+        } else {
+          detailsElement.innerHTML = '';
+        }
+      }
+    }
+  };
 
   var tip = d3Tip()
     .direction('s')
@@ -4922,8 +4942,8 @@ var flamegraph = function () {
     return name(d) + ' (' + format('.3f')(100 * (d.x1 - d.x0), 3) + '%, ' + value(d) + ' samples)'
   };
 
-  function setDetails (t) {
-    if (details) { details.innerHTML = t; }
+  function setSearchDetails () {
+    detailsElement.innerHTML = `${searchSum} of ${totalValue} samples (${format('.3f')(100 * (searchSum / totalValue), 3)}%)`;
   }
 
   var colorMapper = function (d) {
@@ -5102,8 +5122,8 @@ var flamegraph = function () {
 
   function searchTree (d, term) {
     var re = new RegExp(term);
-    var searchResults = [];
-    var searchSum = 0;
+    var results = [];
+    var sum = 0;
 
     function searchInner (d, foundParent) {
       var label = name(d);
@@ -5113,9 +5133,9 @@ var flamegraph = function () {
         d.highlight = true;
         found = true;
         if (!foundParent) {
-          searchSum += d.value;
+          sum += d.value;
         }
-        searchResults.push(d);
+        results.push(d);
       } else {
         d.highlight = false;
       }
@@ -5128,10 +5148,8 @@ var flamegraph = function () {
     }
 
     searchInner(d, false);
-
-    if (searchCallback && typeof searchCallback === 'function') {
-      searchCallback(searchResults, searchSum);
-    }
+    searchSum = sum;
+    searchHandler(results, sum, totalValue);
   }
 
   function clear (d) {
@@ -5255,10 +5273,10 @@ var flamegraph = function () {
 
       g.on('mouseover', function (d) {
         if (tooltip) tip.show(d, this);
-        setDetails(label(d));
+        detailsHandler(label(d));
       }).on('mouseout', function (d) {
         if (tooltip) tip.hide(d);
-        setDetails('');
+        detailsHandler(null);
       });
     });
   }
@@ -5301,8 +5319,6 @@ var flamegraph = function () {
     }
   }
 
-  var maxDelta = 0;
-
   function calculateMaxDelta (node) {
     var delta = Math.abs(getDelta(node));
     maxDelta = delta > maxDelta ? delta : maxDelta;
@@ -5317,6 +5333,8 @@ var flamegraph = function () {
       s.datum(), function (d) { return children(d) }
     );
     injectIds(root);
+
+    totalValue = root.value;
 
     if (differential) {
       calculateMaxDelta(root);
@@ -5426,6 +5444,8 @@ var flamegraph = function () {
   };
 
   chart.clear = function () {
+    searchSum = 0;
+    detailsHandler(null);
     selection.each(function (data) {
       clear(data);
       update();
@@ -5473,11 +5493,13 @@ var flamegraph = function () {
     return chart
   };
 
-  chart.details = function (_) {
-    if (!arguments.length) { return details }
-    details = _;
+  chart.setDetailsElement = function (_) {
+    if (!arguments.length) { return detailsElement }
+    detailsElement = _;
     return chart
   };
+  // Kept for backwards compatibility.
+  chart.details = chart.setDetailsElement;
 
   chart.selfValue = function (_) {
     if (!arguments.length) { return selfValue }
@@ -5485,11 +5507,19 @@ var flamegraph = function () {
     return chart
   };
 
-  chart.searchCallback = function (_) {
+  chart.setSearchHandler = function (_) {
     if (!arguments.length) {
-      return searchCallback
+      return searchHandler
     }
-    searchCallback = _;
+    searchHandler = _;
+    return chart
+  };
+
+  chart.setDetailsHandler = function (_) {
+    if (!arguments.length) {
+      return detailsHandler
+    }
+    detailsHandler = _;
     return chart
   };
 
