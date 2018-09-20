@@ -5226,6 +5226,9 @@ var flamegraph = function () {
         .attr('transform', function (d) { return 'translate(' + x(d.x0) + ',' + (inverted ? y(d.depth) : (h - y(d.depth) - c)) + ')' });
 
       g.select('rect')
+        .transition()
+        .duration(transitionDuration)
+        .ease(transitionEase)
         .attr('width', width);
 
       var node = g.enter()
