@@ -45,19 +45,31 @@ export default function () {
     }
   }
 
+  var labelHandler = function (d) {
+    return getName(d) + ' (' + format('.3f')(100 * (d.x1 - d.x0), 3) + '%, ' + getValue(d) + ' samples)'
+  }
+
   var tip = d3Tip()
     .direction('s')
     .offset([8, 0])
     .attr('class', 'd3-flame-graph-tip')
-    .html(function (d) { return label(d) })
+    .html(function (d) { return labelHandler(d) })
 
   var svg
 
-  function name (d) {
+  function getName (d) {
     return d.data.n || d.data.name
   }
 
-  function libtype (d) {
+  function getValue (d) {
+    return d.v || d.value
+  }
+
+  function getChildren (d) {
+    return d.c || d.children
+  }
+
+  function getLibtype (d) {
     return d.data.l || d.data.libtype
   }
 
@@ -65,24 +77,12 @@ export default function () {
     return d.data.d || d.data.delta
   }
 
-  function children (d) {
-    return d.c || d.children
-  }
-
-  function value (d) {
-    return d.v || d.value
-  }
-
-  var label = function (d) {
-    return name(d) + ' (' + format('.3f')(100 * (d.x1 - d.x0), 3) + '%, ' + value(d) + ' samples)'
-  }
-
   function setSearchDetails () {
     detailsElement.innerHTML = `${searchSum} of ${totalValue} samples (${format('.3f')(100 * (searchSum / totalValue), 3)}%)`
   }
 
   var colorMapper = function (d) {
-    return d.highlight ? '#E600E6' : colorHash(name(d), libtype(d), getDelta(d))
+    return d.highlight ? '#E600E6' : colorHash(getName(d), getLibtype(d), getDelta(d))
   }
 
   function generateHash (name) {
@@ -197,24 +197,24 @@ export default function () {
 
   function hide (d) {
     d.data.hide = true
-    if (children(d)) {
-      children(d).forEach(hide)
+    if (getChildren(d)) {
+      getChildren(d).forEach(hide)
     }
   }
 
   function show (d) {
     d.data.fade = false
     d.data.hide = false
-    if (children(d)) {
-      children(d).forEach(show)
+    if (getChildren(d)) {
+      getChildren(d).forEach(show)
     }
   }
 
   function getSiblings (d) {
     var siblings = []
     if (d.parent) {
-      var me = d.parent.children.indexOf(d)
-      siblings = d.parent.children.slice(0)
+      var me = getChildren(d.parent).indexOf(d)
+      siblings = getChildren(d.parent).slice(0)
       siblings.splice(me, 1)
     }
     return siblings
@@ -261,22 +261,22 @@ export default function () {
     var sum = 0
 
     function searchInner (d, foundParent) {
-      var label = name(d)
+      var label = getName(d)
       var found = false
 
       if (typeof label !== 'undefined' && label && label.match(re)) {
         d.highlight = true
         found = true
         if (!foundParent) {
-          sum += d.value
+          sum += getValue(d)
         }
         results.push(d)
       } else {
         d.highlight = false
       }
 
-      if (children(d)) {
-        children(d).forEach(function (child) {
+      if (getChildren(d)) {
+        getChildren(d).forEach(function (child) {
           searchInner(child, (foundParent || found))
         })
       }
@@ -289,8 +289,8 @@ export default function () {
 
   function clear (d) {
     d.highlight = false
-    if (children(d)) {
-      children(d).forEach(function (child) {
+    if (getChildren(d)) {
+      getChildren(d).forEach(function (child) {
         clear(child)
       })
     }
@@ -300,7 +300,7 @@ export default function () {
     if (typeof sort === 'function') {
       return sort(a, b)
     } else if (sort) {
-      return ascending(name(a), name(b))
+      return ascending(getName(a), getName(b))
     }
   }
 
@@ -328,11 +328,11 @@ export default function () {
           return 0
         }
         // The node's self value is its total value minus all children.
-        var v = value(d)
-        if (!selfValue && children(d)) {
-          var c = children(d)
+        var v = getValue(d)
+        if (!selfValue && getChildren(d)) {
+          var c = getChildren(d)
           for (var i = 0; i < c.length; i++) {
-            v -= value(c[i])
+            v -= getValue(c[i])
           }
         }
         return v
@@ -379,7 +379,7 @@ export default function () {
 
       g.attr('width', width)
         .attr('height', function (d) { return c })
-        .attr('name', function (d) { return name(d) })
+        .attr('name', function (d) { return getName(d) })
         .attr('class', function (d) { return d.data.fade ? 'frame fade' : 'frame' })
 
       g.select('rect')
@@ -388,7 +388,7 @@ export default function () {
 
       if (!tooltip) {
         g.select('title')
-          .text(label)
+          .text(labelHandler)
       }
 
       g.select('foreignObject')
@@ -399,7 +399,7 @@ export default function () {
         .style('display', function (d) { return (width(d) < 35) ? 'none' : 'block' })
         .transition()
         .delay(transitionDuration)
-        .text(name)
+        .text(getName)
 
       g.on('click', zoom)
 
@@ -408,7 +408,7 @@ export default function () {
 
       g.on('mouseover', function (d) {
         if (tooltip) tip.show(d, this)
-        detailsHandler(label(d))
+        detailsHandler(labelHandler(d))
       }).on('mouseout', function (d) {
         if (tooltip) tip.hide(d)
         detailsHandler(null)
@@ -448,7 +448,7 @@ export default function () {
 
   function injectIds (node) {
     node.id = s4() + '-' + s4() + '-' + '-' + s4() + '-' + s4()
-    var children = node.c || node.children || []
+    var children = getChildren(node) || []
     for (var i = 0; i < children.length; i++) {
       injectIds(children[i])
     }
@@ -457,7 +457,7 @@ export default function () {
   function calculateMaxDelta (node) {
     var delta = Math.abs(getDelta(node))
     maxDelta = delta > maxDelta ? delta : maxDelta
-    var children = node.c || node.children || []
+    var children = getChildren(node) || []
     for (var i = 0; i < children.length; i++) {
       calculateMaxDelta(children[i])
     }
@@ -465,11 +465,11 @@ export default function () {
 
   function chart (s) {
     var root = hierarchy(
-      s.datum(), function (d) { return children(d) }
+      s.datum(), function (d) { return getChildren(d) }
     )
     injectIds(root)
 
-    totalValue = root.value
+    totalValue = getValue(root)
 
     if (differential) {
       calculateMaxDelta(root)
@@ -565,11 +565,13 @@ export default function () {
     return chart
   }
 
-  chart.label = function (_) {
-    if (!arguments.length) { return label }
-    label = _
+  chart.setLabelHandler = function (_) {
+    if (!arguments.length) { return labelHandler }
+    labelHandler = _
     return chart
   }
+  // Kept for backwards compatibility.
+  chart.label = chart.setLabelHandler
 
   chart.search = function (term) {
     selection.each(function (data) {
@@ -609,7 +611,7 @@ export default function () {
     var newRoot // Need to re-create hierarchy after data changes.
     selection.each(function (root) {
       merge([root.data], [samples])
-      newRoot = hierarchy(root.data, function (d) { return children(d) })
+      newRoot = hierarchy(root.data, function (d) { return getChildren(d) })
       injectIds(newRoot)
     })
     selection = selection.datum(newRoot)
