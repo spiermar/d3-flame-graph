@@ -1,0 +1,24 @@
+{
+    "name": "Name",
+    "value": 10,
+    "children": [
+        {
+            "name": "SubName01",
+            "value": 3,
+            "children":[
+            ]
+        },
+        {
+            "name": "SubName02",
+            "value": 3,
+            "children":[
+            ]
+        },
+        {
+            "name": "SubName03",
+            "value": 4,
+            "children":[
+            ]
+        }
+    ]
+}
