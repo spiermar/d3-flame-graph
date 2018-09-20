@@ -618,11 +618,13 @@ export default function () {
     update()
   }
 
-  chart.color = function (_) {
+  chart.setColorMapper = function (_) {
     if (!arguments.length) { return colorMapper }
     colorMapper = _
     return chart
   }
+  // Kept for backwards compatibility.
+  chart.color = chart.setColorMapper
 
   chart.minFrameSize = function (_) {
     if (!arguments.length) { return minFrameSize }

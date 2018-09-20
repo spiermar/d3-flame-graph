@@ -28,13 +28,13 @@ Just reference the CDN hosted CSS and JS files!
 
 ```html
 <head>
-  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/spiermar/d3-flame-graph@2.0.0/dist/d3-flamegraph.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/spiermar/d3-flame-graph@2.0.2/dist/d3-flamegraph.css">
 </head>
 <body>
   <div id="chart"></div>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.10.0/d3.min.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/spiermar/d3-flame-graph@2.0.0/dist/d3-flamegraph.min.js"></script>
+  <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/spiermar/d3-flame-graph@2.0.2/dist/d3-flamegraph.min.js"></script>
   <script type="text/javascript">
   var flamegraph = d3.flamegraph()
     .width(960);
@@ -133,27 +133,27 @@ Defines if the plugin should use the self value logic to calculate the node valu
 
 <a name="width" href="#width">#</a> flamegraph.<b>width</b>(<i>[size]</i>)
 
-Graph width in px. Defaults to 960px if not set. If <i>size</i> is specified, it will set the graph width, otherwise it will return the flame graph object.
+Graph width in px. Defaults to 960px if not set. If <i>size</i> is specified, it will set the graph width, otherwise it will return the current graph width.
 
 <a name="height" href="#height">#</a> flamegraph.<b>height</b>(<i>[size]</i>)
 
-Graph height in px. Defaults to the number of cell rows times <a name="cellHeight" href="#cellHeight"><b>cellHeight</b></a> if not set. If <i>size</i> is specified, it will set the cell height, otherwise it will return the flame graph object.
+Graph height in px. Defaults to the number of cell rows times <a name="cellHeight" href="#cellHeight"><b>cellHeight</b></a> if not set. If <i>size</i> is specified, it will set the cell height, otherwise it will return the current graph height.
 
 <a name="cellHeight" href="#cellHeight">#</a> flamegraph.<b>cellHeight</b>(<i>[size]</i>)
 
-Cell height in px. Defaults to 18px if not set. If <i>size</i> is specified, it will set the cell height, otherwise it will return the flame graph object.
+Cell height in px. Defaults to 18px if not set. If <i>size</i> is specified, it will set the cell height, otherwise it will return the current cell height.
 
 <a name="minFrameSize" href="#minFrameSize">#</a> flamegraph.<b>minFrameSize</b>(<i>[size]</i>)
 
-Minimum size of a frame, in px, to be displayed in the flame graph. Defaults to 0px if not set. If <i>size</i> is specified, it will set the minimum frame size, otherwise it will return the flame graph object.
+Minimum size of a frame, in px, to be displayed in the flame graph. Defaults to 0px if not set. If <i>size</i> is specified, it will set the minimum frame size, otherwise it will return the current minimum frame size.
 
 <a name="title" href="#title">#</a> flamegraph.<b>title</b>(<i>[title]</i>)
 
-Title displayed on top of graph. Defaults to empty if not set. If <i>title</i> is specified, it will set the title displayed on the graph, otherwise it will return the flame graph object.
+Title displayed on top of graph. Defaults to empty if not set. If <i>title</i> is specified, it will set the title displayed on the graph, otherwise it will return the current title.
 
 <a name="tooltip" href="#tooltip">#</a> flamegraph.<b>tooltip</b>(<i>[enabled]</i>)
 
-Enables/disables display of tooltips on frames. Defaults to <i>true</i> if not set. It can be set to a [d3-tip configurable function](https://github.com/Caged/d3-tip/blob/master/docs/initializing-tooltips.md), which will replace the default function and display a fully customized tooltip. Else, if a truthy value, uses a default label function. If a value is specified, it will enable/disable tooltips, otherwise it will return the flame graph object.
+Enables/disables display of tooltips on frames. Defaults to <i>true</i> if not set. It can be set to a [d3-tip configurable function](https://github.com/Caged/d3-tip/blob/master/docs/initializing-tooltips.md), which will replace the default function and display a fully customized tooltip. Else, if a truthy value, uses a default label function. If a value is specified, it will enable/disable tooltips, otherwise it will return the current tooltip configuration.
 
 Class should be specified in order to correctly render the tooltip. The default "d3-flame-graph-tip" is available for use too.
 
@@ -165,7 +165,7 @@ See [d3-tip](https://github.com/Caged/d3-tip/tree/master/docs) for more details.
 
 <a name="transitionDuration" href="#transitionDuration">#</a> flamegraph.<b>transitionDuration</b>(<i>[duration]</i>)
 
-Specifies transition duration in milliseconds. The default duration is 750ms. If <i>duration</i> is not specified, returns the flame graph object.
+Specifies transition duration in milliseconds. The default duration is 750ms. If <i>duration</i> is not specified, returns the current transition duration.
 
 See [d3.duration](https://github.com/mbostock/d3/wiki/Transitions#duration).
 
@@ -187,7 +187,11 @@ flamegraph.label(function(d) {
 
 <a name="sort" href="#sort">#</a> flamegraph.<b>sort</b>(<i>[enabled]</i>)
 
-Enables/disables sorting of children frames. Defaults to <i>true</i> if not set to sort in ascending order by frame's name. If set to a function, the function takes two frames (a,b) and returns -1 if frame a is less than b, 1 if greater, or 0 if equal. If a value is specified, it will enable/disable sorting, otherwise it will return the flame graph object.
+Enables/disables sorting of children frames. Defaults to <i>true</i> if not set to sort in ascending order by frame's name. If set to a function, the function takes two frames (a,b) and returns -1 if frame a is less than b, 1 if greater, or 0 if equal. If a value is specified, it will enable/disable sorting, otherwise it will return the current sort configuration.
+
+<a name="inverted" href="#inverted">#</a> flamegraph.<b>inverted</b>(<i>[inverted]</i>)
+
+Invert the flame graph direction. A top-down visualization of the flame graph, also known as _icicle_ plot. Defaults to <i>false</i> if not set. If a value is specified, it will enable/disable the inverted flame graphs direction, otherwise it will return the current inverted configuration.
 
 <a name="resetZoom" href="#resetZoom">#</a> flamegraph.<b>resetZoom</b>()
 
@@ -218,9 +222,7 @@ Sets the element that should be updated with the focused sample details text. Ex
 flamegraph.setDetailsElement(document.getElementById("details"));
 ```
 
-If called with no arguments, `setDetailsElement` will return the flame graph object.
-
----
+If called with no arguments, `setDetailsElement` will return the current details element.
 
 <a name="setDetailsHandler" href="#setDetailsHandler">#</a> flamegraph.<b>setDetailsHandler</b>(<i>[function]</i>)
 
@@ -246,7 +248,7 @@ flamegraph.setDetailsHandler(
 
 If not set, `setDetailsHandler` will default to the above function.
 
-If called with no arguments, `setDetailsHandler` will return the flame graph object. 
+If called with no arguments, `setDetailsHandler` will reset the details handler function. 
 
 <a name="setSearchHandler" href="#setSearchHandler">#</a> flamegraph.<b>setSearchHandler</b>(<i>[function]</i>)
 
@@ -262,26 +264,22 @@ flamegraph.setSearchHandler(
 
 If not set, `setSearchHandler` will default to the above function.
 
-If called with no arguments, `setSearchHandler` will return the flame graph object.
+If called with no arguments, `setSearchHandler` will reset the search handler function.
 
----
+<a name="setColorMapper" href="#setColorMapper">#</a> flamegraph.<b>setColorMapper</b>(<i>[function]</i>)
 
-<a name="inverted" href="#inverted">#</a> flamegraph.<b>inverted</b>(<i>[inverted]</i>)
-
-Invert the flame graph direction. A top-down visualization of the flame graph, also known as _icicle_ plot. Defaults to <i>false</i> if not set. If a value is specified, it will enable/disable the inverted flame graphs direction, otherwise it will return the flame graph object.
-
-<a name="color" href="#color">#</a> flamegraph.<b>color</b>(<i>[function]</i>)
-
-Replaces the built-in node color hash function. Function should take a single argument, the node data structure, and returns a color string. Example:
+Replaces the built-in node color hash function. Function takes a single argument, the node data structure, and returns a color string. Example:
 
 ```js
 // Purple if highlighted, otherwise a static blue.
-flamegraph.color(function(d) {
+flamegraph.setColorMapper(function(d) {
     return d.highlight ? "#E600E6" : "#0A5BC4";
 });
 ```
 
-If called with no arguments, `color` will return the flame graph object. 
+If called with no arguments, `setColorMapper` will return reset the color hash function.
+
+**All API functions will return the flame graph object if no other behavior is specified in the function details.**
 
 ## Issues
 
