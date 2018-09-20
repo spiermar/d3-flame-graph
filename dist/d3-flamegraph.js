@@ -4895,6 +4895,7 @@ var flamegraph = function () {
   var searchHandler = function () {
     if (detailsElement) { setSearchDetails(); }
   };
+  var originalSearchHandler = searchHandler;
 
   var detailsHandler = function (d) {
     if (detailsElement) {
@@ -4909,6 +4910,7 @@ var flamegraph = function () {
       }
     }
   };
+  var originalDetailsHandler = detailsHandler;
 
   var labelHandler = function (d) {
     return getName(d) + ' (' + format('.3f')(100 * (d.x1 - d.x0), 3) + '%, ' + getValue(d) + ' samples)'
@@ -4949,6 +4951,7 @@ var flamegraph = function () {
   var colorMapper = function (d) {
     return d.highlight ? '#E600E6' : colorHash(getName(d), getLibtype(d), getDelta(d))
   };
+  var originalColorMapper = colorMapper;
 
   function generateHash (name) {
     // Return a vector (0.0->1.0) that is a hash of the input string.
@@ -5484,7 +5487,10 @@ var flamegraph = function () {
   };
 
   chart.setColorMapper = function (_) {
-    if (!arguments.length) { return colorMapper }
+    if (!arguments.length) {
+      colorMapper = originalColorMapper;
+      return chart
+    }
     colorMapper = _;
     return chart
   };
@@ -5513,7 +5519,8 @@ var flamegraph = function () {
 
   chart.setSearchHandler = function (_) {
     if (!arguments.length) {
-      return searchHandler
+      searchHandler = originalSearchHandler;
+      return chart
     }
     searchHandler = _;
     return chart
@@ -5521,7 +5528,8 @@ var flamegraph = function () {
 
   chart.setDetailsHandler = function (_) {
     if (!arguments.length) {
-      return detailsHandler
+      detailsHandler = originalDetailsHandler;
+      return chart
     }
     detailsHandler = _;
     return chart
