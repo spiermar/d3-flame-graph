@@ -28,13 +28,13 @@ Just reference the CDN hosted CSS and JS files!
 
 ```html
 <head>
-  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/spiermar/d3-flame-graph@2.0.2/dist/d3-flamegraph.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/spiermar/d3-flame-graph@2.0.3/dist/d3-flamegraph.css">
 </head>
 <body>
   <div id="chart"></div>
   <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/spiermar/d3-flame-graph@2.0.2/dist/d3-flamegraph.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/spiermar/d3-flame-graph@2.0.3/dist/d3-flamegraph.min.js"></script>
   <script type="text/javascript">
   var flamegraph = d3.flamegraph()
     .width(960);
