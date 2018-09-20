@@ -84,7 +84,7 @@ And use it!
 </body>
 ```
 
-More detailed examples in the [/example](/example) directory.
+More detailed examples in the [/examples](/examples) directory.
 
 ## Input Format
 
