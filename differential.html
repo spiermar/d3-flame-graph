@@ -85,37 +85,16 @@
       .transitionDuration(750)
       .minFrameSize(5)
       .transitionEase(d3.easeCubic)
-      .sort(true)
-      //Example to sort in reverse order
-      //.sort(function(a,b){ return d3.descending(a.name, b.name);})
       .title("")
       .onClick(onClick)
-      .differential(false)
-      .selfValue(false);
-
-
-    // Example on how to use custom tooltips using d3-tip.
-    // var tip = d3.tip()
-    //   .direction("s")
-    //   .offset([8, 0])
-    //   .attr('class', 'd3-flame-graph-tip')
-    //   .html(function(d) { return "name: " + d.data.name + ", value: " + d.data.value; });
-
-    // flameGraph.tooltip(tip);
+      .differential(true)
+      .selfValue(true);
 
     var details = document.getElementById("details");
     flameGraph.setDetailsElement(details);
 
-    // Example on how to use custom labels
-    // var label = function(d) {
-    //  return "name: " + d.name + ", value: " + d.value;
-    // }
-    // flameGraph.label(label);
 
-    // Example of how to set fixed chart height
-    // flameGraph.height(540);
-
-    d3.json("stacks.json", function(error, data) {
+    d3.json("differential.json", function(error, data) {
       if (error) return console.warn(error);
       d3.select("#chart")
           .datum(data)
