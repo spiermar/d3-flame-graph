@@ -23,6 +23,7 @@ export default function () {
   var detailsElement = null
   var selfValue = false
   var differential = false
+  var elided = false
   var searchSum = 0
   var totalValue = 0
   var maxDelta = 0
@@ -138,9 +139,9 @@ export default function () {
       }
     } else {
       // default when libtype is not in use
-      var hue = 'warm'
+      var hue = elided ? 'cold' : 'warm'
 
-      if (!(typeof libtype === 'undefined' || libtype === '')) {
+      if (!elided && !(typeof libtype === 'undefined' || libtype === '')) {
         // Select hue. Order is important.
         hue = 'red'
         if (typeof name !== 'undefined' && name && name.match(/::/)) {
@@ -187,6 +188,10 @@ export default function () {
         r = 50 + Math.round(60 * vector)
         g = 165 + Math.round(55 * vector)
         b = g
+      } else if (hue === 'cold') {
+        r = 0 + Math.round(55 * (1 - vector))
+        g = 0 + Math.round(230 * (1 - vector))
+        b = 200 + Math.round(55 * vector)
       } else {
         // original warm palette
         r = 200 + Math.round(55 * vector)
@@ -568,6 +573,12 @@ export default function () {
   chart.differential = function (_) {
     if (!arguments.length) { return differential }
     differential = _
+    return chart
+  }
+
+  chart.elided = function (_) {
+    if (!arguments.length) { return elided }
+    elided = _
     return chart
   }
 

@@ -193,6 +193,14 @@ Enables/disables sorting of children frames. Defaults to <i>true</i> if not set 
 
 Invert the flame graph direction. A top-down visualization of the flame graph, also known as _icicle_ plot. Defaults to <i>false</i> if not set. If a value is specified, it will enable/disable the inverted flame graphs direction, otherwise it will return the current inverted configuration.
 
+<a name="inverted" href="#inverted">#</a> flamegraph.<b>differential</b>(<i>[differential]</i>)
+
+Use the _differential_ color hash. Frames are sized according to their `value` but colored based on the `delta` property. Blue for negative numbers, red for positive numbers.
+
+<a name="elided" href="#elided">#</a> flamegraph.<b>elided</b>(<i>[elided]</i>)
+
+Use the _elided_ color hash to show elided frames in a differential heat map. The _elided_ color hash is _cold / blue_ to differentiate from the regular _warm_ palette.
+
 <a name="resetZoom" href="#resetZoom">#</a> flamegraph.<b>resetZoom</b>()
 
 Resets the zoom so that everything is visible.
