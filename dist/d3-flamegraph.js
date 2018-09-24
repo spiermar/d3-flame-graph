@@ -4893,6 +4893,26 @@ var flamegraph = function () {
   var totalValue = 0;
   var maxDelta = 0;
 
+  var getName = function (d) {
+    return d.data.n || d.data.name
+  };
+
+  var getValue = function (d) {
+    return d.v || d.value
+  };
+
+  var getChildren = function (d) {
+    return d.c || d.children
+  };
+
+  var getLibtype = function (d) {
+    return d.data.l || d.data.libtype
+  };
+
+  var getDelta = function (d) {
+    return d.data.d || d.data.delta
+  };
+
   var searchHandler = function () {
     if (detailsElement) { setSearchDetails(); }
   };
@@ -4924,26 +4944,6 @@ var flamegraph = function () {
     .html(function (d) { return labelHandler(d) });
 
   var svg;
-
-  function getName (d) {
-    return d.data.n || d.data.name
-  }
-
-  function getValue (d) {
-    return d.v || d.value
-  }
-
-  function getChildren (d) {
-    return d.c || d.children
-  }
-
-  function getLibtype (d) {
-    return d.data.l || d.data.libtype
-  }
-
-  function getDelta (d) {
-    return d.data.d || d.data.delta
-  }
 
   function setSearchDetails () {
     detailsElement.innerHTML = searchSum + ' of ' + totalValue + ' samples ( ' + format('.3f')(100 * (searchSum / totalValue), 3) + '%)';
@@ -5604,6 +5604,36 @@ var flamegraph = function () {
   chart.selfValue = function (_) {
     if (!arguments.length) { return selfValue }
     selfValue = _;
+    return chart
+  };
+
+  chart.getName = function (_) {
+    if (!arguments.length) { return getName }
+    getName = _;
+    return chart
+  };
+
+  chart.getValue = function (_) {
+    if (!arguments.length) { return getValue }
+    getValue = _;
+    return chart
+  };
+
+  chart.getChildren = function (_) {
+    if (!arguments.length) { return getChildren }
+    getChildren = _;
+    return chart
+  };
+
+  chart.getLibtype = function (_) {
+    if (!arguments.length) { return getLibtype }
+    getLibtype = _;
+    return chart
+  };
+
+  chart.getDelta = function (_) {
+    if (!arguments.length) { return getDelta }
+    getDelta = _;
     return chart
   };
 
