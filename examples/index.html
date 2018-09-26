@@ -73,7 +73,7 @@
     <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
     
     <!-- d3-tip -->
-    <script type="text/javascript" src=https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.7.1/d3-tip.min.js></script>
+    <script type="text/javascript" src=https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js></script>
 
     <!-- d3-flamegraph -->
     <script type="text/javascript" src="d3-flamegraph.js"></script>
@@ -89,7 +89,10 @@
       //Example to sort in reverse order
       //.sort(function(a,b){ return d3.descending(a.name, b.name);})
       .title("")
-      .onClick(onClick);
+      .onClick(onClick)
+      .differential(false)
+      .elided(false)
+      .selfValue(false);
 
 
     // Example on how to use custom tooltips using d3-tip.
@@ -102,7 +105,7 @@
     // flameGraph.tooltip(tip);
 
     var details = document.getElementById("details");
-    flameGraph.details(details);
+    flameGraph.setDetailsElement(details);
 
     // Example on how to use custom labels
     // var label = function(d) {

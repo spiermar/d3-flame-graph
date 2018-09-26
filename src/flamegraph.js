@@ -1,6 +1,11 @@
-import { select, format, ascending, partition, hierarchy, scaleLinear, easeCubic } from 'd3'
+import { select } from 'd3-selection'
+import { format } from 'd3-format'
+import { ascending } from 'd3-array'
+import { partition, hierarchy } from 'd3-hierarchy'
+import { scaleLinear } from 'd3-scale'
+import { easeCubic } from 'd3-ease'
 import { default as d3Tip } from 'd3-tip'
-import sha1 from 'sha1'
+import 'd3-transition'
 
 export default function () {
   var w = 960 // graph width
@@ -15,43 +20,74 @@ export default function () {
   var inverted = false // invert the graph direction
   var clickHandler = null
   var minFrameSize = 0
-  var details = null
+  var detailsElement = null
+  var selfValue = false
+  var differential = false
+  var elided = false
+  var searchSum = 0
+  var totalValue = 0
+  var maxDelta = 0
+
+  var searchHandler = function () {
+    if (detailsElement) { setSearchDetails() }
+  }
+  var originalSearchHandler = searchHandler
+
+  var detailsHandler = function (d) {
+    if (detailsElement) {
+      if (d) {
+        detailsElement.innerHTML = d
+      } else {
+        if (searchSum) {
+          setSearchDetails()
+        } else {
+          detailsElement.innerHTML = ''
+        }
+      }
+    }
+  }
+  var originalDetailsHandler = detailsHandler
+
+  var labelHandler = function (d) {
+    return getName(d) + ' (' + format('.3f')(100 * (d.x1 - d.x0), 3) + '%, ' + getValue(d) + ' samples)'
+  }
 
   var tip = d3Tip()
     .direction('s')
     .offset([8, 0])
     .attr('class', 'd3-flame-graph-tip')
-    .html(function (d) { return label(d) })
+    .html(function (d) { return labelHandler(d) })
 
   var svg
 
-  function name (d) {
+  function getName (d) {
     return d.data.n || d.data.name
   }
 
-  function libtype (d) {
-    return d.data.l || d.data.libtype
-  }
-
-  function children (d) {
-    return d.c || d.children
-  }
-
-  function value (d) {
+  function getValue (d) {
     return d.v || d.value
   }
 
-  var label = function (d) {
-    return name(d) + ' (' + format('.3f')(100 * (d.x1 - d.x0), 3) + '%, ' + value(d) + ' samples)'
+  function getChildren (d) {
+    return d.c || d.children
   }
 
-  function setDetails (t) {
-    if (details) { details.innerHTML = t }
+  function getLibtype (d) {
+    return d.data.l || d.data.libtype
+  }
+
+  function getDelta (d) {
+    return d.data.d || d.data.delta
+  }
+
+  function setSearchDetails () {
+    detailsElement.innerHTML = `${searchSum} of ${totalValue} samples (${format('.3f')(100 * (searchSum / totalValue), 3)}%)`
   }
 
   var colorMapper = function (d) {
-    return d.highlight ? '#E600E6' : colorHash(name(d), libtype(d))
+    return d.highlight ? '#E600E6' : colorHash(getName(d), getLibtype(d), getDelta(d))
   }
+  var originalColorMapper = colorMapper
 
   function generateHash (name) {
     // Return a vector (0.0->1.0) that is a hash of the input string.
@@ -77,7 +113,7 @@ export default function () {
     return hash
   }
 
-  function colorHash (name, libtype) {
+  function colorHash (name, libtype, delta) {
     // Return a color for the given name and library type. The library type
     // selects the hue, and the name is hashed to a color in that hue.
 
@@ -85,62 +121,83 @@ export default function () {
     var g
     var b
 
-    // Select hue. Order is important.
-    var hue
-    if (typeof libtype === 'undefined' || libtype === '') {
+    if (differential) {
+      r = 220
+      g = 220
+      b = 220
+
+      if (!delta) {
+        delta = 0
+      }
+
+      if (delta > 0) {
+        b = Math.round(210 * (maxDelta - delta) / maxDelta)
+        g = b
+      } else if (delta < 0) {
+        r = Math.round(210 * (maxDelta + delta) / maxDelta)
+        g = r
+      }
+    } else {
       // default when libtype is not in use
-      hue = 'warm'
-    } else {
-      hue = 'red'
-      if (typeof name !== 'undefined' && name && name.match(/::/)) {
-        hue = 'yellow'
-      }
-      if (libtype === 'kernel') {
-        hue = 'orange'
-      } else if (libtype === 'jit') {
-        hue = 'green'
-      } else if (libtype === 'inlined') {
-        hue = 'aqua'
-      }
-    }
+      var hue = elided ? 'cold' : 'warm'
 
-    // calculate hash
-    var vector = 0
-    if (name) {
-      var nameArr = name.split('`')
-      if (nameArr.length > 1) {
-        name = nameArr[nameArr.length - 1] // drop module name if present
+      if (!elided && !(typeof libtype === 'undefined' || libtype === '')) {
+        // Select hue. Order is important.
+        hue = 'red'
+        if (typeof name !== 'undefined' && name && name.match(/::/)) {
+          hue = 'yellow'
+        }
+        if (libtype === 'kernel') {
+          hue = 'orange'
+        } else if (libtype === 'jit') {
+          hue = 'green'
+        } else if (libtype === 'inlined') {
+          hue = 'aqua'
+        }
       }
-      name = name.split('(')[0] // drop extra info
-      vector = generateHash(name)
-    }
 
-    // calculate color
-    if (hue === 'red') {
-      r = 200 + Math.round(55 * vector)
-      g = 50 + Math.round(80 * vector)
-      b = g
-    } else if (hue === 'orange') {
-      r = 190 + Math.round(65 * vector)
-      g = 90 + Math.round(65 * vector)
-      b = 0
-    } else if (hue === 'yellow') {
-      r = 175 + Math.round(55 * vector)
-      g = r
-      b = 50 + Math.round(20 * vector)
-    } else if (hue === 'green') {
-      r = 50 + Math.round(60 * vector)
-      g = 200 + Math.round(55 * vector)
-      b = r
-    } else if (hue === 'aqua') {
-      r = 50 + Math.round(60 * vector)
-      g = 165 + Math.round(55 * vector)
-      b = g
-    } else {
-      // original warm palette
-      r = 200 + Math.round(55 * vector)
-      g = 0 + Math.round(230 * (1 - vector))
-      b = 0 + Math.round(55 * (1 - vector))
+      // calculate hash
+      var vector = 0
+      if (name) {
+        var nameArr = name.split('`')
+        if (nameArr.length > 1) {
+          name = nameArr[nameArr.length - 1] // drop module name if present
+        }
+        name = name.split('(')[0] // drop extra info
+        vector = generateHash(name)
+      }
+
+      // calculate color
+      if (hue === 'red') {
+        r = 200 + Math.round(55 * vector)
+        g = 50 + Math.round(80 * vector)
+        b = g
+      } else if (hue === 'orange') {
+        r = 190 + Math.round(65 * vector)
+        g = 90 + Math.round(65 * vector)
+        b = 0
+      } else if (hue === 'yellow') {
+        r = 175 + Math.round(55 * vector)
+        g = r
+        b = 50 + Math.round(20 * vector)
+      } else if (hue === 'green') {
+        r = 50 + Math.round(60 * vector)
+        g = 200 + Math.round(55 * vector)
+        b = r
+      } else if (hue === 'aqua') {
+        r = 50 + Math.round(60 * vector)
+        g = 165 + Math.round(55 * vector)
+        b = g
+      } else if (hue === 'cold') {
+        r = 0 + Math.round(55 * (1 - vector))
+        g = 0 + Math.round(230 * (1 - vector))
+        b = 200 + Math.round(55 * vector)
+      } else {
+        // original warm palette
+        r = 200 + Math.round(55 * vector)
+        g = 0 + Math.round(230 * (1 - vector))
+        b = 0 + Math.round(55 * (1 - vector))
+      }
     }
 
     return 'rgb(' + r + ',' + g + ',' + b + ')'
@@ -148,24 +205,24 @@ export default function () {
 
   function hide (d) {
     d.data.hide = true
-    if (children(d)) {
-      children(d).forEach(hide)
+    if (getChildren(d)) {
+      getChildren(d).forEach(hide)
     }
   }
 
   function show (d) {
     d.data.fade = false
     d.data.hide = false
-    if (children(d)) {
-      children(d).forEach(show)
+    if (getChildren(d)) {
+      getChildren(d).forEach(show)
     }
   }
 
   function getSiblings (d) {
     var siblings = []
     if (d.parent) {
-      var me = d.parent.children.indexOf(d)
-      siblings = d.parent.children.slice(0)
+      var me = getChildren(d.parent).indexOf(d)
+      siblings = getChildren(d.parent).slice(0)
       siblings.splice(me, 1)
     }
     return siblings
@@ -208,27 +265,34 @@ export default function () {
 
   function searchTree (d, term) {
     var re = new RegExp(term)
-    var searchResults = []
+    var results = []
+    var sum = 0
 
-    function searchInner (d) {
-      var label = name(d)
-
-      if (children(d)) {
-        children(d).forEach(function (child) {
-          searchInner(child)
-        })
-      }
+    function searchInner (d, foundParent) {
+      var label = getName(d)
+      var found = false
 
       if (typeof label !== 'undefined' && label && label.match(re)) {
         d.highlight = true
-        searchResults.push(d)
+        found = true
+        if (!foundParent) {
+          sum += getValue(d)
+        }
+        results.push(d)
       } else {
         d.highlight = false
       }
+
+      if (getChildren(d)) {
+        getChildren(d).forEach(function (child) {
+          searchInner(child, (foundParent || found))
+        })
+      }
     }
 
-    searchInner(d)
-    return searchResults
+    searchInner(d, false)
+    searchSum = sum
+    searchHandler(results, sum, totalValue)
   }
 
   function findTree (id, data) {
@@ -243,8 +307,8 @@ export default function () {
 
   function clear (d) {
     d.highlight = false
-    if (children(d)) {
-      children(d).forEach(function (child) {
+    if (getChildren(d)) {
+      getChildren(d).forEach(function (child) {
         clear(child)
       })
     }
@@ -254,7 +318,7 @@ export default function () {
     if (typeof sort === 'function') {
       return sort(a, b)
     } else if (sort) {
-      return ascending(name(a), name(b))
+      return ascending(getName(a), getName(b))
     }
   }
 
@@ -282,11 +346,11 @@ export default function () {
           return 0
         }
         // The node's self value is its total value minus all children.
-        var v = value(d)
-        if (children(d)) {
-          var c = children(d)
+        var v = getValue(d)
+        if (!selfValue && getChildren(d)) {
+          var c = getChildren(d)
           for (var i = 0; i < c.length; i++) {
-            v -= value(c[i])
+            v -= getValue(c[i])
           }
         }
         return v
@@ -299,12 +363,22 @@ export default function () {
       var descendants = filterNodes(root)
       var g = select(this).select('svg').selectAll('g').data(descendants, function (d) { return d.id })
 
+      // if height is not set: set height on first update, after nodes were filtered by minFrameSize
+      if (!h) {
+        var maxDepth = Math.max.apply(null, descendants.map(function (n) { return n.depth }))
+        h = (maxDepth + 2) * c
+        select(this).select('svg').attr('height', h)
+      }
+
       g.transition()
         .duration(transitionDuration)
         .ease(transitionEase)
         .attr('transform', function (d) { return 'translate(' + x(d.x0) + ',' + (inverted ? y(d.depth) : (h - y(d.depth) - c)) + ')' })
 
       g.select('rect')
+        .transition()
+        .duration(transitionDuration)
+        .ease(transitionEase)
         .attr('width', width)
 
       var node = g.enter()
@@ -326,7 +400,7 @@ export default function () {
 
       g.attr('width', width)
         .attr('height', function (d) { return c })
-        .attr('name', function (d) { return name(d) })
+        .attr('name', function (d) { return getName(d) })
         .attr('class', function (d) { return d.data.fade ? 'frame fade' : 'frame' })
 
       g.select('rect')
@@ -335,7 +409,7 @@ export default function () {
 
       if (!tooltip) {
         g.select('title')
-          .text(label)
+          .text(labelHandler)
       }
 
       g.select('foreignObject')
@@ -346,7 +420,7 @@ export default function () {
         .style('display', function (d) { return (width(d) < 35) ? 'none' : 'block' })
         .transition()
         .delay(transitionDuration)
-        .text(name)
+        .text(getName)
 
       g.on('click', zoom)
 
@@ -355,10 +429,10 @@ export default function () {
 
       g.on('mouseover', function (d) {
         if (tooltip) tip.show(d, this)
-        setDetails(label(d))
+        detailsHandler(labelHandler(d))
       }).on('mouseout', function (d) {
         if (tooltip) tip.hide(d)
-        setDetails('')
+        detailsHandler(null)
       })
     })
   }
@@ -387,33 +461,51 @@ export default function () {
     })
   }
 
-  function injectIds (node, parent, pos) {
-    node.id = sha1((((pos || 0) + 1) ^ 3) * (node.depth ^ 7) + node.data.n + (parent || ''))
-    var children = node.c || node.children || []
+  function s4 () {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1)
+  }
+
+  function injectIds (node) {
+    node.id = s4() + '-' + s4() + '-' + '-' + s4() + '-' + s4()
+    var children = getChildren(node) || []
     for (var i = 0; i < children.length; i++) {
       injectIds(children[i], node.id, i)
     }
   }
 
+  function calculateMaxDelta (node) {
+    var delta = Math.abs(getDelta(node))
+    maxDelta = delta > maxDelta ? delta : maxDelta
+    var children = getChildren(node) || []
+    for (var i = 0; i < children.length; i++) {
+      calculateMaxDelta(children[i])
+    }
+  }
+
   function chart (s) {
     var root = hierarchy(
-      s.datum(), function (d) { return children(d) }
+      s.datum(), function (d) { return getChildren(d) }
     )
     injectIds(root)
+
+    totalValue = getValue(root)
+
+    if (differential) {
+      calculateMaxDelta(root)
+    }
+
     selection = s.datum(root)
 
     if (!arguments.length) return chart
-
-    if (!h) {
-      h = (root.height + 2) * c
-    }
 
     selection.each(function (data) {
       if (!svg) {
         svg = select(this)
           .append('svg:svg')
           .attr('width', w)
-          .attr('height', h)
+          .attr('height', h || (root.height + 2) * c)
           .attr('class', 'partition d3-flame-graph')
           .call(tip)
 
@@ -488,19 +580,31 @@ export default function () {
     return chart
   }
 
-  chart.label = function (_) {
-    if (!arguments.length) { return label }
-    label = _
+  chart.differential = function (_) {
+    if (!arguments.length) { return differential }
+    differential = _
     return chart
   }
 
+  chart.elided = function (_) {
+    if (!arguments.length) { return elided }
+    elided = _
+    return chart
+  }
+
+  chart.setLabelHandler = function (_) {
+    if (!arguments.length) { return labelHandler }
+    labelHandler = _
+    return chart
+  }
+  // Kept for backwards compatibility.
+  chart.label = chart.setLabelHandler
+
   chart.search = function (term) {
-    var searchResults = []
     selection.each(function (data) {
-      searchResults = searchTree(data, term)
+      searchTree(data, term)
       update()
     })
-    return searchResults
   }
 
   chart.findById = function (id) {
@@ -513,6 +617,8 @@ export default function () {
   }
 
   chart.clear = function () {
+    searchSum = 0
+    detailsHandler(null)
     selection.each(function (data) {
       clear(data)
       update()
@@ -541,18 +647,23 @@ export default function () {
     var newRoot // Need to re-create hierarchy after data changes.
     selection.each(function (root) {
       merge([root.data], [samples])
-      newRoot = hierarchy(root.data, function (d) { return children(d) })
+      newRoot = hierarchy(root.data, function (d) { return getChildren(d) })
       injectIds(newRoot)
     })
     selection = selection.datum(newRoot)
     update()
   }
 
-  chart.color = function (_) {
-    if (!arguments.length) { return colorMapper }
+  chart.setColorMapper = function (_) {
+    if (!arguments.length) {
+      colorMapper = originalColorMapper
+      return chart
+    }
     colorMapper = _
     return chart
   }
+  // Kept for backwards compatibility.
+  chart.color = chart.setColorMapper
 
   chart.minFrameSize = function (_) {
     if (!arguments.length) { return minFrameSize }
@@ -560,9 +671,35 @@ export default function () {
     return chart
   }
 
-  chart.details = function (_) {
-    if (!arguments.length) { return details }
-    details = _
+  chart.setDetailsElement = function (_) {
+    if (!arguments.length) { return detailsElement }
+    detailsElement = _
+    return chart
+  }
+  // Kept for backwards compatibility.
+  chart.details = chart.setDetailsElement
+
+  chart.selfValue = function (_) {
+    if (!arguments.length) { return selfValue }
+    selfValue = _
+    return chart
+  }
+
+  chart.setSearchHandler = function (_) {
+    if (!arguments.length) {
+      searchHandler = originalSearchHandler
+      return chart
+    }
+    searchHandler = _
+    return chart
+  }
+
+  chart.setDetailsHandler = function (_) {
+    if (!arguments.length) {
+      detailsHandler = originalDetailsHandler
+      return chart
+    }
+    detailsHandler = _
     return chart
   }
 

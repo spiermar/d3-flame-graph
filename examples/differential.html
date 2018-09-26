@@ -83,16 +83,18 @@
       .width(960)
       .cellHeight(18)
       .transitionDuration(750)
-      .minFrameSize(0)
+      .minFrameSize(5)
       .transitionEase(d3.easeCubic)
-      .sort(true)
       .title("")
-      .onClick(onClick);
+      .onClick(onClick)
+      .differential(true)
+      .selfValue(true);
 
     var details = document.getElementById("details");
     flameGraph.setDetailsElement(details);
 
-    d3.json("stacks.min.json", function(error, data) {
+
+    d3.json("differential.json", function(error, data) {
       if (error) return console.warn(error);
       d3.select("#chart")
           .datum(data)
