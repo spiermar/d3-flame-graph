@@ -111,7 +111,7 @@
     // To invoke this function after loading the graph itself, this function should be registered in d3 datum(data).call()
     // (See d3.json invocation in this file)
     function findInvoke() {
-      var searchId = new URLSearchParams(location.search).get('id');
+      var searchId = location.hash.substring(1);
       if (searchId) {
         console.log(searchId);
         find(searchId);
@@ -161,6 +161,7 @@
 
     function onClick(d) {
       console.info("Clicked on " + d.data.name + ", id: \"" + d.id + "\"");
+      history.pushState({ id: d.id }, d.data.name, '#' + d.id)
     }
     </script>
   </body>
