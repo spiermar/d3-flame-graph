@@ -107,6 +107,17 @@
     var details = document.getElementById("details");
     flameGraph.setDetailsElement(details);
 
+    // Example on how to use searchById() function in flamegraph. 
+    // To invoke this function after loading the graph itself, this function should be registered in d3 datum(data).call()
+    // (See d3.json invocation in this file)
+    function findInvoke() {
+      var searchId = new URLSearchParams(location.search).get('id');
+      if (searchId) {
+        console.log(searchId);
+        find(searchId);
+      }
+    }
+
     // Example on how to use custom labels
     // var label = function(d) {
     //  return "name: " + d.name + ", value: " + d.value;
@@ -120,7 +131,8 @@
       if (error) return console.warn(error);
       d3.select("#chart")
           .datum(data)
-          .call(flameGraph);
+          .call(flameGraph)
+          .call(findInvoke);
     });
 
     document.getElementById("form").addEventListener("submit", function(event){
@@ -135,7 +147,6 @@
 
     function find(id) {
       var elem = flameGraph.findById(id);
-      console.log(elem);
       flameGraph.zoomTo(elem);
     }
 
@@ -149,7 +160,7 @@
     }
 
     function onClick(d) {
-      console.info("Clicked on " + d.data.name);
+      console.info("Clicked on " + d.data.name + ", id: \"" + d.id + "\"");
     }
     </script>
   </body>

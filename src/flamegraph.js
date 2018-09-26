@@ -600,7 +600,6 @@ export default function () {
 
   chart.findById = function (id) {
     function findTree (d, id) {
-      console.log(d.id)
       if (d.id === id) {
         return d
       } else {
