@@ -133,6 +133,12 @@
       flameGraph.search(term);
     }
 
+    function find(id) {
+      var elem = flameGraph.findById(id);
+      console.log(elem);
+      flameGraph.zoomTo(elem);
+    }
+
     function clear() {
       document.getElementById('term').value = '';
       flameGraph.clear();

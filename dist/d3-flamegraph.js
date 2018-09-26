@@ -5212,14 +5212,13 @@ var flamegraph = function () {
   }
 
   function injectIds (node, parentId, rank) {
-    function idgen(seed, salt) {
-        return parentId + '-' + rank
+    function idgen (seed, salt) {
+      return parentId + '-' + rank
     }
-    if (parentId == undefined) {
-        node.id = 'root';
+    if (parentId === undefined) {
+      node.id = 'root';
     } else {
-        console.log(node.data.name);
-        node.id = idgen(parentId, rank);
+      node.id = idgen(parentId, rank);
     }
     var children = getChildren(node) || [];
     for (var i = 0; i < children.length; i++) {
@@ -5360,12 +5359,29 @@ var flamegraph = function () {
   };
 
   chart.findById = function (id) {
+    function findTree (d, id) {
+      console.log(d.id);
+      if (d.id === id) {
+        return d
+      } else {
+        var children = getChildren(d);
+        if (children) {
+          for (var i = 0; i < children.length; i++) {
+            var found = findTree(children[i], id);
+            if (found) {
+              return found
+            }
+          }
+        }
+      }
+    }
+
     if (id === undefined) {
       return undefined
     }
-    // var data = selection.data()
-    // var found = findTree(id, data[0])
-    // return found
+    var data = selection.data();
+    var found = findTree(data[0], id);
+    return found
   };
 
   chart.clear = function () {
