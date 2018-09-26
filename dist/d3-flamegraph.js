@@ -1,8 +1,8 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3'), require('sha1')) :
-	typeof define === 'function' && define.amd ? define(['exports', 'd3', 'sha1'], factory) :
-	(factory((global.d3 = global.d3 || {}),global.d3,global.sha1));
-}(this, (function (exports,d3,sha1) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('d3')) :
+	typeof define === 'function' && define.amd ? define(['exports', 'd3'], factory) :
+	(factory((global.d3 = global.d3 || {}),global.d3));
+}(this, (function (exports,d3) { 'use strict';
 
 d3 = d3 && d3.hasOwnProperty('default') ? d3['default'] : d3;
 
@@ -5055,16 +5055,6 @@ var flamegraph = function () {
     searchHandler(results, sum, totalValue);
   }
 
-  function findTree (id, data) {
-    if (data.id === id) {
-      return data
-    } else if (children(data)) {
-      return children(data).find(c => findTree(id, c))
-    } else {
-      return undefined
-    }
-  }
-
   function clear (d) {
     d.highlight = false;
     if (getChildren(d)) {
@@ -5221,14 +5211,16 @@ var flamegraph = function () {
     });
   }
 
-  function s4 () {
-    return Math.floor((1 + Math.random()) * 0x10000)
-      .toString(16)
-      .substring(1)
-  }
-
-  function injectIds (node) {
-    node.id = s4() + '-' + s4() + '-' + '-' + s4() + '-' + s4();
+  function injectIds (node, parentId, rank) {
+    function idgen(seed, salt) {
+        return parentId + '-' + rank
+    }
+    if (parentId == undefined) {
+        node.id = 'root';
+    } else {
+        console.log(node.data.name);
+        node.id = idgen(parentId, rank);
+    }
     var children = getChildren(node) || [];
     for (var i = 0; i < children.length; i++) {
       injectIds(children[i], node.id, i);
@@ -5371,9 +5363,9 @@ var flamegraph = function () {
     if (id === undefined) {
       return undefined
     }
-    var data = selection.data();
-    var found = findTree(id, data[0]);
-    return found
+    // var data = selection.data()
+    // var found = findTree(id, data[0])
+    // return found
   };
 
   chart.clear = function () {

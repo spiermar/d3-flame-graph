@@ -295,16 +295,6 @@ export default function () {
     searchHandler(results, sum, totalValue)
   }
 
-  function findTree (id, data) {
-    if (data.id === id) {
-      return data
-    } else if (children(data)) {
-      return children(data).find(c => findTree(id, c))
-    } else {
-      return undefined
-    }
-  }
-
   function clear (d) {
     d.highlight = false
     if (getChildren(d)) {
@@ -467,8 +457,17 @@ export default function () {
       .substring(1)
   }
 
-  function injectIds (node) {
-    node.id = s4() + '-' + s4() + '-' + '-' + s4() + '-' + s4()
+
+  function injectIds (node, parentId, rank) {
+    function idgen(seed, salt) {
+        return parentId + '-' + rank
+    }
+    if (parentId == undefined) {
+        node.id = 'root'
+    } else {
+        console.log(node.data.name)
+        node.id = idgen(parentId, rank)
+    }
     var children = getChildren(node) || []
     for (var i = 0; i < children.length; i++) {
       injectIds(children[i], node.id, i)
@@ -611,9 +610,9 @@ export default function () {
     if (id === undefined) {
       return undefined
     }
-    var data = selection.data()
-    var found = findTree(id, data[0])
-    return found
+    // var data = selection.data()
+    // var found = findTree(id, data[0])
+    // return found
   }
 
   chart.clear = function () {
