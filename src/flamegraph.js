@@ -460,7 +460,7 @@ export default function () {
         } else if (rank < 10 + 25 /* + alphabet - 1 ('z') */) {
           return String.fromCodePoint('a'.charCodeAt(0) + rank - 10)
         } else if (rank < 10 + 25 + 25 /* + Alphabet - 1 ('Z') */) {
-          return String.fromCodePoint('A'.charCodeAt(0) + rank - 25)
+          return String.fromCodePoint('A'.charCodeAt(0) + rank - 35)
         } else {
           console.log('Error at Id generation')
         }
@@ -489,19 +489,27 @@ export default function () {
         }
       }
 
-      return parentId + multiByte('', rank, nSibs)
+      return seed + multiByte('', rank, nSibs)
     }
     function flatten (arr) {
-      var ret = arr.reduce((acc, v) => acc.concat(v, (getChildren(v) || [])), [])
-      ret.map(x => x.adopted = true)
+      arr.map(x => { x.adopted = true })
+      /* get children + grandchildren */
+      var gcs = arr.reduce((acc, v) => acc.concat(getChildren(v) || []), [])
+      /* children go first than grandchildren */
+      var ret = arr.concat(gcs)
       return ret
     }
 
-    function flattenToFill (children, cur) {
-      var nGranch = (children || []).reduce((acc, v) => acc + (getChildren(v) || []).length)
-      if (cur < 100 && nGranch.length !== 0 && nGranch.length + children.length < 64) {
-
-        return flattenToFill(flatten(children), cur + 1)
+    function adopt (children) {
+      /* Try to adopt my grandchildren and offsprings.
+       * Firstly, the number of grandchildren is counted. */
+      var nGranch = (children || []).reduce((acc, v) => acc + (getChildren(v) || []).length, 0)
+      /* It is the only chance to adopt my grandchildren when the number of children and grandchildren
+       * are under 60 in total otherwise I need bigger house.
+       * Additionally, when the number of my grandchildren is zero, it is not good to adopt them.
+       */
+      if (nGranch !== 0 && nGranch + children.length + 1 /* me! */ < 60) {
+        return adopt(flatten(children))
       } else {
         return children
       }
@@ -519,7 +527,8 @@ export default function () {
 
       var myid = idgen(parentId, rank, nSibs)
       if (idpool[myid]) {
-        console.log('ID collision!!', idpool[myid], node)
+        console.log('ID collision!!', idpool[myid], node, parentId, rank, nSibs)
+        myid = myid + 1
       }
       idpool[myid] = node
       node.id = myid
@@ -531,7 +540,7 @@ export default function () {
       .filter(x => !x.adopted)
 
     if (children.length > 0) {
-      children = flattenToFill(children, 0)
+      children = adopt(children)
     }
 
     for (var i = 0; i < children.length; i++) {
