@@ -59,6 +59,7 @@ export default function () {
     .html(function (d) { return labelHandler(d) })
 
   var svg
+  var idpool = {}
 
   function getName (d) {
     return d.data.n || d.data.name
@@ -500,9 +501,16 @@ export default function () {
       if (depth % 8 === 0) {
         parentId = parentId + '-'
       }
-      node.id = idgen(parentId, rank, nSibs)
+
+      var myid = idgen(parentId, rank, nSibs)
+      if (idpool[myid]) {
+        console.log('ID collision!!', idpool[myid], node)
+      }
+      idpool[myid] = node
+      node.id = myid
     }
     var children = getChildren(node) || []
+    children.sort((a, b) => a.name > b.name)
 
     for (var i = 0; i < children.length; i++) {
       injectIds(children[i], node.id, i, children.length, depth + 1)
