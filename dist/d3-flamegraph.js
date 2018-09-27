@@ -5287,8 +5287,9 @@ var flamegraph = function () {
 
       var myid = idgen(parentId, rank, nSibs);
       if (idpool[myid]) {
+        /* Unless the id generation has a bug, you never come here. */
         console.log('ID collision!!', idpool[myid], node, parentId, rank, nSibs);
-        myid = myid + 1;
+        myid = myid + 'z';
       }
       idpool[myid] = node;
       node.id = myid;
