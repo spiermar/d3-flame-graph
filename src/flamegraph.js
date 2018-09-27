@@ -451,18 +451,61 @@ export default function () {
     })
   }
 
-  function injectIds (node, parentId, rank) {
-    function idgen (seed, salt) {
-      return parentId + '-' + rank
+  function injectIds (node, parentId, rank, nSibs, depth) {
+    function idgen (seed, rank, nSibs) {
+      function toAlpha (rank) {
+        if (rank < 10 /* numeric */) {
+          return rank
+        } else if (rank < 10 + 25 /* + alphabet - 1 ('z') */) {
+          return String.fromCodePoint('a'.charCodeAt(0) + rank - 10)
+        } else if (rank < 10 + 25 + 25 /* + Alphabet - 1 ('Z') */) {
+          return String.fromCodePoint('A'.charCodeAt(0) + rank - 25)
+        } else {
+          console.log('Error at Id generation')
+        }
+      }
+      function multiByte (w, rank, nSibs) {
+        /* In this function, the id is generated depending on how
+         * many siblings the node has. If the number of siblings
+         * is under 60, the id is represented with additional one
+         * character.
+         * In that case, id of the (zeros-origin) 4th node is 4,
+         * 9 => 9, 10 => a, 34 => y, 35 => A,... accordingly.
+         * Note that 'z' and 'Z' are skipped here; they are used
+         * to indicate 'multiByte' id.
+         * 'multiByte' is looks like this:
+         * Za0, Z3i, ZZyi9, ZZZacdm, ....
+         * Zxx type of code can indicate a rank in 3600 children.
+         * ZZxxx supports to indicate one out of 216000, which
+         * may be reasonable to assume the "limit", but it can go
+         * beyond of this with ZZZxxxx and further.
+         */
+        if (nSibs > 60) {
+          /* We have to generate multiple bytes rank */
+          return multiByte('Z' + toAlpha(rank % 60), rank / 60, nSibs / 60)
+        } else {
+          return w + toAlpha(rank)
+        }
+      }
+
+      return parentId + multiByte('', rank, nSibs)
     }
+
     if (parentId === undefined) {
-      node.id = 'root'
+      node.id = 'z'
+      rank = 0
+      nSibs = 0
+      depth = 0
     } else {
-      node.id = idgen(parentId, rank)
+      if (depth % 8 === 0) {
+        parentId = parentId + '-'
+      }
+      node.id = idgen(parentId, rank, nSibs)
     }
     var children = getChildren(node) || []
+
     for (var i = 0; i < children.length; i++) {
-      injectIds(children[i], node.id, i)
+      injectIds(children[i], node.id, i, children.length, depth + 1)
     }
   }
 
