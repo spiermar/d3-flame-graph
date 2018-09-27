@@ -5276,12 +5276,12 @@ var flamegraph = function () {
     }
 
     if (parentId === undefined) {
-      node.id = 'z';
+      node.id = 'node';
       rank = 0;
       nSibs = 0;
       depth = 0;
     } else {
-      if (depth % 8 === 0) {
+      if (depth % 4 === 1) {
         parentId = parentId + '-';
       }
 
