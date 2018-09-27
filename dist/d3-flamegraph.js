@@ -5251,6 +5251,21 @@ var flamegraph = function () {
 
       return parentId + multiByte('', rank, nSibs)
     }
+    function flatten (arr) {
+      var ret = arr.reduce((acc, v) => acc.concat(v, (getChildren(v) || [])), []);
+      ret.map(x => x.adopted = true);
+      return ret
+    }
+
+    function flattenToFill (children, cur) {
+      var nGranch = (children || []).reduce((acc, v) => acc + (getChildren(v) || []).length);
+      if (cur < 100 && nGranch.length !== 0 && nGranch.length + children.length < 64) {
+
+        return flattenToFill(flatten(children), cur + 1)
+      } else {
+        return children
+      }
+    }
 
     if (parentId === undefined) {
       node.id = 'z';
@@ -5269,8 +5284,15 @@ var flamegraph = function () {
       idpool[myid] = node;
       node.id = myid;
     }
-    var children = getChildren(node) || [];
-    children.sort((a, b) => a.name > b.name);
+    /* sort shallow copy of children array for robust id naming */
+    var children = (getChildren(node) || [])
+      .slice(0)
+      .sort((a, b) => a.name > b.name)
+      .filter(x => !x.adopted);
+
+    if (children.length > 0) {
+      children = flattenToFill(children, 0);
+    }
 
     for (var i = 0; i < children.length; i++) {
       injectIds(children[i], node.id, i, children.length, depth + 1);
