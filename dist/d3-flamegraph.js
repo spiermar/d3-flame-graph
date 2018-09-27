@@ -5331,12 +5331,28 @@ var flamegraph = function () {
   }
 
   function calculateMaxDelta (node) {
-    var delta = Math.abs(getDelta(node));
-    maxDelta = delta > maxDelta ? delta : maxDelta;
-    var children = getChildren(node) || [];
-    for (var i = 0; i < children.length; i++) {
-      calculateMaxDelta(children[i]);
+    let maxDelta = Math.abs(getDelta(node));
+    let children = getChildren(node);
+    if (children) {
+      const stack = [children];
+      let count, child, delta, grandChildren;
+      while (stack.length) {
+        children = stack.pop();
+        count = children.length;
+        while (count--) {
+          child = children[count];
+          delta = Math.abs(getDelta(child));
+          if (maxDelta < delta) {
+            maxDelta = delta;
+          }
+          grandChildren = getChildren(child);
+          if (grandChildren) {
+            stack.push(grandChildren);
+          }
+        }
+      }
     }
+    return maxDelta
   }
 
   function chart (s) {
@@ -5348,7 +5364,10 @@ var flamegraph = function () {
     totalValue = getValue(root);
 
     if (differential) {
-      calculateMaxDelta(root);
+      var t0 = window.performance.now();
+      maxDelta = calculateMaxDelta(root);
+      var t1 = window.performance.now();
+      console.log('Call to calculateMaxDelta took ' + (t1 - t0) + ' milliseconds.');
     }
 
     selection = s.datum(root);
