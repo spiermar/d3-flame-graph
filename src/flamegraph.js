@@ -454,7 +454,7 @@ export default function () {
 
   function injectIds (node, parentId, rank, nSibs, depth) {
     function idgen (seed, rank, nSibs) {
-      function toAlpha (rank) {
+      function toChar (rank) {
         if (rank < 10 /* numeric */) {
           return rank
         } else if (rank < 10 + 25 /* + alphabet - 1 ('z') */) {
@@ -483,9 +483,9 @@ export default function () {
          */
         if (nSibs > 60) {
           /* We have to generate multiple bytes rank */
-          return multiByte('Z' + toAlpha(rank % 60), rank / 60, nSibs / 60)
+          return multiByte('Z' + w + toChar(rank % 60), rank / 60, nSibs / 60)
         } else {
-          return w + toAlpha(rank)
+          return w + toChar(rank)
         }
       }
 
