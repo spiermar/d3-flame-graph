@@ -5252,11 +5252,11 @@ var flamegraph = function () {
       return seed + multiByte('', rank, nSibs)
     }
     function flatten (arr) {
-      arr.map(x => { x.adopted = true; });
       /* get children + grandchildren */
       var gcs = arr.reduce((acc, v) => acc.concat(getChildren(v) || []), []);
       /* children go first than grandchildren */
       var ret = arr.concat(gcs);
+      ret.map(x => { x.adopted = true; });
       return ret
     }
 
