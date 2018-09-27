@@ -451,40 +451,49 @@ export default function () {
     })
   }
 
-  function s4 () {
-    return Math.floor((1 + Math.random()) * 0x10000)
-      .toString(16)
-      .substring(1)
-  }
-
-  function injectIds (node) {
-    node.id = s4() + '-' + s4() + '-' + '-' + s4() + '-' + s4()
-    var children = getChildren(node) || []
-    for (var i = 0; i < children.length; i++) {
-      injectIds(children[i])
+  function forEachNode (node, f) {
+    f(node)
+    let children = getChildren(node)
+    if (children) {
+      const stack = [children]
+      let count, child, grandChildren
+      while (stack.length) {
+        children = stack.pop()
+        count = children.length
+        while (count--) {
+          child = children[count]
+          f(child)
+          grandChildren = getChildren(child)
+          if (grandChildren) {
+            stack.push(grandChildren)
+          }
+        }
+      }
     }
   }
 
-  function calculateMaxDelta (node) {
-    var delta = Math.abs(getDelta(node))
-    maxDelta = delta > maxDelta ? delta : maxDelta
-    var children = getChildren(node) || []
-    for (var i = 0; i < children.length; i++) {
-      calculateMaxDelta(children[i])
-    }
+  function adoptNode (node) {
+    maxDelta = 0
+    let id = 0
+    let delta = 0
+    const wantDelta = differential
+    forEachNode(node, function (n) {
+      n.id = id++
+      if (wantDelta) {
+        delta = Math.abs(getDelta(n))
+        if (maxDelta < delta) {
+          maxDelta = delta
+        }
+      }
+    })
   }
 
   function chart (s) {
-    var root = hierarchy(
-      s.datum(), function (d) { return getChildren(d) }
-    )
-    injectIds(root)
+    var root = hierarchy(s.datum(), getChildren)
+    adoptNode(root)
 
+    // This line is invalid - root is a d3 node, while getValue() expects data item. Will address in next patch.
     totalValue = getValue(root)
-
-    if (differential) {
-      calculateMaxDelta(root)
-    }
 
     selection = s.datum(root)
 
@@ -628,8 +637,8 @@ export default function () {
     var newRoot // Need to re-create hierarchy after data changes.
     selection.each(function (root) {
       merge([root.data], [samples])
-      newRoot = hierarchy(root.data, function (d) { return getChildren(d) })
-      injectIds(newRoot)
+      newRoot = hierarchy(root.data, getChildren)
+      adoptNode(newRoot)
     })
     selection = selection.datum(newRoot)
     update()
