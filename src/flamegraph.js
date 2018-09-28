@@ -81,7 +81,7 @@ export default function () {
   }
 
   function setSearchDetails () {
-    detailsElement.innerHTML = `${searchSum} of ${totalValue} samples (${format('.3f')(100 * (searchSum / totalValue), 3)}%)`
+    detailsElement.innerHTML = searchSum + ' of ' + totalValue + ' samples ( ' + format('.3f')(100 * (searchSum / totalValue), 3) + '%)'
   }
 
   var colorMapper = function (d) {
