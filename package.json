@@ -4,7 +4,7 @@
   "description": "A d3.js library to produce flame graphs.",
   "main": "dist/d3-flamegraph.js",
   "directories": {
-    "example": "example"
+    "example": "examples"
   },
   "scripts": {
     "pretest": "gulp build",
