@@ -5195,21 +5195,9 @@ var flamegraph = function () {
       var x = linear().range([0, w]);
       var y = linear().range([0, c]);
 
+      reappraiseNode(root);
       if (sort) root.sort(doSort);
-      root.sum(function (d) {
-        if (d.fade || d.hide) {
-          return 0
-        }
-        // The node's self value is its total value minus all children.
-        var v = getValue(d);
-        if (!selfValue && getChildren(d)) {
-          var c = getChildren(d);
-          for (var i = 0; i < c.length; i++) {
-            v -= getValue(c[i]);
-          }
-        }
-        return v
-      });
+
       p(root);
 
       var kx = w / (root.x1 - root.x0);
@@ -5318,7 +5306,7 @@ var flamegraph = function () {
 
   function forEachNode (node, f) {
     f(node);
-    let children = getChildren(node);
+    let children = node.children;
     if (children) {
       const stack = [children];
       let count, child, grandChildren;
@@ -5328,7 +5316,7 @@ var flamegraph = function () {
         while (count--) {
           child = children[count];
           f(child);
-          grandChildren = getChildren(child);
+          grandChildren = child.children;
           if (grandChildren) {
             stack.push(grandChildren);
           }
@@ -5351,6 +5339,85 @@ var flamegraph = function () {
         }
       }
     });
+  }
+
+  function reappraiseNode (root) {
+    let node, children, grandChildren, childrenValue, i, j, child, childValue;
+    const stack = [];
+    const included = [];
+    const excluded = [];
+    const compoundValue = !selfValue;
+    let item = root.data;
+    if (item.hide) {
+      root.value = 0;
+      children = root.children;
+      if (children) {
+        excluded.push(children);
+      }
+    } else {
+      root.value = item.fade ? 0 : getValue(item);
+      stack.push(root);
+    }
+    // First DFS pass:
+    // 1. Update node.value with node's self value
+    // 2. Populate excluded list with children under hidden nodes
+    // 3. Populate included list with children under visible nodes
+    while ((node = stack.pop())) {
+      children = node.children;
+      if (children && (i = children.length)) {
+        childrenValue = 0;
+        while (i--) {
+          child = children[i];
+          item = child.data;
+          if (item.hide) {
+            child.value = 0;
+            grandChildren = child.children;
+            if (grandChildren) {
+              excluded.push(grandChildren);
+            }
+            continue
+          }
+          if (item.fade) {
+            child.value = 0;
+          } else {
+            childValue = getValue(item);
+            child.value = childValue;
+            childrenValue += childValue;
+          }
+          stack.push(child);
+        }
+        // Here second part of `&&` is actually checking for `node.data.fade`. However,
+        // checking for node.value is faster and presents more oportunities for JS optimizer.
+        if (compoundValue && node.value) {
+          node.value -= childrenValue;
+        }
+        included.push(children);
+      }
+    }
+    // Postorder traversal to compute compound value of each visible node.
+    i = included.length;
+    while (i--) {
+      children = included[i];
+      childrenValue = 0;
+      j = children.length;
+      while (j--) {
+        childrenValue += children[j].value;
+      }
+      children[0].parent.value += childrenValue;
+    }
+    // Continue DFS to set value of all hidden nodes to 0.
+    while (excluded.length) {
+      children = excluded.pop();
+      j = children.length;
+      while (j--) {
+        child = children[j];
+        child.value = 0;
+        grandChildren = child.children;
+        if (grandChildren) {
+          excluded.push(grandChildren);
+        }
+      }
+    }
   }
 
   function chart (s) {
