@@ -4819,7 +4819,6 @@ var flamegraph = function () {
     .html(function (d) { return labelHandler(d) });
 
   var svg;
-  var idpool = {};
 
   function getName (d) {
     return d.data.n || d.data.name
@@ -5212,8 +5211,8 @@ var flamegraph = function () {
     });
   }
 
-  function injectIds (node, parentId, rank, nSibs, depth) {
-    function idgen (parentId, rank, nSibs) {
+  function injectIds (node, depth) {
+    function idgen (rank, nSibs) {
       function toChar (rank) {
         if (rank < 10 /* numeric */) {
           return rank
@@ -5249,60 +5248,51 @@ var flamegraph = function () {
         }
       }
 
-      var newid = parentId + multiByte('', rank, nSibs);
-      if (idpool[newid]) {
-        console.log('id conflict with', newid);
-      }
-      idpool[newid] = true;
-      return newid
+      return multiByte('', rank, nSibs)
     }
 
     function adopt (children, node, adopted) {
       /* Try to adopt my grandchildren and offsprings.
        * Firstly, the number of grandchildren is counted. */
-      var gcs = children.reduce((acc, v) => acc.concat(getChildren(v) || []), []);
+      var gcs = [];
+      for (var i = 0; i < children.length; ++i) {
+        var gc = getChildren(children[i]) || [];
+        Array.prototype.push.apply(gcs, gc);
+      }
       /* It is the only chance to adopt my grandchildren when the number of children and grandchildren
        * are under 60 in total otherwise I need bigger house.
        * Additionally, when the number of my grandchildren is zero, it is not good to adopt them.
        */
-      if (gcs.length !== 0 && gcs.length + adopted < 60) {
-        for (var i = 0; i < children.length; i++) {
-          children[i].id = idgen(node.id, adopted + i - 1, gcs.length + adopted);
+      if (gcs.length !== 0 && gcs.length + children.length + adopted < 60) {
+        /* variable "adopted" is indicating how many children has been treated to assign  */
+        for (var j = 0; j < children.length; ++j) {
+          children[j].id = node.id + idgen(adopted + j, 60 /* Assume the number of the digit is one unless it must not be called */);
         }
-        children.concat(gcs).map(x => { x.isAdopted = true; });
         return adopt(gcs, node, adopted + children.length)
       } else {
         return { lastGen: children, adopted: adopted }
       }
     }
 
-    if (parentId === undefined) {
-      node.id = 'node';
-      rank = 0;
-      nSibs = 0;
-      depth = 0;
+    if (depth === undefined) {
+      node.id = '';
     }
-    /* sort shallow copy of children array for robust id naming */
-    var children = (getChildren(node) || [])
-      .slice(0)
-      .sort((a, b) => a.name > b.name)
-      .filter(x => !x.isAdopted);
+
+    var children = getChildren(node) || [];
 
     var used = 0;
     if (children.length > 0 && children.length < 60) {
-      var res = adopt(children, node, 1 /* me! */);
+      var res = adopt(children, node, 0);
       children = res.lastGen;
       used = res.adopted;
     }
 
     /* Give a name for each children, let them name their selves. */
-    for (var i = 0; i < children.length; i++) {
-      children[i].id = idgen(node.id, used + i, used + children.length);
+    for (var i = 0; i < children.length; ++i) {
+      children[i].id = node.id + idgen(used + i, used + children.length);
     }
 
-    for (var j = 0; j < children.length; j++) {
-      injectIds(children[j], node.id, j, children.length, depth + 1);
-    }
+    children.forEach(x => injectIds(x, depth + 1));
   }
 
   function calculateMaxDelta (node) {

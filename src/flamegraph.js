@@ -59,7 +59,6 @@ export default function () {
     .html(function (d) { return labelHandler(d) })
 
   var svg
-  var idpool = {}
 
   function getName (d) {
     return d.data.n || d.data.name
@@ -453,7 +452,7 @@ export default function () {
   }
 
   function injectIds (node, depth) {
-    function idgen (parentId, rank, nSibs) {
+    function idgen (rank, nSibs) {
       function toChar (rank) {
         if (rank < 10 /* numeric */) {
           return rank
@@ -489,26 +488,25 @@ export default function () {
         }
       }
 
-      var newid = parentId + multiByte('', rank, nSibs)
-      if (idpool[newid]) {
-        console.log('id conflict with', newid)
-      }
-      idpool[newid] = true
-      return newid
+      return multiByte('', rank, nSibs)
     }
 
     function adopt (children, node, adopted) {
       /* Try to adopt my grandchildren and offsprings.
        * Firstly, the number of grandchildren is counted. */
-      var gcs = children.reduce((acc, v) => acc.concat(getChildren(v) || []), [])
+      var gcs = []
+      for (var i = 0; i < children.length; ++i) {
+        var gc = getChildren(children[i]) || []
+        Array.prototype.push.apply(gcs, gc)
+      }
       /* It is the only chance to adopt my grandchildren when the number of children and grandchildren
        * are under 60 in total otherwise I need bigger house.
        * Additionally, when the number of my grandchildren is zero, it is not good to adopt them.
        */
       if (gcs.length !== 0 && gcs.length + children.length + adopted < 60) {
         /* variable "adopted" is indicating how many children has been treated to assign  */
-        for (var i = 0; i < children.length; i++) {
-          children[i].id = idgen(node.id, adopted + i, gcs.length + children.length + adopted)
+        for (var j = 0; j < children.length; ++j) {
+          children[j].id = node.id + idgen(adopted + j, 60 /* Assume the number of the digit is one unless it must not be called */)
         }
         return adopt(gcs, node, adopted + children.length)
       } else {
@@ -520,10 +518,7 @@ export default function () {
       node.id = ''
     }
 
-    /* sort shallow copy of children array for robust id naming */
-    var children = (getChildren(node) || [])
-      .slice(0)
-      .sort((a, b) => a.name > b.name)
+    var children = getChildren(node) || []
 
     var used = 0
     if (children.length > 0 && children.length < 60) {
@@ -533,11 +528,11 @@ export default function () {
     }
 
     /* Give a name for each children, let them name their selves. */
-    for (var i = 0; i < children.length; i++) {
-      children[i].id = idgen(node.id, used + i, used + children.length)
+    for (var i = 0; i < children.length; ++i) {
+      children[i].id = node.id + idgen(used + i, used + children.length)
     }
 
-    children.map(x => injectIds(x, depth + 1))
+    children.forEach(x => injectIds(x, depth + 1))
   }
 
   function calculateMaxDelta (node) {
