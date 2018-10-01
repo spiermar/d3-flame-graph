@@ -452,7 +452,7 @@ export default function () {
     })
   }
 
-  function injectIds (node, parentId, rank, nSibs, depth) {
+  function injectIds (node, depth) {
     function idgen (parentId, rank, nSibs) {
       function toChar (rank) {
         if (rank < 10 /* numeric */) {
@@ -505,32 +505,29 @@ export default function () {
        * are under 60 in total otherwise I need bigger house.
        * Additionally, when the number of my grandchildren is zero, it is not good to adopt them.
        */
-      if (gcs.length !== 0 && gcs.length + adopted < 60) {
+      if (gcs.length !== 0 && gcs.length + children.length + adopted < 60) {
+        /* variable "adopted" is indicating how many children has been treated to assign  */
         for (var i = 0; i < children.length; i++) {
-          children[i].id = idgen(node.id, adopted + i - 1, gcs.length + adopted)
+          children[i].id = idgen(node.id, adopted + i, gcs.length + children.length + adopted)
         }
-        children.concat(gcs).map(x => { x.isAdopted = true })
         return adopt(gcs, node, adopted + children.length)
       } else {
         return { lastGen: children, adopted: adopted }
       }
     }
 
-    if (parentId === undefined) {
-      node.id = 'node'
-      rank = 0
-      nSibs = 0
-      depth = 0
+    if (depth === undefined) {
+      node.id = ''
     }
+
     /* sort shallow copy of children array for robust id naming */
     var children = (getChildren(node) || [])
       .slice(0)
       .sort((a, b) => a.name > b.name)
-      .filter(x => !x.isAdopted)
 
     var used = 0
     if (children.length > 0 && children.length < 60) {
-      var res = adopt(children, node, 1 /* me! */)
+      var res = adopt(children, node, 0)
       children = res.lastGen
       used = res.adopted
     }
@@ -540,9 +537,7 @@ export default function () {
       children[i].id = idgen(node.id, used + i, used + children.length)
     }
 
-    for (var j = 0; j < children.length; j++) {
-      injectIds(children[j], node.id, j, children.length, depth + 1)
-    }
+    children.map(x => injectIds(x, depth + 1))
   }
 
   function calculateMaxDelta (node) {
