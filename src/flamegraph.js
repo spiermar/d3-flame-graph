@@ -453,7 +453,7 @@ export default function () {
   }
 
   function injectIds (node, parentId, rank, nSibs, depth) {
-    function idgen (seed, rank, nSibs) {
+    function idgen (parentId, rank, nSibs) {
       function toChar (rank) {
         if (rank < 10 /* numeric */) {
           return rank
@@ -462,7 +462,7 @@ export default function () {
         } else if (rank < 10 + 25 + 25 /* + Alphabet - 1 ('Z') */) {
           return String.fromCodePoint('A'.charCodeAt(0) + rank - 35)
         } else {
-          console.log('Error at Id generation')
+          console.log('Error at Id generation', rank)
         }
       }
       function multiByte (w, rank, nSibs) {
@@ -483,35 +483,36 @@ export default function () {
          */
         if (nSibs > 60) {
           /* We have to generate multiple bytes rank */
-          return multiByte('Z' + w + toChar(rank % 60), rank / 60, nSibs / 60)
+          return multiByte('Z' + w + toChar(rank % 60), rank / 60 | 0, nSibs / 60 | 0)
         } else {
           return w + toChar(rank)
         }
       }
 
-      return seed + multiByte('', rank, nSibs)
-    }
-    function flatten (arr) {
-      /* get children + grandchildren */
-      var gcs = arr.reduce((acc, v) => acc.concat(getChildren(v) || []), [])
-      /* children go first than grandchildren */
-      var ret = arr.concat(gcs)
-      ret.map(x => { x.adopted = true })
-      return ret
+      var newid = parentId + multiByte('', rank, nSibs)
+      if (idpool[newid]) {
+        console.log('id conflict with', newid)
+      }
+      idpool[newid] = true
+      return newid
     }
 
-    function adopt (children) {
+    function adopt (children, node, adopted) {
       /* Try to adopt my grandchildren and offsprings.
        * Firstly, the number of grandchildren is counted. */
-      var nGranch = (children || []).reduce((acc, v) => acc + (getChildren(v) || []).length, 0)
+      var gcs = children.reduce((acc, v) => acc.concat(getChildren(v) || []), [])
       /* It is the only chance to adopt my grandchildren when the number of children and grandchildren
        * are under 60 in total otherwise I need bigger house.
        * Additionally, when the number of my grandchildren is zero, it is not good to adopt them.
        */
-      if (nGranch !== 0 && nGranch + children.length + 1 /* me! */ < 60) {
-        return adopt(flatten(children))
+      if (gcs.length !== 0 && gcs.length + adopted < 60) {
+        for (var i = 0; i < children.length; i++) {
+          children[i].id = idgen(node.id, adopted + i - 1, gcs.length + adopted)
+        }
+        children.concat(gcs).map(x => { x.isAdopted = true })
+        return adopt(gcs, node, adopted + children.length)
       } else {
-        return children
+        return { lastGen: children, adopted: adopted }
       }
     }
 
@@ -520,32 +521,27 @@ export default function () {
       rank = 0
       nSibs = 0
       depth = 0
-    } else {
-      if (depth % 4 === 1) {
-        parentId = parentId + '-'
-      }
-
-      var myid = idgen(parentId, rank, nSibs)
-      if (idpool[myid]) {
-        /* Unless the id generation has a bug, you never come here. */
-        console.log('ID collision!!', idpool[myid], node, parentId, rank, nSibs)
-        myid = myid + 'z'
-      }
-      idpool[myid] = node
-      node.id = myid
     }
     /* sort shallow copy of children array for robust id naming */
     var children = (getChildren(node) || [])
       .slice(0)
       .sort((a, b) => a.name > b.name)
-      .filter(x => !x.adopted)
+      .filter(x => !x.isAdopted)
 
-    if (children.length > 0) {
-      children = adopt(children)
+    var used = 0
+    if (children.length > 0 && children.length < 60) {
+      var res = adopt(children, node, 1 /* me! */)
+      children = res.lastGen
+      used = res.adopted
     }
 
+    /* Give a name for each children, let them name their selves. */
     for (var i = 0; i < children.length; i++) {
-      injectIds(children[i], node.id, i, children.length, depth + 1)
+      children[i].id = idgen(node.id, used + i, used + children.length)
+    }
+
+    for (var j = 0; j < children.length; j++) {
+      injectIds(children[j], node.id, j, children.length, depth + 1)
     }
   }
 
