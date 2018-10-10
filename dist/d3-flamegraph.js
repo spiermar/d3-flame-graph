@@ -4819,6 +4819,7 @@ var flamegraph = function () {
     .html(function (d) { return labelHandler(d) });
 
   var svg;
+  var idpool = {};
 
   function getName (d) {
     return d.data.n || d.data.name
@@ -5211,17 +5212,18 @@ var flamegraph = function () {
     });
   }
 
-  function injectIds (node, depth) {
-    function idgen (rank, nSibs) {
-      function toChar (rank) {
+<<<<<<< HEAD
+  function injectIds (node, parentId, rank, nSibs, depth) {
+    function idgen (seed, rank, nSibs) {
+      function toAlpha (rank) {
         if (rank < 10 /* numeric */) {
           return rank
         } else if (rank < 10 + 25 /* + alphabet - 1 ('z') */) {
           return String.fromCodePoint('a'.charCodeAt(0) + rank - 10)
         } else if (rank < 10 + 25 + 25 /* + Alphabet - 1 ('Z') */) {
-          return String.fromCodePoint('A'.charCodeAt(0) + rank - 35)
+          return String.fromCodePoint('A'.charCodeAt(0) + rank - 25)
         } else {
-          console.log('Error at Id generation', rank);
+          console.log('Error at Id generation');
         }
       }
       function multiByte (w, rank, nSibs) {
@@ -5242,57 +5244,148 @@ var flamegraph = function () {
          */
         if (nSibs > 60) {
           /* We have to generate multiple bytes rank */
-          return multiByte('Z' + w + toChar(rank % 60), rank / 60 | 0, nSibs / 60 | 0)
+          return multiByte('Z' + toAlpha(rank % 60), rank / 60, nSibs / 60)
         } else {
-          return w + toChar(rank)
+          return w + toAlpha(rank)
         }
       }
 
-      return multiByte('', rank, nSibs)
+<<<<<<< HEAD
+<<<<<<< HEAD
+      var newid = parentId + multiByte('', rank, nSibs);
+      if (idpool[newid]) {
+        console.log('id conflict with', newid);
+      }
+      idpool[newid] = true;
+      return newid
+=======
+      return seed + multiByte('', rank, nSibs)
+    }
+    function flatten (arr) {
+      /* get children + grandchildren */
+      var gcs = arr.reduce((acc, v) => acc.concat(getChildren(v) || []), []);
+      /* children go first than grandchildren */
+      var ret = arr.concat(gcs);
+      ret.map(x => { x.adopted = true; });
+      return ret
+>>>>>>> parent of 84ad3d0... refactor: improve injectIds performance
     }
 
-    function adopt (children, node, adopted) {
+    function adopt (children) {
       /* Try to adopt my grandchildren and offsprings.
        * Firstly, the number of grandchildren is counted. */
-      var gcs = [];
-      for (var i = 0; i < children.length; ++i) {
-        var gc = getChildren(children[i]) || [];
-        Array.prototype.push.apply(gcs, gc);
-      }
+      var nGranch = (children || []).reduce((acc, v) => acc + (getChildren(v) || []).length, 0);
       /* It is the only chance to adopt my grandchildren when the number of children and grandchildren
        * are under 60 in total otherwise I need bigger house.
        * Additionally, when the number of my grandchildren is zero, it is not good to adopt them.
        */
-      if (gcs.length !== 0 && gcs.length + children.length + adopted < 60) {
-        /* variable "adopted" is indicating how many children has been treated to assign  */
-        for (var j = 0; j < children.length; ++j) {
-          children[j].id = node.id + idgen(adopted + j, 60 /* Assume the number of the digit is one unless it must not be called */);
+<<<<<<< HEAD
+      if (gcs.length !== 0 && gcs.length + adopted < 60) {
+        for (var i = 0; i < children.length; i++) {
+          children[i].id = idgen(node.id, adopted + i - 1, gcs.length + adopted);
         }
+        children.concat(gcs).map(x => { x.isAdopted = true; });
         return adopt(gcs, node, adopted + children.length)
+=======
+      return parentId + multiByte('', rank, nSibs)
+    }
+    function flatten (arr) {
+      var ret = arr.reduce((acc, v) => acc.concat(v, (getChildren(v) || [])), []);
+      ret.map(x => x.adopted = true);
+      return ret
+    }
+
+    function flattenToFill (children, cur) {
+      var nGranch = (children || []).reduce((acc, v) => acc + (getChildren(v) || []).length);
+      if (cur < 100 && nGranch.length !== 0 && nGranch.length + children.length < 64) {
+
+        return flattenToFill(flatten(children), cur + 1)
+>>>>>>> parent of bc21aa9... feat: id generation gains some bug fix and documents
+=======
+      if (nGranch !== 0 && nGranch + children.length + 1 /* me! */ < 60) {
+        return adopt(flatten(children))
+>>>>>>> parent of 84ad3d0... refactor: improve injectIds performance
       } else {
-        return { lastGen: children, adopted: adopted }
+        return children
       }
+=======
+  function injectIds (node, parentId, rank) {
+    function idgen (seed, salt) {
+      return parentId + '-' + rank
+>>>>>>> parent of c09985e... feat: packed Id generation considering about horizontally large graph
+    }
+    if (parentId === undefined) {
+<<<<<<< HEAD
+      node.id = 'node';
+      rank = 0;
+      nSibs = 0;
+      depth = 0;
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+    } else {
+      if (depth % 8 === 0) {
+=======
+    } else {
+      if (depth % 4 === 1) {
+>>>>>>> parent of 84ad3d0... refactor: improve injectIds performance
+        parentId = parentId + '-';
+      }
+
+      var myid = idgen(parentId, rank, nSibs);
+      if (idpool[myid]) {
+<<<<<<< HEAD
+        console.log('ID collision!!', idpool[myid], node);
+      }
+      idpool[myid] = node;
+      node.id = myid;
+>>>>>>> parent of bc21aa9... feat: id generation gains some bug fix and documents
+=======
+        /* Unless the id generation has a bug, you never come here. */
+        console.log('ID collision!!', idpool[myid], node, parentId, rank, nSibs);
+        myid = myid + 'z';
+      }
+      idpool[myid] = node;
+      node.id = myid;
+>>>>>>> parent of 84ad3d0... refactor: improve injectIds performance
+    }
+    /* sort shallow copy of children array for robust id naming */
+    var children = (getChildren(node) || [])
+      .slice(0)
+      .sort((a, b) => a.name > b.name)
+      .filter(x => !x.adopted);
+
+    if (children.length > 0) {
+      children = adopt(children);
     }
 
-    if (depth === undefined) {
-      node.id = '';
-    }
-
-    var children = getChildren(node) || [];
-
-    var used = 0;
-    if (children.length > 0 && children.length < 60) {
-      var res = adopt(children, node, 0);
-      children = res.lastGen;
-      used = res.adopted;
-    }
-
+<<<<<<< HEAD
+<<<<<<< HEAD
     /* Give a name for each children, let them name their selves. */
-    for (var i = 0; i < children.length; ++i) {
-      children[i].id = node.id + idgen(used + i, used + children.length);
+    for (var i = 0; i < children.length; i++) {
+      children[i].id = idgen(node.id, used + i, used + children.length);
+=======
+    if (children.length > 0) {
+      children = flattenToFill(children, 0);
+>>>>>>> parent of bc21aa9... feat: id generation gains some bug fix and documents
     }
 
-    children.forEach(x => injectIds(x, depth + 1));
+    for (var j = 0; j < children.length; j++) {
+      injectIds(children[j], node.id, j, children.length, depth + 1);
+=======
+      node.id = 'root';
+    } else {
+      node.id = idgen(parentId, rank);
+    }
+    var children = getChildren(node) || [];
+    for (var i = 0; i < children.length; i++) {
+      injectIds(children[i], node.id, i);
+>>>>>>> parent of c09985e... feat: packed Id generation considering about horizontally large graph
+=======
+    for (var i = 0; i < children.length; i++) {
+      injectIds(children[i], node.id, i, children.length, depth + 1);
+>>>>>>> parent of 84ad3d0... refactor: improve injectIds performance
+    }
   }
 
   function calculateMaxDelta (node) {
@@ -5308,7 +5401,9 @@ var flamegraph = function () {
     var root = hierarchy(
       s.datum(), function (d) { return getChildren(d) }
     );
+    console.time('injectIds');
     injectIds(root);
+    console.timeEnd('injectIds');
 
     totalValue = getValue(root);
 

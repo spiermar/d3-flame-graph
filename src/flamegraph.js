@@ -59,6 +59,7 @@ export default function () {
     .html(function (d) { return labelHandler(d) })
 
   var svg
+  var idpool = {}
 
   function getName (d) {
     return d.data.n || d.data.name
@@ -451,17 +452,18 @@ export default function () {
     })
   }
 
-  function injectIds (node, depth) {
-    function idgen (rank, nSibs) {
-      function toChar (rank) {
+  function injectIds (node, parentId, rank) {
+    function idgen (seed, salt) {
+      return parentId + '-' + rank
+      function toAlpha (rank) {
         if (rank < 10 /* numeric */) {
           return rank
         } else if (rank < 10 + 25 /* + alphabet - 1 ('z') */) {
           return String.fromCodePoint('a'.charCodeAt(0) + rank - 10)
         } else if (rank < 10 + 25 + 25 /* + Alphabet - 1 ('Z') */) {
-          return String.fromCodePoint('A'.charCodeAt(0) + rank - 35)
+          return String.fromCodePoint('A'.charCodeAt(0) + rank - 25)
         } else {
-          console.log('Error at Id generation', rank)
+          console.log('Error at Id generation')
         }
       }
       function multiByte (w, rank, nSibs) {
@@ -482,57 +484,55 @@ export default function () {
          */
         if (nSibs > 60) {
           /* We have to generate multiple bytes rank */
-          return multiByte('Z' + w + toChar(rank % 60), rank / 60 | 0, nSibs / 60 | 0)
+          return multiByte('Z' + w + toChar(rank % 60), rank / 60, nSibs / 60)
         } else {
-          return w + toChar(rank)
+          return w + toAlpha(rank)
         }
       }
 
-      return multiByte('', rank, nSibs)
+      return parentId + multiByte('', rank, nSibs)
+    }
+    function flatten (arr) {
+      var ret = arr.reduce((acc, v) => acc.concat(v, (getChildren(v) || [])), [])
+      ret.map(x => x.adopted = true)
+      return ret
     }
 
-    function adopt (children, node, adopted) {
-      /* Try to adopt my grandchildren and offsprings.
-       * Firstly, the number of grandchildren is counted. */
-      var gcs = []
-      for (var i = 0; i < children.length; ++i) {
-        var gc = getChildren(children[i]) || []
-        Array.prototype.push.apply(gcs, gc)
-      }
-      /* It is the only chance to adopt my grandchildren when the number of children and grandchildren
-       * are under 60 in total otherwise I need bigger house.
-       * Additionally, when the number of my grandchildren is zero, it is not good to adopt them.
-       */
-      if (gcs.length !== 0 && gcs.length + children.length + adopted < 60) {
-        /* variable "adopted" is indicating how many children has been treated to assign  */
-        for (var j = 0; j < children.length; ++j) {
-          children[j].id = node.id + idgen(adopted + j, 60 /* Assume the number of the digit is one unless it must not be called */)
-        }
-        return adopt(gcs, node, adopted + children.length)
+    function flattenToFill (children, cur) {
+      var nGranch = (children || []).reduce((acc, v) => acc + (getChildren(v) || []).length)
+      if (cur < 100 && nGranch.length !== 0 && nGranch.length + children.length < 64) {
+
+        return flattenToFill(flatten(children), cur + 1)
       } else {
-        return { lastGen: children, adopted: adopted }
+        return children
       }
-    }
+      node.id = idgen(parentId, rank)
+      if (depth % 8 === 0) {
+        parentId = parentId + '-'
+      }
 
-    if (depth === undefined) {
-      node.id = ''
+      var myid = idgen(parentId, rank, nSibs)
+      if (idpool[myid]) {
+        console.log('ID collision!!', idpool[myid], node)
+      }
+      idpool[myid] = node
+      node.id = myid
     }
+    /* sort shallow copy of children array for robust id naming */
+    var children = (getChildren(node) || [])
+      .slice(0)
+      .sort((a, b) => a.name > b.name)
+      .filter(x => !x.adopted)
 
+    if (children.length > 0) {
+      children = flattenToFill(children, 0)
+    }
     var children = getChildren(node) || []
-
-    var used = 0
-    if (children.length > 0 && children.length < 60) {
-      var res = adopt(children, node, 0)
-      children = res.lastGen
-      used = res.adopted
+    for (var i = 0; i < children.length; i++) {
+      injectIds(children[i], node.id, i)
     }
 
-    /* Give a name for each children, let them name their selves. */
-    for (var i = 0; i < children.length; ++i) {
-      children[i].id = node.id + idgen(used + i, used + children.length)
-    }
-
-    children.forEach(x => injectIds(x, depth + 1))
+    children.map(x => injectIds(x, depth + 1))
   }
 
   function calculateMaxDelta (node) {
@@ -548,7 +548,9 @@ export default function () {
     var root = hierarchy(
       s.datum(), function (d) { return getChildren(d) }
     )
+    console.time('injectIds')
     injectIds(root)
+    console.timeEnd('injectIds')
 
     totalValue = getValue(root)
 
