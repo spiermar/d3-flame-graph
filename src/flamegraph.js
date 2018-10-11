@@ -3,9 +3,6 @@ import { format } from 'd3-format'
 import { ascending } from 'd3-array'
 import { partition, hierarchy } from 'd3-hierarchy'
 import { scaleLinear } from 'd3-scale'
-import { easeCubic } from 'd3-ease'
-import { default as d3Tip } from 'd3-tip'
-import 'd3-transition'
 
 export default function () {
   var w = 960 // graph width
@@ -14,8 +11,6 @@ export default function () {
   var selection = null // selection
   var tooltip = true // enable tooltip
   var title = '' // graph title
-  var transitionDuration = 750
-  var transitionEase = easeCubic // tooltip offset
   var sort = false
   var inverted = false // invert the graph direction
   var clickHandler = null
@@ -27,6 +22,44 @@ export default function () {
   var searchSum = 0
   var totalValue = 0
   var maxDelta = 0
+  var p = partition()
+
+  const containerElement = document.createElement('div')
+  const titleElement = document.createElement('div')
+  const nodesSpaceElement = document.createElement('div')
+  const nodesElement = document.createElement('div')
+  const tipElement = document.createElement('div')
+  // Safari is very annoying with its default tooltips for text with ellipsis.
+  // The only way to disable it is to add dummy block element inside.
+  const tipDeterringElement = document.createElement('div')
+  containerElement.className = 'd3-flame-graph'
+  titleElement.className = 'title'
+  nodesSpaceElement.className = 'nodes-space'
+  nodesElement.className = 'nodes'
+  tipElement.className = 'tip'
+  nodesSpaceElement.appendChild(nodesElement)
+  nodesSpaceElement.appendChild(tipElement)
+  containerElement.appendChild(titleElement)
+  containerElement.appendChild(nodesSpaceElement)
+
+  const externalState = {
+    shiftKey: false,
+    handleEvent (event) {
+      switch (event.type) {
+        case 'keydown':
+        case 'keyup':
+          this.shiftKey = event.shiftKey
+          break
+      }
+    },
+    listen () {
+      document.addEventListener('keydown', this, false)
+      document.addEventListener('keyup', this, false)
+    },
+    textSelected () {
+      return window.getSelection().type === 'Range'
+    }
+  }
 
   var getName = function (d) {
     return d.data.n || d.data.name
@@ -72,20 +105,19 @@ export default function () {
     return getName(d) + ' (' + format('.3f')(100 * (d.x1 - d.x0), 3) + '%, ' + getValue(d) + ' samples)'
   }
 
-  var tip = d3Tip()
-    .direction('s')
-    .offset([8, 0])
-    .attr('class', 'd3-flame-graph-tip')
-    .html(function (d) { return labelHandler(d) })
-
-  var svg
-
   function setSearchDetails () {
     detailsElement.innerHTML = `${searchSum} of ${totalValue} samples (${format('.3f')(100 * (searchSum / totalValue), 3)}%)`
   }
 
+  var classMapper = function (d, base) {
+    let classes = base
+    if (d.data.fade) classes += ' stem'
+    if (d.highlight) classes += ' highlight'
+    return classes
+  }
+
   var colorMapper = function (d) {
-    return d.highlight ? '#E600E6' : colorHash(getName(d), getLibtype(d), getDelta(d))
+    return colorHash(getName(d), getLibtype(d), getDelta(d))
   }
   var originalColorMapper = colorMapper
 
@@ -230,21 +262,48 @@ export default function () {
   }
 
   function fadeAncestors (d) {
+    // FIXME: .fade and .hide must be injected into nodes, not data
     if (d.parent) {
       d.parent.data.fade = true
       fadeAncestors(d.parent)
     }
   }
 
+  function tipShow (d, itemRect, insideRect) {
+    tipElement.innerHTML = labelHandler(d)
+    // Need to reset `display` here, so `getBoundingClientRect()` will actually layout the `tipElement`.
+    tipElement.style.display = 'unset'
+    const tipRect = tipElement.getBoundingClientRect()
+    const cw = document.documentElement.clientWidth
+    const ch = document.documentElement.clientHeight
+    let x = -insideRect.left
+    if (cw < itemRect.left + tipRect.width) {
+      x += cw - tipRect.width
+    } else if (itemRect.left > 0) {
+      x += itemRect.left
+    }
+    let y = -insideRect.top
+    if (ch < itemRect.top + itemRect.height + tipRect.height) {
+      y += itemRect.top - tipRect.height
+    } else {
+      y += itemRect.top + itemRect.height
+    }
+    tipElement.style.transform = 'translate(' + x + 'px,' + y + 'px)'
+  }
+
+  function tipHide () {
+    tipElement.style.display = 'none'
+  }
+
+  function tipShown () {
+    return tipElement.style.display !== 'none'
+  }
+
   function zoom (d) {
-    tip.hide(d)
     hideSiblings(d)
     show(d)
     fadeAncestors(d)
     update()
-    if (typeof clickHandler === 'function') {
-      clickHandler(d)
-    }
   }
 
   function searchTree (d, term) {
@@ -296,8 +355,6 @@ export default function () {
     }
   }
 
-  var p = partition()
-
   function filterNodes (root) {
     var nodeList = root.descendants()
     if (minFrameSize > 0) {
@@ -309,92 +366,100 @@ export default function () {
     return nodeList
   }
 
+  function nodeClick () {
+    if (!externalState.textSelected()) {
+      if (tooltip) tipHide()
+      const d = this.__data__
+      zoom(d)
+      if (clickHandler) {
+        clickHandler.call(this, d)
+      }
+    }
+  }
+
+  function nodeMouseOver () {
+    if (tooltip) {
+      this.appendChild(tipDeterringElement)
+      if (!(externalState.shiftKey && tipShown())) {
+        tipShow(this.__data__, this.getBoundingClientRect(), this.parentElement.getBoundingClientRect())
+      }
+    }
+  }
+
+  function nodeMouseOut () {
+    if (tooltip) {
+      if (tipDeterringElement.parentElement === this) {
+        this.removeChild(tipDeterringElement)
+      }
+      if (!externalState.shiftKey) {
+        tipHide()
+      }
+    }
+  }
+
   function update () {
     selection.each(function (root) {
-      var x = scaleLinear().range([0, w])
-      var y = scaleLinear().range([0, c])
+      const x = scaleLinear().rangeRound([0, w])
+      const y = scaleLinear().rangeRound([0, c])
 
+      // FIXME: This can return list of children lists (since it builds it anyway) that can efficiently sorted without
+      // FIXME: full tree traversal. This list also can be used later in filtering step with the same benefits.
       reappraiseNode(root)
-      if (sort) root.sort(doSort)
-
+      if (sort) {
+        root.sort(doSort)
+      }
       p(root)
 
-      var kx = w / (root.x1 - root.x0)
-      function width (d) { return (d.x1 - d.x0) * kx }
-
-      var descendants = filterNodes(root)
-      var g = select(this).select('svg').selectAll('g').data(descendants, function (d) { return d.id })
+      const descendants = filterNodes(root)
 
       // if height is not set: set height on first update, after nodes were filtered by minFrameSize
       if (!h) {
-        var maxDepth = Math.max.apply(null, descendants.map(function (n) { return n.depth }))
+        // FIXME: This will blow out the stack (in Safari at least) on big data sets. Don't use `apply()`.
+        const maxDepth = Math.max.apply(null, descendants.map(function (n) { return n.depth }))
         h = (maxDepth + 2) * c
-        select(this).select('svg').attr('height', h)
+        nodesElement.style.height = h + 'px'
       }
 
-      g.transition()
-        .duration(transitionDuration)
-        .ease(transitionEase)
-        .attr('transform', function (d) { return 'translate(' + x(d.x0) + ',' + (inverted ? y(d.depth) : (h - y(d.depth) - c)) + ')' })
+      const kx = w / (root.x1 - root.x0)
+      const width = function (d) { return Math.round((d.x1 - d.x0) * kx) }
+      const top = inverted ? function (d) { return y(d.depth) } : function (d) { return h - y(d.depth) - c }
 
-      g.select('rect')
-        .transition()
-        .duration(transitionDuration)
-        .ease(transitionEase)
-        .attr('width', width)
+      // JOIN new data with old elements.
+      const g = select(nodesElement)
+        .selectAll(function () { return nodesElement.childNodes })
+        .data(descendants, function (d) { return d.id })
 
-      var node = g.enter()
-        .append('svg:g')
-        .attr('transform', function (d) { return 'translate(' + x(d.x0) + ',' + (inverted ? y(d.depth) : (h - y(d.depth) - c)) + ')' })
+      // EXIT old elements not present in new data.
+      g.exit().each(function (d) {
+        this.style.display = 'none'
+      })
 
-      node.append('svg:rect')
-        .transition()
-        .delay(transitionDuration / 2)
-        .attr('width', width)
+      // UPDATE old elements present in new data.
+      g.each(function (d) {
+        const wpx = width(d)
+        this.className = classMapper(d, wpx < 35 ? 'node-sm' : 'node')
+        this.textContent = wpx < 35 ? '' : getName(d)
+        this.style.width = wpx + 'px'
+        this.style.left = x(d.x0) + 'px'
+        this.style.top = top(d) + 'px'
+        this.style.display = 'unset'
+      })
 
-      if (!tooltip) { node.append('svg:title') }
-
-      node.append('foreignObject')
-        .append('xhtml:div')
-
-      // Now we have to re-select to see the new elements (why?).
-      g = select(this).select('svg').selectAll('g').data(descendants, function (d) { return d.id })
-
-      g.attr('width', width)
-        .attr('height', function (d) { return c })
-        .attr('name', function (d) { return getName(d) })
-        .attr('class', function (d) { return d.data.fade ? 'frame fade' : 'frame' })
-
-      g.select('rect')
-        .attr('height', function (d) { return c })
-        .attr('fill', function (d) { return colorMapper(d) })
-
-      if (!tooltip) {
-        g.select('title')
-          .text(labelHandler)
-      }
-
-      g.select('foreignObject')
-        .attr('width', width)
-        .attr('height', function (d) { return c })
-        .select('div')
-        .attr('class', 'd3-flame-graph-label')
-        .style('display', function (d) { return (width(d) < 35) ? 'none' : 'block' })
-        .transition()
-        .delay(transitionDuration)
-        .text(getName)
-
-      g.on('click', zoom)
-
-      g.exit()
-        .remove()
-
-      g.on('mouseover', function (d) {
-        if (tooltip) tip.show(d, this)
-        detailsHandler(labelHandler(d))
-      }).on('mouseout', function (d) {
-        if (tooltip) tip.hide(d)
-        detailsHandler(null)
+      // ENTER new elements present in new data.
+      g.enter().append(function (d) {
+        const wpx = width(d)
+        const element = document.createElement('div')
+        element.className = classMapper(d, wpx < 35 ? 'node-sm' : 'node')
+        element.style.backgroundColor = colorMapper(d)
+        element.style.width = wpx + 'px'
+        element.style.left = x(d.x0) + 'px'
+        element.style.top = top(d) + 'px'
+        element.textContent = wpx < 35 ? '' : getName(d)
+        if (!tooltip) element.title = labelHandler(d)
+        element.addEventListener('click', nodeClick)
+        element.addEventListener('mouseover', nodeMouseOver)
+        element.addEventListener('mouseout', nodeMouseOut)
+        return element
       })
     })
   }
@@ -461,6 +526,7 @@ export default function () {
   }
 
   function reappraiseNode (root) {
+    // FIXME: No need to set value for children of hidden nodes, since we will filter them out
     let node, children, grandChildren, childrenValue, i, j, child, childValue
     const stack = []
     const included = []
@@ -540,36 +606,26 @@ export default function () {
   }
 
   function chart (s) {
+    if (!arguments.length) return chart
+
     var root = hierarchy(s.datum(), getChildren)
     adoptNode(root)
 
-    // This line is invalid - root is a d3 node, while getValue() expects data item. Will address in next patch.
-    totalValue = getValue(root)
-
+    // FIXME: Looks like totalValue logic is broken, since we will recalculate values in update().
+    // FIXME: And it doesn't account for `selfValue` option.
+    totalValue = root.value
     selection = s.datum(root)
 
-    if (!arguments.length) return chart
-
-    selection.each(function (data) {
-      if (!svg) {
-        svg = select(this)
-          .append('svg:svg')
-          .attr('width', w)
-          .attr('height', h || (root.height + 2) * c)
-          .attr('class', 'partition d3-flame-graph')
-          .call(tip)
-
-        svg.append('svg:text')
-          .attr('class', 'title')
-          .attr('text-anchor', 'middle')
-          .attr('y', '25')
-          .attr('x', w / 2)
-          .attr('fill', '#808080')
-          .text(title)
+    s.each(function (data) {
+      if (this.childElementCount === 0) {
+        this.appendChild(containerElement)
+        externalState.listen()
       }
+      titleElement.innerHTML = title
+      nodesElement.style.width = w + 'px'
+      nodesElement.style.height = (h || (root.height + 2) * c) + 'px'
     })
 
-    // first draw
     update()
   }
 
@@ -593,9 +649,6 @@ export default function () {
 
   chart.tooltip = function (_) {
     if (!arguments.length) { return tooltip }
-    if (typeof _ === 'function') {
-      tip = _
-    }
     tooltip = !!_
     return chart
   }
@@ -603,18 +656,6 @@ export default function () {
   chart.title = function (_) {
     if (!arguments.length) { return title }
     title = _
-    return chart
-  }
-
-  chart.transitionDuration = function (_) {
-    if (!arguments.length) { return transitionDuration }
-    transitionDuration = _
-    return chart
-  }
-
-  chart.transitionEase = function (_) {
-    if (!arguments.length) { return transitionEase }
-    transitionEase = _
     return chart
   }
 
