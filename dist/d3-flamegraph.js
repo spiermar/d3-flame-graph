@@ -3397,7 +3397,7 @@ var parseIso = +new Date("2000-01-01T00:00:00.000Z")
 var flamegraph = function () {
   var w = null; // graph width
   var h = null; // graph height
-  var c = 18; // cell height
+  var cellHeight = 18;
   var root = null;
   var tooltip = true; // enable tooltip
   var title = ''; // graph title
@@ -3789,7 +3789,7 @@ var flamegraph = function () {
   function update () {
     const nodesRect = nodesElement.getBoundingClientRect();
     const x = linear().rangeRound([0, nodesRect.width]);
-    const y = linear().rangeRound([0, c]);
+    const y = linear().rangeRound([0, cellHeight]);
 
     // FIXME: This can return list of children lists (since it builds it anyway) that can efficiently sorted without
     // FIXME: full tree traversal. This list also can be used later in filtering step with the same benefits.
@@ -3799,8 +3799,9 @@ var flamegraph = function () {
     }
     p(root);
     const kx = nodesRect.width / (root.x1 - root.x0);
+    const dy = nodesRect.height - cellHeight;
     const width = function (d) { return Math.round((d.x1 - d.x0) * kx) };
-    const top = inverted ? function (d) { return y(d.depth) } : function (d) { return h - y(d.depth) - c };
+    const top = inverted ? function (d) { return y(d.depth) } : function (d) { return dy - y(d.depth) };
 
     const descendants = filterNodes(root, width);
 
@@ -3995,10 +3996,7 @@ var flamegraph = function () {
 
     titleElement.innerHTML = title;
     nodesElement.style.width = w ? w + 'px' : '100%';
-    if (!h) {
-      h = (root.height + 2) * c;
-    }
-    nodesElement.style.height = h + 'px';
+    nodesElement.style.height = (h || (root.height + 1) * cellHeight) + 'px';
 
     s.each(function () {
       if (this.childElementCount === 0) {
@@ -4023,8 +4021,8 @@ var flamegraph = function () {
   };
 
   chart.cellHeight = function (_) {
-    if (!arguments.length) { return c }
-    c = _;
+    if (!arguments.length) { return cellHeight }
+    cellHeight = _;
     return chart
   };
 
