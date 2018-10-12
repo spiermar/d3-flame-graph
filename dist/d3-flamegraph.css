@@ -1,6 +1,6 @@
 .d3-flame-graph {
   position: relative;
-  width: max-content;
+  width: 100%;
 }
 
 .d3-flame-graph .title {

@@ -5,7 +5,7 @@ import { partition, hierarchy } from 'd3-hierarchy'
 import { scaleLinear } from 'd3-scale'
 
 export default function () {
-  var w = 960 // graph width
+  var w = null // graph width
   var h = null // graph height
   var c = 18 // cell height
   var root = null
@@ -355,12 +355,11 @@ export default function () {
     }
   }
 
-  function filterNodes (root) {
+  function filterNodes (root, width) {
     var nodeList = root.descendants()
     if (minFrameSize > 0) {
-      var kx = w / (root.x1 - root.x0)
       nodeList = nodeList.filter(function (el) {
-        return ((el.x1 - el.x0) * kx) > minFrameSize
+        return width(el) > minFrameSize
       })
     }
     return nodeList
@@ -398,7 +397,8 @@ export default function () {
   }
 
   function update () {
-    const x = scaleLinear().rangeRound([0, w])
+    const nodesRect = nodesElement.getBoundingClientRect()
+    const x = scaleLinear().rangeRound([0, nodesRect.width])
     const y = scaleLinear().rangeRound([0, c])
 
     // FIXME: This can return list of children lists (since it builds it anyway) that can efficiently sorted without
@@ -408,11 +408,11 @@ export default function () {
       root.sort(doSort)
     }
     p(root)
-    const kx = w / (root.x1 - root.x0)
+    const kx = nodesRect.width / (root.x1 - root.x0)
     const width = function (d) { return Math.round((d.x1 - d.x0) * kx) }
     const top = inverted ? function (d) { return y(d.depth) } : function (d) { return h - y(d.depth) - c }
 
-    const descendants = filterNodes(root)
+    const descendants = filterNodes(root, width)
 
     // JOIN new data with old elements.
     const g = select(nodesElement)
@@ -604,7 +604,7 @@ export default function () {
     totalValue = root.value
 
     titleElement.innerHTML = title
-    nodesElement.style.width = w + 'px'
+    nodesElement.style.width = w ? w + 'px' : '100%'
     if (!h) {
       h = (root.height + 2) * c
     }
