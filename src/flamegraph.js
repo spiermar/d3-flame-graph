@@ -408,20 +408,11 @@ export default function () {
       root.sort(doSort)
     }
     p(root)
-
-    const descendants = filterNodes(root)
-
-    // if height is not set: set height on first update, after nodes were filtered by minFrameSize
-    if (!h) {
-      // FIXME: This will blow out the stack (in Safari at least) on big data sets. Don't use `apply()`.
-      const maxDepth = Math.max.apply(null, descendants.map(function (n) { return n.depth }))
-      h = (maxDepth + 2) * c
-      nodesElement.style.height = h + 'px'
-    }
-
     const kx = w / (root.x1 - root.x0)
     const width = function (d) { return Math.round((d.x1 - d.x0) * kx) }
     const top = inverted ? function (d) { return y(d.depth) } : function (d) { return h - y(d.depth) - c }
+
+    const descendants = filterNodes(root)
 
     // JOIN new data with old elements.
     const g = select(nodesElement)
@@ -614,7 +605,10 @@ export default function () {
 
     titleElement.innerHTML = title
     nodesElement.style.width = w + 'px'
-    nodesElement.style.height = (h || (root.height + 2) * c) + 'px'
+    if (!h) {
+      h = (root.height + 2) * c
+    }
+    nodesElement.style.height = h + 'px'
 
     s.each(function () {
       if (this.childElementCount === 0) {
