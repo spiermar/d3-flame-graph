@@ -111,7 +111,7 @@ export default function () {
 
   var classMapper = function (d, base) {
     let classes = base
-    if (d.data.fade) classes += ' stem'
+    if (d.fade) classes += ' stem'
     if (d.highlight) classes += ' highlight'
     return classes
   }
@@ -236,8 +236,8 @@ export default function () {
   }
 
   function show (d) {
-    d.data.fade = false
-    d.data.hide = false
+    d.fade = false
+    d.hide = false
     if (d.children) {
       d.children.forEach(show)
     }
@@ -253,7 +253,7 @@ export default function () {
       while (i--) {
         sibling = children[i]
         if (sibling !== child) {
-          sibling.data.hide = true
+          sibling.hide = true
         }
       }
       child = parent
@@ -262,9 +262,8 @@ export default function () {
   }
 
   function fadeAncestors (d) {
-    // FIXME: .fade and .hide must be injected into nodes, not data
     if (d.parent) {
-      d.parent.data.fade = true
+      d.parent.fade = true
       fadeAncestors(d.parent)
     }
   }
@@ -522,15 +521,14 @@ export default function () {
     const included = []
     const excluded = []
     const compoundValue = !selfValue
-    let item = root.data
-    if (item.hide) {
+    if (root.hide) {
       root.value = 0
       children = root.children
       if (children) {
         excluded.push(children)
       }
     } else {
-      root.value = item.fade ? 0 : getValue(item)
+      root.value = root.fade ? 0 : getValue(root.data)
       stack.push(root)
     }
     // First DFS pass:
@@ -543,8 +541,7 @@ export default function () {
         childrenValue = 0
         while (i--) {
           child = children[i]
-          item = child.data
-          if (item.hide) {
+          if (child.hide) {
             child.value = 0
             grandChildren = child.children
             if (grandChildren) {
@@ -552,16 +549,16 @@ export default function () {
             }
             continue
           }
-          if (item.fade) {
+          if (child.fade) {
             child.value = 0
           } else {
-            childValue = getValue(item)
+            childValue = getValue(child.data)
             child.value = childValue
             childrenValue += childValue
           }
           stack.push(child)
         }
-        // Here second part of `&&` is actually checking for `node.data.fade`. However,
+        // Here second part of `&&` is actually checking for `node.fade`. However,
         // checking for node.value is faster and presents more oportunities for JS optimizer.
         if (compoundValue && node.value) {
           node.value -= childrenValue
