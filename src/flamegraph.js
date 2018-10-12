@@ -8,7 +8,7 @@ export default function () {
   var w = 960 // graph width
   var h = null // graph height
   var c = 18 // cell height
-  var selection = null // selection
+  var root = null
   var tooltip = true // enable tooltip
   var title = '' // graph title
   var sort = false
@@ -398,69 +398,67 @@ export default function () {
   }
 
   function update () {
-    selection.each(function (root) {
-      const x = scaleLinear().rangeRound([0, w])
-      const y = scaleLinear().rangeRound([0, c])
+    const x = scaleLinear().rangeRound([0, w])
+    const y = scaleLinear().rangeRound([0, c])
 
-      // FIXME: This can return list of children lists (since it builds it anyway) that can efficiently sorted without
-      // FIXME: full tree traversal. This list also can be used later in filtering step with the same benefits.
-      reappraiseNode(root)
-      if (sort) {
-        root.sort(doSort)
-      }
-      p(root)
+    // FIXME: This can return list of children lists (since it builds it anyway) that can efficiently sorted without
+    // FIXME: full tree traversal. This list also can be used later in filtering step with the same benefits.
+    reappraiseNode(root)
+    if (sort) {
+      root.sort(doSort)
+    }
+    p(root)
 
-      const descendants = filterNodes(root)
+    const descendants = filterNodes(root)
 
-      // if height is not set: set height on first update, after nodes were filtered by minFrameSize
-      if (!h) {
-        // FIXME: This will blow out the stack (in Safari at least) on big data sets. Don't use `apply()`.
-        const maxDepth = Math.max.apply(null, descendants.map(function (n) { return n.depth }))
-        h = (maxDepth + 2) * c
-        nodesElement.style.height = h + 'px'
-      }
+    // if height is not set: set height on first update, after nodes were filtered by minFrameSize
+    if (!h) {
+      // FIXME: This will blow out the stack (in Safari at least) on big data sets. Don't use `apply()`.
+      const maxDepth = Math.max.apply(null, descendants.map(function (n) { return n.depth }))
+      h = (maxDepth + 2) * c
+      nodesElement.style.height = h + 'px'
+    }
 
-      const kx = w / (root.x1 - root.x0)
-      const width = function (d) { return Math.round((d.x1 - d.x0) * kx) }
-      const top = inverted ? function (d) { return y(d.depth) } : function (d) { return h - y(d.depth) - c }
+    const kx = w / (root.x1 - root.x0)
+    const width = function (d) { return Math.round((d.x1 - d.x0) * kx) }
+    const top = inverted ? function (d) { return y(d.depth) } : function (d) { return h - y(d.depth) - c }
 
-      // JOIN new data with old elements.
-      const g = select(nodesElement)
-        .selectAll(function () { return nodesElement.childNodes })
-        .data(descendants, function (d) { return d.id })
+    // JOIN new data with old elements.
+    const g = select(nodesElement)
+      .selectAll(function () { return nodesElement.childNodes })
+      .data(descendants, function (d) { return d.id })
 
-      // EXIT old elements not present in new data.
-      g.exit().each(function (d) {
-        this.style.display = 'none'
-      })
+    // EXIT old elements not present in new data.
+    g.exit().each(function (d) {
+      this.style.display = 'none'
+    })
 
-      // UPDATE old elements present in new data.
-      g.each(function (d) {
-        const wpx = width(d)
-        this.className = classMapper(d, wpx < 35 ? 'node-sm' : 'node')
-        this.textContent = wpx < 35 ? '' : getName(d)
-        this.style.width = wpx + 'px'
-        this.style.left = x(d.x0) + 'px'
-        this.style.top = top(d) + 'px'
-        this.style.display = 'unset'
-      })
+    // UPDATE old elements present in new data.
+    g.each(function (d) {
+      const wpx = width(d)
+      this.className = classMapper(d, wpx < 35 ? 'node-sm' : 'node')
+      this.textContent = wpx < 35 ? '' : getName(d)
+      this.style.width = wpx + 'px'
+      this.style.left = x(d.x0) + 'px'
+      this.style.top = top(d) + 'px'
+      this.style.display = 'unset'
+    })
 
-      // ENTER new elements present in new data.
-      g.enter().append(function (d) {
-        const wpx = width(d)
-        const element = document.createElement('div')
-        element.className = classMapper(d, wpx < 35 ? 'node-sm' : 'node')
-        element.style.backgroundColor = colorMapper(d)
-        element.style.width = wpx + 'px'
-        element.style.left = x(d.x0) + 'px'
-        element.style.top = top(d) + 'px'
-        element.textContent = wpx < 35 ? '' : getName(d)
-        if (!tooltip) element.title = labelHandler(d)
-        element.addEventListener('click', nodeClick)
-        element.addEventListener('mouseover', nodeMouseOver)
-        element.addEventListener('mouseout', nodeMouseOut)
-        return element
-      })
+    // ENTER new elements present in new data.
+    g.enter().append(function (d) {
+      const wpx = width(d)
+      const element = document.createElement('div')
+      element.className = classMapper(d, wpx < 35 ? 'node-sm' : 'node')
+      element.style.backgroundColor = colorMapper(d)
+      element.style.width = wpx + 'px'
+      element.style.left = x(d.x0) + 'px'
+      element.style.top = top(d) + 'px'
+      element.textContent = wpx < 35 ? '' : getName(d)
+      if (!tooltip) element.title = labelHandler(d)
+      element.addEventListener('click', nodeClick)
+      element.addEventListener('mouseover', nodeMouseOver)
+      element.addEventListener('mouseout', nodeMouseOut)
+      return element
     })
   }
 
@@ -608,22 +606,21 @@ export default function () {
   function chart (s) {
     if (!arguments.length) return chart
 
-    var root = hierarchy(s.datum(), getChildren)
+    root = hierarchy(s.datum(), getChildren)
     adoptNode(root)
-
     // FIXME: Looks like totalValue logic is broken, since we will recalculate values in update().
     // FIXME: And it doesn't account for `selfValue` option.
     totalValue = root.value
-    selection = s.datum(root)
 
-    s.each(function (data) {
+    titleElement.innerHTML = title
+    nodesElement.style.width = w + 'px'
+    nodesElement.style.height = (h || (root.height + 2) * c) + 'px'
+
+    s.each(function () {
       if (this.childElementCount === 0) {
         this.appendChild(containerElement)
         externalState.listen()
       }
-      titleElement.innerHTML = title
-      nodesElement.style.width = w + 'px'
-      nodesElement.style.height = (h || (root.height + 2) * c) + 'px'
     })
 
     update()
@@ -692,19 +689,15 @@ export default function () {
   chart.label = chart.setLabelHandler
 
   chart.search = function (term) {
-    selection.each(function (data) {
-      searchTree(data, term)
-      update()
-    })
+    searchTree(root, term)
+    update()
   }
 
   chart.clear = function () {
     searchSum = 0
     detailsHandler(null)
-    selection.each(function (data) {
-      clear(data)
-      update()
-    })
+    clear(root)
+    update()
   }
 
   chart.zoomTo = function (d) {
@@ -712,9 +705,7 @@ export default function () {
   }
 
   chart.resetZoom = function () {
-    selection.each(function (data) {
-      zoom(data) // zoom to root
-    })
+    zoom(root)
   }
 
   chart.onClick = function (_) {
@@ -727,12 +718,10 @@ export default function () {
 
   chart.merge = function (samples) {
     var newRoot // Need to re-create hierarchy after data changes.
-    selection.each(function (root) {
-      merge([root.data], [samples])
-      newRoot = hierarchy(root.data, getChildren)
-      adoptNode(newRoot)
-    })
-    selection = selection.datum(newRoot)
+    merge([root.data], [samples])
+    newRoot = hierarchy(root.data, getChildren)
+    adoptNode(newRoot)
+    root = newRoot
     update()
   }
 
