@@ -428,10 +428,11 @@ export default function () {
     g.each(function (d) {
       const wpx = width(d)
       this.className = classMapper(d, wpx < 35 ? 'node-sm' : 'node')
-      this.textContent = wpx < 35 ? '' : getName(d)
+      this.style.backgroundColor = colorMapper(d)
       this.style.width = wpx + 'px'
       this.style.left = x(d.x0) + 'px'
       this.style.top = top(d) + 'px'
+      this.textContent = wpx < 35 ? '' : getName(d)
       this.style.display = 'unset'
     })
 
