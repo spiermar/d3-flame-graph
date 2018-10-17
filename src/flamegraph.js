@@ -73,12 +73,12 @@ export default function () {
     return item.d || item.delta
   }
 
-  var getItemChildren = function (item) {
-    return item.c || item.children
+  var getItemKind = function (item) {
+    return item.l || item.libtype
   }
 
-  var getLibtype = function (d) {
-    return d.data.l || d.data.libtype
+  var getItemChildren = function (item) {
+    return item.c || item.children
   }
 
   var searchHandler = function () {
@@ -117,7 +117,7 @@ export default function () {
   }
 
   var colorMapper = function (d) {
-    return colorHash(getItemName(d.data), getLibtype(d), getItemDelta(d.data))
+    return colorHash(getItemName(d.data), getItemKind(d.data), getItemDelta(d.data))
   }
   var originalColorMapper = colorMapper
 
@@ -770,9 +770,9 @@ export default function () {
     return chart
   }
 
-  chart.getLibtype = function (_) {
-    if (!arguments.length) { return getLibtype }
-    getLibtype = _
+  chart.getItemKind = function (_) {
+    if (!arguments.length) { return getItemKind }
+    getItemKind = _
     return chart
   }
 
