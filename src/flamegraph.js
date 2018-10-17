@@ -61,8 +61,8 @@ export default function () {
     }
   }
 
-  var getName = function (d) {
-    return d.data.n || d.data.name
+  var getItemName = function (item) {
+    return item.n || item.name
   }
 
   var getValue = function (d) {
@@ -102,7 +102,7 @@ export default function () {
   var originalDetailsHandler = detailsHandler
 
   var labelHandler = function (d) {
-    return getName(d) + ' (' + format('.3f')(100 * (d.x1 - d.x0), 3) + '%, ' + getValue(d) + ' samples)'
+    return getItemName(d.data) + ' (' + format('.3f')(100 * (d.x1 - d.x0), 3) + '%, ' + getValue(d) + ' samples)'
   }
 
   function setSearchDetails () {
@@ -117,7 +117,7 @@ export default function () {
   }
 
   var colorMapper = function (d) {
-    return colorHash(getName(d), getLibtype(d), getDelta(d))
+    return colorHash(getItemName(d.data), getLibtype(d), getDelta(d))
   }
   var originalColorMapper = colorMapper
 
@@ -311,7 +311,7 @@ export default function () {
     var sum = 0
 
     function searchInner (d, foundParent) {
-      var label = getName(d)
+      var label = getItemName(d.data)
       var found = false
 
       if (typeof label !== 'undefined' && label && label.match(re)) {
@@ -350,7 +350,7 @@ export default function () {
     if (typeof sort === 'function') {
       return sort(a, b)
     } else if (sort) {
-      return ascending(getName(a), getName(b))
+      return ascending(getItemName(a.data), getItemName(b.data))
     }
   }
 
@@ -432,7 +432,7 @@ export default function () {
       this.style.width = wpx + 'px'
       this.style.left = x(d.x0) + 'px'
       this.style.top = top(d) + 'px'
-      this.textContent = wpx < 35 ? '' : getName(d)
+      this.textContent = wpx < 35 ? '' : getItemName(d.data)
       this.style.display = 'unset'
     })
 
@@ -445,7 +445,7 @@ export default function () {
       element.style.width = wpx + 'px'
       element.style.left = x(d.x0) + 'px'
       element.style.top = top(d) + 'px'
-      element.textContent = wpx < 35 ? '' : getName(d)
+      element.textContent = wpx < 35 ? '' : getItemName(d.data)
       if (!tooltip) element.title = labelHandler(d)
       element.addEventListener('click', nodeClick)
       element.addEventListener('mouseover', nodeMouseOver)
@@ -746,9 +746,9 @@ export default function () {
     return chart
   }
 
-  chart.getName = function (_) {
-    if (!arguments.length) { return getName }
-    getName = _
+  chart.getItemName = function (_) {
+    if (!arguments.length) { return getItemName }
+    getItemName = _
     return chart
   }
 
