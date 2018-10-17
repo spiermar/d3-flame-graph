@@ -69,8 +69,8 @@ export default function () {
     return item.v || item.value
   }
 
-  var getChildren = function (d) {
-    return d.c || d.children
+  var getItemChildren = function (item) {
+    return item.c || item.children
   }
 
   var getLibtype = function (d) {
@@ -325,8 +325,8 @@ export default function () {
         d.highlight = false
       }
 
-      if (getChildren(d)) {
-        getChildren(d).forEach(function (child) {
+      if (d.children) {
+        d.children.forEach(function (child) {
           searchInner(child, (foundParent || found))
         })
       }
@@ -339,8 +339,8 @@ export default function () {
 
   function clear (d) {
     d.highlight = false
-    if (getChildren(d)) {
-      getChildren(d).forEach(function (child) {
+    if (d.children) {
+      d.children.forEach(function (child) {
         clear(child)
       })
     }
@@ -596,7 +596,7 @@ export default function () {
   function chart (s) {
     if (!arguments.length) return chart
 
-    root = hierarchy(s.datum(), getChildren)
+    root = hierarchy(s.datum(), getItemChildren)
     adoptNode(root)
     // FIXME: Looks like totalValue logic is broken, since we will recalculate values in update().
     // FIXME: And it doesn't account for `selfValue` option.
@@ -709,7 +709,7 @@ export default function () {
   chart.merge = function (samples) {
     var newRoot // Need to re-create hierarchy after data changes.
     merge([root.data], [samples])
-    newRoot = hierarchy(root.data, getChildren)
+    newRoot = hierarchy(root.data, getItemChildren)
     adoptNode(newRoot)
     root = newRoot
     update()
@@ -758,9 +758,9 @@ export default function () {
     return chart
   }
 
-  chart.getChildren = function (_) {
-    if (!arguments.length) { return getChildren }
-    getChildren = _
+  chart.getItemChildren = function (_) {
+    if (!arguments.length) { return getItemChildren }
+    getItemChildren = _
     return chart
   }
 
