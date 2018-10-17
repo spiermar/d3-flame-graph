@@ -116,11 +116,6 @@ export default function () {
     return classes
   }
 
-  var colorMapper = function (d) {
-    return colorHash(getItemName(d.data), getItemKind(d.data), getItemDelta(d.data))
-  }
-  var originalColorMapper = colorMapper
-
   function generateHash (name) {
     // Return a vector (0.0->1.0) that is a hash of the input string.
     // The hash is computed to favor early characters over later ones, so
@@ -145,15 +140,17 @@ export default function () {
     return hash
   }
 
-  function colorHash (name, libtype, delta) {
+  var getNodeColor = function (node) {
     // Return a color for the given name and library type. The library type
     // selects the hue, and the name is hashed to a color in that hue.
 
-    var r
-    var g
-    var b
+    let r
+    let g
+    let b
 
     if (differential) {
+      let delta = getItemDelta(node.data)
+
       r = 220
       g = 220
       b = 220
@@ -170,6 +167,9 @@ export default function () {
         g = r
       }
     } else {
+      let name = getItemName(node.data)
+      let libtype = getItemKind(node.data)
+
       // default when libtype is not in use
       var hue = elided ? 'cold' : 'warm'
 
@@ -234,6 +234,8 @@ export default function () {
 
     return 'rgb(' + r + ',' + g + ',' + b + ')'
   }
+
+  const getNodeColorDefault = getNodeColor
 
   function show (d) {
     d.fade = false
@@ -428,7 +430,7 @@ export default function () {
     g.each(function (d) {
       const wpx = width(d)
       this.className = classMapper(d, wpx < 35 ? 'node-sm' : 'node')
-      this.style.backgroundColor = colorMapper(d)
+      this.style.backgroundColor = getNodeColor(d)
       this.style.width = wpx + 'px'
       this.style.left = x(d.x0) + 'px'
       this.style.top = top(d) + 'px'
@@ -441,7 +443,7 @@ export default function () {
       const wpx = width(d)
       const element = document.createElement('div')
       element.className = classMapper(d, wpx < 35 ? 'node-sm' : 'node')
-      element.style.backgroundColor = colorMapper(d)
+      element.style.backgroundColor = getNodeColor(d)
       element.style.width = wpx + 'px'
       element.style.left = x(d.x0) + 'px'
       element.style.top = top(d) + 'px'
@@ -715,17 +717,6 @@ export default function () {
     update()
   }
 
-  chart.setColorMapper = function (_) {
-    if (!arguments.length) {
-      colorMapper = originalColorMapper
-      return chart
-    }
-    colorMapper = _
-    return chart
-  }
-  // Kept for backwards compatibility.
-  chart.color = chart.setColorMapper
-
   chart.minFrameSize = function (_) {
     if (!arguments.length) { return minFrameSize }
     minFrameSize = _
@@ -773,6 +764,12 @@ export default function () {
   chart.getItemKind = function (_) {
     if (!arguments.length) { return getItemKind }
     getItemKind = _
+    return chart
+  }
+
+  chart.getNodeColor = function (_) {
+    if (!arguments.length) { return getNodeColor }
+    getNodeColor = _ || getNodeColorDefault
     return chart
   }
 
