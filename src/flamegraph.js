@@ -109,13 +109,6 @@ export default function () {
     detailsElement.innerHTML = searchSum + ' of ' + totalValue + ' samples ( ' + format('.3f')(100 * (searchSum / totalValue), 3) + '%)'
   }
 
-  var classMapper = function (d, base) {
-    let classes = base
-    if (d.fade) classes += ' stem'
-    if (d.highlight) classes += ' highlight'
-    return classes
-  }
-
   function generateHash (name) {
     // Return a vector (0.0->1.0) that is a hash of the input string.
     // The hash is computed to favor early characters over later ones, so
@@ -236,6 +229,13 @@ export default function () {
   }
 
   const getNodeColorDefault = getNodeColor
+
+  var getNodeClass = function (node, small) {
+    let classes = small ? 'node-sm' : 'node'
+    if (node.fade) classes += ' stem'
+    if (node.highlight) classes += ' highlight'
+    return classes
+  }
 
   function show (d) {
     d.fade = false
@@ -429,7 +429,7 @@ export default function () {
     // UPDATE old elements present in new data.
     g.each(function (d) {
       const wpx = width(d)
-      this.className = classMapper(d, wpx < 35 ? 'node-sm' : 'node')
+      this.className = getNodeClass(d, wpx < 35)
       this.style.backgroundColor = getNodeColor(d)
       this.style.width = wpx + 'px'
       this.style.left = x(d.x0) + 'px'
@@ -442,7 +442,7 @@ export default function () {
     g.enter().append(function (d) {
       const wpx = width(d)
       const element = document.createElement('div')
-      element.className = classMapper(d, wpx < 35 ? 'node-sm' : 'node')
+      element.className = getNodeClass(d, wpx < 35)
       element.style.backgroundColor = getNodeColor(d)
       element.style.width = wpx + 'px'
       element.style.left = x(d.x0) + 'px'
@@ -770,6 +770,12 @@ export default function () {
   chart.getNodeColor = function (_) {
     if (!arguments.length) { return getNodeColor }
     getNodeColor = _ || getNodeColorDefault
+    return chart
+  }
+
+  chart.getNodeClass = function (_) {
+    if (!arguments.length) { return getNodeClass }
+    getNodeClass = _
     return chart
   }
 
