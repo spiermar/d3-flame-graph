@@ -65,8 +65,8 @@ export default function () {
     return item.n || item.name
   }
 
-  var getValue = function (d) {
-    return d.v || d.value
+  var getItemValue = function (item) {
+    return item.v || item.value
   }
 
   var getChildren = function (d) {
@@ -102,7 +102,7 @@ export default function () {
   var originalDetailsHandler = detailsHandler
 
   var labelHandler = function (d) {
-    return getItemName(d.data) + ' (' + format('.3f')(100 * (d.x1 - d.x0), 3) + '%, ' + getValue(d) + ' samples)'
+    return getItemName(d.data) + ' (' + format('.3f')(100 * (d.x1 - d.x0), 3) + '%, ' + d.value + ' samples)'
   }
 
   function setSearchDetails () {
@@ -318,7 +318,7 @@ export default function () {
         d.highlight = true
         found = true
         if (!foundParent) {
-          sum += getValue(d)
+          sum += d.value
         }
         results.push(d)
       } else {
@@ -529,7 +529,7 @@ export default function () {
         excluded.push(children)
       }
     } else {
-      root.value = root.fade ? 0 : getValue(root.data)
+      root.value = root.fade ? 0 : getItemValue(root.data)
       stack.push(root)
     }
     // First DFS pass:
@@ -553,7 +553,7 @@ export default function () {
           if (child.fade) {
             child.value = 0
           } else {
-            childValue = getValue(child.data)
+            childValue = getItemValue(child.data)
             child.value = childValue
             childrenValue += childValue
           }
@@ -752,9 +752,9 @@ export default function () {
     return chart
   }
 
-  chart.getValue = function (_) {
-    if (!arguments.length) { return getValue }
-    getValue = _
+  chart.getItemValue = function (_) {
+    if (!arguments.length) { return getItemValue }
+    getItemValue = _
     return chart
   }
 
