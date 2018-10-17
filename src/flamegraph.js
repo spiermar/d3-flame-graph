@@ -69,16 +69,16 @@ export default function () {
     return item.v || item.value
   }
 
+  var getItemDelta = function (item) {
+    return item.d || item.delta
+  }
+
   var getItemChildren = function (item) {
     return item.c || item.children
   }
 
   var getLibtype = function (d) {
     return d.data.l || d.data.libtype
-  }
-
-  var getDelta = function (d) {
-    return d.data.d || d.data.delta
   }
 
   var searchHandler = function () {
@@ -117,7 +117,7 @@ export default function () {
   }
 
   var colorMapper = function (d) {
-    return colorHash(getItemName(d.data), getLibtype(d), getDelta(d))
+    return colorHash(getItemName(d.data), getLibtype(d), getItemDelta(d.data))
   }
   var originalColorMapper = colorMapper
 
@@ -507,7 +507,7 @@ export default function () {
     forEachNode(node, function (n) {
       n.id = id++
       if (wantDelta) {
-        delta = Math.abs(getDelta(n))
+        delta = Math.abs(getItemDelta(n.data))
         if (maxDelta < delta) {
           maxDelta = delta
         }
@@ -758,6 +758,12 @@ export default function () {
     return chart
   }
 
+  chart.getItemDelta = function (_) {
+    if (!arguments.length) { return getItemDelta }
+    getItemDelta = _
+    return chart
+  }
+
   chart.getItemChildren = function (_) {
     if (!arguments.length) { return getItemChildren }
     getItemChildren = _
@@ -767,12 +773,6 @@ export default function () {
   chart.getLibtype = function (_) {
     if (!arguments.length) { return getLibtype }
     getLibtype = _
-    return chart
-  }
-
-  chart.getDelta = function (_) {
-    if (!arguments.length) { return getDelta }
-    getDelta = _
     return chart
   }
 
