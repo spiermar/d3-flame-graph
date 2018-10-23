@@ -3451,24 +3451,24 @@ var flamegraph = function () {
     }
   };
 
-  var getName = function (d) {
-    return d.data.n || d.data.name
+  var getItemName = function (item) {
+    return item.n || item.name
   };
 
-  var getValue = function (d) {
-    return d.v || d.value
+  var getItemValue = function (item) {
+    return item.v || item.value
   };
 
-  var getChildren = function (d) {
-    return d.c || d.children
+  var getItemDelta = function (item) {
+    return item.d || item.delta
   };
 
-  var getLibtype = function (d) {
-    return d.data.l || d.data.libtype
+  var getItemKind = function (item) {
+    return item.l || item.libtype
   };
 
-  var getDelta = function (d) {
-    return d.data.d || d.data.delta
+  var getItemChildren = function (item) {
+    return item.c || item.children
   };
 
   var searchHandler = function () {
@@ -3492,24 +3492,12 @@ var flamegraph = function () {
   var originalDetailsHandler = detailsHandler;
 
   var labelHandler = function (d) {
-    return getName(d) + ' (' + format('.3f')(100 * (d.x1 - d.x0), 3) + '%, ' + getValue(d) + ' samples)'
+    return getItemName(d.data) + ' (' + format('.3f')(100 * (d.x1 - d.x0), 3) + '%, ' + d.value + ' samples)'
   };
 
   function setSearchDetails () {
     detailsElement.innerHTML = searchSum + ' of ' + totalValue + ' samples ( ' + format('.3f')(100 * (searchSum / totalValue), 3) + '%)';
   }
-
-  var classMapper = function (d, base) {
-    let classes = base;
-    if (d.fade) classes += ' stem';
-    if (d.highlight) classes += ' highlight';
-    return classes
-  };
-
-  var colorMapper = function (d) {
-    return colorHash(getName(d), getLibtype(d), getDelta(d))
-  };
-  var originalColorMapper = colorMapper;
 
   function generateHash (name) {
     // Return a vector (0.0->1.0) that is a hash of the input string.
@@ -3535,15 +3523,17 @@ var flamegraph = function () {
     return hash
   }
 
-  function colorHash (name, libtype, delta) {
+  var getNodeColor = function (node) {
     // Return a color for the given name and library type. The library type
     // selects the hue, and the name is hashed to a color in that hue.
 
-    var r;
-    var g;
-    var b;
+    let r;
+    let g;
+    let b;
 
     if (differential) {
+      let delta = getItemDelta(node.data);
+
       r = 220;
       g = 220;
       b = 220;
@@ -3560,6 +3550,9 @@ var flamegraph = function () {
         g = r;
       }
     } else {
+      let name = getItemName(node.data);
+      let libtype = getItemKind(node.data);
+
       // default when libtype is not in use
       var hue = elided ? 'cold' : 'warm';
 
@@ -3623,7 +3616,16 @@ var flamegraph = function () {
     }
 
     return 'rgb(' + r + ',' + g + ',' + b + ')'
-  }
+  };
+
+  const getNodeColorDefault = getNodeColor;
+
+  var getNodeClass = function (node, small) {
+    let classes = small ? 'node-sm' : 'node';
+    if (node.fade) classes += ' stem';
+    if (node.highlight) classes += ' highlight';
+    return classes
+  };
 
   function show (d) {
     d.fade = false;
@@ -3701,22 +3703,22 @@ var flamegraph = function () {
     var sum = 0;
 
     function searchInner (d, foundParent) {
-      var label = getName(d);
+      var label = getItemName(d.data);
       var found = false;
 
       if (typeof label !== 'undefined' && label && label.match(re)) {
         d.highlight = true;
         found = true;
         if (!foundParent) {
-          sum += getValue(d);
+          sum += d.value;
         }
         results.push(d);
       } else {
         d.highlight = false;
       }
 
-      if (getChildren(d)) {
-        getChildren(d).forEach(function (child) {
+      if (d.children) {
+        d.children.forEach(function (child) {
           searchInner(child, (foundParent || found));
         });
       }
@@ -3729,8 +3731,8 @@ var flamegraph = function () {
 
   function clear (d) {
     d.highlight = false;
-    if (getChildren(d)) {
-      getChildren(d).forEach(function (child) {
+    if (d.children) {
+      d.children.forEach(function (child) {
         clear(child);
       });
     }
@@ -3740,7 +3742,7 @@ var flamegraph = function () {
     if (typeof sort === 'function') {
       return sort(a, b)
     } else if (sort) {
-      return ascending$1(getName(a), getName(b))
+      return ascending$1(getItemName(a.data), getItemName(b.data))
     }
   }
 
@@ -3817,12 +3819,12 @@ var flamegraph = function () {
     // UPDATE old elements present in new data.
     g.each(function (d) {
       const wpx = width(d);
-      this.className = classMapper(d, wpx < 35 ? 'node-sm' : 'node');
-      this.style.backgroundColor = colorMapper(d);
+      this.className = getNodeClass(d, wpx < 35);
+      this.style.backgroundColor = getNodeColor(d);
       this.style.width = wpx + 'px';
       this.style.left = x(d.x0) + 'px';
       this.style.top = top(d) + 'px';
-      this.textContent = wpx < 35 ? '' : getName(d);
+      this.textContent = wpx < 35 ? '' : getItemName(d.data);
       this.style.display = 'unset';
     });
 
@@ -3830,12 +3832,12 @@ var flamegraph = function () {
     g.enter().append(function (d) {
       const wpx = width(d);
       const element = document.createElement('div');
-      element.className = classMapper(d, wpx < 35 ? 'node-sm' : 'node');
-      element.style.backgroundColor = colorMapper(d);
+      element.className = getNodeClass(d, wpx < 35);
+      element.style.backgroundColor = getNodeColor(d);
       element.style.width = wpx + 'px';
       element.style.left = x(d.x0) + 'px';
       element.style.top = top(d) + 'px';
-      element.textContent = wpx < 35 ? '' : getName(d);
+      element.textContent = wpx < 35 ? '' : getItemName(d.data);
       if (!tooltip) element.title = labelHandler(d);
       element.addEventListener('click', nodeClick);
       element.addEventListener('mouseover', nodeMouseOver);
@@ -3897,7 +3899,7 @@ var flamegraph = function () {
     forEachNode(node, function (n) {
       n.id = id++;
       if (wantDelta) {
-        delta = Math.abs(getDelta(n));
+        delta = Math.abs(getItemDelta(n.data));
         if (maxDelta < delta) {
           maxDelta = delta;
         }
@@ -3919,7 +3921,7 @@ var flamegraph = function () {
         excluded.push(children);
       }
     } else {
-      root.value = root.fade ? 0 : getValue(root.data);
+      root.value = root.fade ? 0 : getItemValue(root.data);
       stack.push(root);
     }
     // First DFS pass:
@@ -3943,7 +3945,7 @@ var flamegraph = function () {
           if (child.fade) {
             child.value = 0;
           } else {
-            childValue = getValue(child.data);
+            childValue = getItemValue(child.data);
             child.value = childValue;
             childrenValue += childValue;
           }
@@ -3986,7 +3988,7 @@ var flamegraph = function () {
   function chart (s) {
     if (!arguments.length) return chart
 
-    root = hierarchy(s.datum(), getChildren);
+    root = hierarchy(s.datum(), getItemChildren);
     adoptNode(root);
     // FIXME: Looks like totalValue logic is broken, since we will recalculate values in update().
     // FIXME: And it doesn't account for `selfValue` option.
@@ -4099,22 +4101,11 @@ var flamegraph = function () {
   chart.merge = function (samples) {
     var newRoot; // Need to re-create hierarchy after data changes.
     merge([root.data], [samples]);
-    newRoot = hierarchy(root.data, getChildren);
+    newRoot = hierarchy(root.data, getItemChildren);
     adoptNode(newRoot);
     root = newRoot;
     update();
   };
-
-  chart.setColorMapper = function (_) {
-    if (!arguments.length) {
-      colorMapper = originalColorMapper;
-      return chart
-    }
-    colorMapper = _;
-    return chart
-  };
-  // Kept for backwards compatibility.
-  chart.color = chart.setColorMapper;
 
   chart.minFrameSize = function (_) {
     if (!arguments.length) { return minFrameSize }
@@ -4136,33 +4127,45 @@ var flamegraph = function () {
     return chart
   };
 
-  chart.getName = function (_) {
-    if (!arguments.length) { return getName }
-    getName = _;
+  chart.getItemName = function (_) {
+    if (!arguments.length) { return getItemName }
+    getItemName = _;
     return chart
   };
 
-  chart.getValue = function (_) {
-    if (!arguments.length) { return getValue }
-    getValue = _;
+  chart.getItemValue = function (_) {
+    if (!arguments.length) { return getItemValue }
+    getItemValue = _;
     return chart
   };
 
-  chart.getChildren = function (_) {
-    if (!arguments.length) { return getChildren }
-    getChildren = _;
+  chart.getItemDelta = function (_) {
+    if (!arguments.length) { return getItemDelta }
+    getItemDelta = _;
     return chart
   };
 
-  chart.getLibtype = function (_) {
-    if (!arguments.length) { return getLibtype }
-    getLibtype = _;
+  chart.getItemChildren = function (_) {
+    if (!arguments.length) { return getItemChildren }
+    getItemChildren = _;
     return chart
   };
 
-  chart.getDelta = function (_) {
-    if (!arguments.length) { return getDelta }
-    getDelta = _;
+  chart.getItemKind = function (_) {
+    if (!arguments.length) { return getItemKind }
+    getItemKind = _;
+    return chart
+  };
+
+  chart.getNodeColor = function (_) {
+    if (!arguments.length) { return getNodeColor }
+    getNodeColor = _ || getNodeColorDefault;
+    return chart
+  };
+
+  chart.getNodeClass = function (_) {
+    if (!arguments.length) { return getNodeClass }
+    getNodeClass = _;
     return chart
   };
 
