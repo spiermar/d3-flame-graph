@@ -203,38 +203,29 @@ export default function () {
     return 'rgb(' + r + ',' + g + ',' + b + ')'
   }
 
-  function hide (d) {
-    d.data.hide = true
-    if (getChildren(d)) {
-      getChildren(d).forEach(hide)
-    }
-  }
-
   function show (d) {
     d.data.fade = false
     d.data.hide = false
-    if (getChildren(d)) {
-      getChildren(d).forEach(show)
+    if (d.children) {
+      d.children.forEach(show)
     }
   }
 
-  function getSiblings (d) {
-    var siblings = []
-    if (d.parent) {
-      var me = getChildren(d.parent).indexOf(d)
-      siblings = getChildren(d.parent).slice(0)
-      siblings.splice(me, 1)
-    }
-    return siblings
-  }
-
-  function hideSiblings (d) {
-    var siblings = getSiblings(d)
-    siblings.forEach(function (s) {
-      hide(s)
-    })
-    if (d.parent) {
-      hideSiblings(d.parent)
+  function hideSiblings (node) {
+    let child = node
+    let parent = child.parent
+    let children, i, sibling
+    while (parent) {
+      children = parent.children
+      i = children.length
+      while (i--) {
+        sibling = children[i]
+        if (sibling !== child) {
+          sibling.data.hide = true
+        }
+      }
+      child = parent
+      parent = child.parent
     }
   }
 
@@ -244,13 +235,6 @@ export default function () {
       fadeAncestors(d.parent)
     }
   }
-
-  // function getRoot (d) {
-  //   if (d.parent) {
-  //     return getRoot(d.parent)
-  //   }
-  //   return d
-  // }
 
   function zoom (d) {
     tip.hide(d)
