@@ -659,7 +659,7 @@ export default function () {
 
   chart.findById = function (id) {
     function findTree (d, id) {
-      if (d.id === id) {
+      if (d.id.toString() === id) {
         return d
       } else {
         var children = getChildren(d)

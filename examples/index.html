@@ -113,7 +113,6 @@
     function findInvoke() {
       var searchId = location.hash.substring(1);
       if (searchId) {
-        console.log(searchId);
         find(searchId);
       }
     }
@@ -147,6 +146,7 @@
 
     function find(id) {
       var elem = flameGraph.findById(id);
+      console.log(elem)
       flameGraph.zoomTo(elem);
     }
 

@@ -5419,7 +5419,7 @@ var flamegraph = function () {
 
   chart.findById = function (id) {
     function findTree (d, id) {
-      if (d.id === id) {
+      if (d.id.toString() === id) {
         return d
       } else {
         var children = getChildren(d);
@@ -5441,27 +5441,6 @@ var flamegraph = function () {
     var found = findTree(data[0], id);
     return found
   };
-
-  /*
-  function findTree (id, data) {
-    if (data.id === id) {
-      return data
-    } else if (children(data)) {
-      return children(data).find(c => findTree(id, c))
-    } else {
-      return undefined
-    }
-  }
-
-  chart.findById = function (id) {
-    if (id === undefined) {
-      return undefined
-    }
-    var data = selection.data()
-    var found = findTree(id, data[0])
-    return found
-  }
-  */
 
   chart.clear = function () {
     searchSum = 0;
