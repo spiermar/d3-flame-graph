@@ -6,7 +6,6 @@ import { scaleLinear } from 'd3-scale'
 import { easeCubic } from 'd3-ease'
 import { default as d3Tip } from 'd3-tip'
 import 'd3-transition'
-import sha1 from 'sha1'
 
 export default function () {
   var w = 960 // graph width
@@ -28,6 +27,26 @@ export default function () {
   var searchSum = 0
   var totalValue = 0
   var maxDelta = 0
+
+  var getName = function (d) {
+    return d.data.n || d.data.name
+  }
+
+  var getValue = function (d) {
+    return d.v || d.value
+  }
+
+  var getChildren = function (d) {
+    return d.c || d.children
+  }
+
+  var getLibtype = function (d) {
+    return d.data.l || d.data.libtype
+  }
+
+  var getDelta = function (d) {
+    return d.data.d || d.data.delta
+  }
 
   var searchHandler = function () {
     if (detailsElement) { setSearchDetails() }
@@ -60,30 +79,9 @@ export default function () {
     .html(function (d) { return labelHandler(d) })
 
   var svg
-  var idpool = {}
-
-  function getName (d) {
-    return d.data.n || d.data.name
-  }
-
-  function getValue (d) {
-    return d.v || d.value
-  }
-
-  function getChildren (d) {
-    return d.c || d.children
-  }
-
-  function getLibtype (d) {
-    return d.data.l || d.data.libtype
-  }
-
-  function getDelta (d) {
-    return d.data.d || d.data.delta
-  }
 
   function setSearchDetails () {
-    detailsElement.innerHTML = `${searchSum} of ${totalValue} samples (${format('.3f')(100 * (searchSum / totalValue), 3)}%)`
+    detailsElement.innerHTML = searchSum + ' of ' + totalValue + ' samples ( ' + format('.3f')(100 * (searchSum / totalValue), 3) + '%)'
   }
 
   var colorMapper = function (d) {
@@ -205,38 +203,29 @@ export default function () {
     return 'rgb(' + r + ',' + g + ',' + b + ')'
   }
 
-  function hide (d) {
-    d.data.hide = true
-    if (getChildren(d)) {
-      getChildren(d).forEach(hide)
-    }
-  }
-
   function show (d) {
     d.data.fade = false
     d.data.hide = false
-    if (getChildren(d)) {
-      getChildren(d).forEach(show)
+    if (d.children) {
+      d.children.forEach(show)
     }
   }
 
-  function getSiblings (d) {
-    var siblings = []
-    if (d.parent) {
-      var me = getChildren(d.parent).indexOf(d)
-      siblings = getChildren(d.parent).slice(0)
-      siblings.splice(me, 1)
-    }
-    return siblings
-  }
-
-  function hideSiblings (d) {
-    var siblings = getSiblings(d)
-    siblings.forEach(function (s) {
-      hide(s)
-    })
-    if (d.parent) {
-      hideSiblings(d.parent)
+  function hideSiblings (node) {
+    let child = node
+    let parent = child.parent
+    let children, i, sibling
+    while (parent) {
+      children = parent.children
+      i = children.length
+      while (i--) {
+        sibling = children[i]
+        if (sibling !== child) {
+          sibling.data.hide = true
+        }
+      }
+      child = parent
+      parent = child.parent
     }
   }
 
@@ -246,13 +235,6 @@ export default function () {
       fadeAncestors(d.parent)
     }
   }
-
-  // function getRoot (d) {
-  //   if (d.parent) {
-  //     return getRoot(d.parent)
-  //   }
-  //   return d
-  // }
 
   function zoom (d) {
     tip.hide(d)
@@ -332,21 +314,9 @@ export default function () {
       var x = scaleLinear().range([0, w])
       var y = scaleLinear().range([0, c])
 
+      reappraiseNode(root)
       if (sort) root.sort(doSort)
-      root.sum(function (d) {
-        if (d.fade || d.hide) {
-          return 0
-        }
-        // The node's self value is its total value minus all children.
-        var v = getValue(d)
-        if (!selfValue && getChildren(d)) {
-          var c = getChildren(d)
-          for (var i = 0; i < c.length; i++) {
-            v -= getValue(c[i])
-          }
-        }
-        return v
-      })
+
       p(root)
 
       var kx = w / (root.x1 - root.x0)
@@ -453,27 +423,128 @@ export default function () {
     })
   }
 
-  function injectIds (node, parent, pos) {
-    node.id = sha1((((pos || 0) + 1) ^ 3) * (node.depth ^ 7) + node.data.n + (parent || ''))
-    var children = node.c || node.children || []
-    for (var i = 0; i < children.length; i++) {
-      injectIds(children[i], node.id, i)
+  function forEachNode (node, f) {
+    f(node)
+    let children = node.children
+    if (children) {
+      const stack = [children]
+      let count, child, grandChildren
+      while (stack.length) {
+        children = stack.pop()
+        count = children.length
+        while (count--) {
+          child = children[count]
+          f(child)
+          grandChildren = child.children
+          if (grandChildren) {
+            stack.push(grandChildren)
+          }
+        }
+      }
+    }
+  }
+
+  function adoptNode (node) {
+    maxDelta = 0
+    let id = 0
+    let delta = 0
+    const wantDelta = differential
+    forEachNode(node, function (n) {
+      n.id = id++
+      if (wantDelta) {
+        delta = Math.abs(getDelta(n))
+        if (maxDelta < delta) {
+          maxDelta = delta
+        }
+      }
+    })
+  }
+
+  function reappraiseNode (root) {
+    let node, children, grandChildren, childrenValue, i, j, child, childValue
+    const stack = []
+    const included = []
+    const excluded = []
+    const compoundValue = !selfValue
+    let item = root.data
+    if (item.hide) {
+      root.value = 0
+      children = root.children
+      if (children) {
+        excluded.push(children)
+      }
+    } else {
+      root.value = item.fade ? 0 : getValue(item)
+      stack.push(root)
+    }
+    // First DFS pass:
+    // 1. Update node.value with node's self value
+    // 2. Populate excluded list with children under hidden nodes
+    // 3. Populate included list with children under visible nodes
+    while ((node = stack.pop())) {
+      children = node.children
+      if (children && (i = children.length)) {
+        childrenValue = 0
+        while (i--) {
+          child = children[i]
+          item = child.data
+          if (item.hide) {
+            child.value = 0
+            grandChildren = child.children
+            if (grandChildren) {
+              excluded.push(grandChildren)
+            }
+            continue
+          }
+          if (item.fade) {
+            child.value = 0
+          } else {
+            childValue = getValue(item)
+            child.value = childValue
+            childrenValue += childValue
+          }
+          stack.push(child)
+        }
+        // Here second part of `&&` is actually checking for `node.data.fade`. However,
+        // checking for node.value is faster and presents more oportunities for JS optimizer.
+        if (compoundValue && node.value) {
+          node.value -= childrenValue
+        }
+        included.push(children)
+      }
+    }
+    // Postorder traversal to compute compound value of each visible node.
+    i = included.length
+    while (i--) {
+      children = included[i]
+      childrenValue = 0
+      j = children.length
+      while (j--) {
+        childrenValue += children[j].value
+      }
+      children[0].parent.value += childrenValue
+    }
+    // Continue DFS to set value of all hidden nodes to 0.
+    while (excluded.length) {
+      children = excluded.pop()
+      j = children.length
+      while (j--) {
+        child = children[j]
+        child.value = 0
+        grandChildren = child.children
+        if (grandChildren) {
+          excluded.push(grandChildren)
+        }
+      }
     }
   }
 
   function chart (s) {
-    var root = hierarchy(
-      s.datum(), function (d) { return getChildren(d) }
-    )
-    console.time('injectIds')
-    injectIds(root)
-    console.timeEnd('injectIds')
+    var root = hierarchy(s.datum(), getChildren)
+    adoptNode(root)
 
+    // This line is invalid - root is a d3 node, while getValue() expects data item. Will address in next patch.
     totalValue = getValue(root)
-
-    if (differential) {
-      calculateMaxDelta(root)
-    }
 
     selection = s.datum(root)
 
@@ -611,25 +682,6 @@ export default function () {
     return found
   }
 
-  function findTree (id, data) {
-    if (data.id === id) {
-      return data
-    } else if (children(data)) {
-      return children(data).find(c => findTree(id, c))
-    } else {
-      return undefined
-    }
-  }
-
-  chart.findById = function (id) {
-    if (id === undefined) {
-      return undefined
-    }
-    var data = selection.data()
-    var found = findTree(id, data[0])
-    return found
-  }
-
   chart.clear = function () {
     searchSum = 0
     detailsHandler(null)
@@ -661,8 +713,8 @@ export default function () {
     var newRoot // Need to re-create hierarchy after data changes.
     selection.each(function (root) {
       merge([root.data], [samples])
-      newRoot = hierarchy(root.data, function (d) { return getChildren(d) })
-      injectIds(newRoot)
+      newRoot = hierarchy(root.data, getChildren)
+      adoptNode(newRoot)
     })
     selection = selection.datum(newRoot)
     update()
@@ -696,6 +748,36 @@ export default function () {
   chart.selfValue = function (_) {
     if (!arguments.length) { return selfValue }
     selfValue = _
+    return chart
+  }
+
+  chart.getName = function (_) {
+    if (!arguments.length) { return getName }
+    getName = _
+    return chart
+  }
+
+  chart.getValue = function (_) {
+    if (!arguments.length) { return getValue }
+    getValue = _
+    return chart
+  }
+
+  chart.getChildren = function (_) {
+    if (!arguments.length) { return getChildren }
+    getChildren = _
+    return chart
+  }
+
+  chart.getLibtype = function (_) {
+    if (!arguments.length) { return getLibtype }
+    getLibtype = _
+    return chart
+  }
+
+  chart.getDelta = function (_) {
+    if (!arguments.length) { return getDelta }
+    getDelta = _
     return chart
   }
 
