@@ -5144,6 +5144,22 @@ var flamegraph = function () {
     searchHandler(results, sum, totalValue);
   }
 
+  function findTree (d, id) {
+    if (d.id === id) {
+      return d
+    } else {
+      var children = getChildren(d);
+      if (children) {
+        for (var i = 0; i < children.length; i++) {
+          var found = findTree(children[i], id);
+          if (found) {
+            return found
+          }
+        }
+      }
+    }
+  }
+
   function clear (d) {
     d.highlight = false;
     if (getChildren(d)) {
@@ -5520,6 +5536,19 @@ var flamegraph = function () {
       searchTree(data, term);
       update();
     });
+  };
+
+  chart.findById = function (id) {
+    if (typeof (id) === 'undefined' || id === null) {
+      return null
+    }
+    let found = null;
+    selection.each(function (data) {
+      if (found === null) {
+        found = findTree(data, id);
+      }
+    });
+    return found
   };
 
   chart.clear = function () {
