@@ -110,8 +110,8 @@
     // Example on how to use searchById() function in flamegraph. 
     // To invoke this function after loading the graph itself, this function should be registered in d3 datum(data).call()
     // (See d3.json invocation in this file)
-    function findInvoke() {
-      var searchId = location.hash.substring(1);
+    function invokeFind() {
+      var searchId = parseInt(location.hash.substring(1), 10);
       if (searchId) {
         find(searchId);
       }
@@ -131,7 +131,7 @@
       d3.select("#chart")
           .datum(data)
           .call(flameGraph)
-          .call(findInvoke);
+          .call(invokeFind);
     });
 
     document.getElementById("form").addEventListener("submit", function(event){
@@ -146,8 +146,10 @@
 
     function find(id) {
       var elem = flameGraph.findById(id);
-      console.log(elem)
-      flameGraph.zoomTo(elem);
+      if (elem){
+        console.log(elem)
+        flameGraph.zoomTo(elem);
+      }
     }
 
     function clear() {
@@ -160,8 +162,8 @@
     }
 
     function onClick(d) {
-      console.info("Clicked on " + d.data.name + ", id: \"" + d.id + "\"");
-      history.pushState({ id: d.id }, d.data.name, '#' + d.id)
+      console.info(`Clicked on ${d.data.name}, id: "${d.id}"`);
+      history.pushState({ id: d.id }, d.data.name, `#${d.id}`);
     }
     </script>
   </body>

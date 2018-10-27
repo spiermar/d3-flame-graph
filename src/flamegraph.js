@@ -279,6 +279,22 @@ export default function () {
     searchHandler(results, sum, totalValue)
   }
 
+  function findTree (d, id) {
+    if (d.id === id) {
+      return d
+    } else {
+      var children = getChildren(d)
+      if (children) {
+        for (var i = 0; i < children.length; i++) {
+          var found = findTree(children[i], id)
+          if (found) {
+            return found
+          }
+        }
+      }
+    }
+  }
+
   function clear (d) {
     d.highlight = false
     if (getChildren(d)) {
@@ -658,27 +674,15 @@ export default function () {
   }
 
   chart.findById = function (id) {
-    function findTree (d, id) {
-      if (d.id.toString() === id) {
-        return d
-      } else {
-        var children = getChildren(d)
-        if (children) {
-          for (var i = 0; i < children.length; i++) {
-            var found = findTree(children[i], id)
-            if (found) {
-              return found
-            }
-          }
-        }
+    if (typeof (id) === 'undefined' || id === null) {
+      return null
+    }
+    let found = null
+    selection.each(function (data) {
+      if (found === null) {
+        found = findTree(data, id)
       }
-    }
-
-    if (id === undefined) {
-      return undefined
-    }
-    var data = selection.data()
-    var found = findTree(data[0], id)
+    })
     return found
   }
 
