@@ -4898,7 +4898,11 @@ var flamegraph = function () {
   };
 
   var getValue = function (d) {
-    return d.v || d.value
+    if ('v' in d) {
+      return d.v
+    } else {
+      return d.value
+    }
   };
 
   var getChildren = function (d) {
@@ -4910,7 +4914,11 @@ var flamegraph = function () {
   };
 
   var getDelta = function (d) {
-    return d.data.d || d.data.delta
+    if ('d' in d.data) {
+      return d.data.v
+    } else {
+      return d.data.delta
+    }
   };
 
   var searchHandler = function () {
@@ -5424,8 +5432,7 @@ var flamegraph = function () {
     var root = hierarchy(s.datum(), getChildren);
     adoptNode(root);
 
-    // This line is invalid - root is a d3 node, while getValue() expects data item. Will address in next patch.
-    totalValue = getValue(root);
+    totalValue = root.value;
 
     selection = s.datum(root);
 
