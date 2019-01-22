@@ -5120,16 +5120,14 @@ var flamegraph = function () {
     }
   }
 
-  function searchTree (d, term) {
-    var re = new RegExp(term);
+  function searchTree (d, searchFunction) {
     var results = [];
     var sum = 0;
 
     function searchInner (d, foundParent) {
-      var label = getName(d);
       var found = false;
 
-      if (typeof label !== 'undefined' && label && label.match(re)) {
+      if (searchFunction(d)) {
         d.highlight = true;
         found = true;
         if (!foundParent) {
@@ -5539,8 +5537,19 @@ var flamegraph = function () {
   chart.label = chart.setLabelHandler;
 
   chart.search = function (term) {
+    let searchFunction;
+    if (typeof term === 'function') {
+      searchFunction = term;
+    } else {
+      const re = new RegExp(term);
+      searchFunction = function (d) {
+        const label = getName(d);
+        return (typeof label !== 'undefined' && label && label.match(re))
+      };
+    }
+
     selection.each(function (data) {
-      searchTree(data, term);
+      searchTree(data, searchFunction);
       update();
     });
   };
