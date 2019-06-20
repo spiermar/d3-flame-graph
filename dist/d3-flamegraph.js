@@ -4915,7 +4915,7 @@ var flamegraph = function () {
 
   var getDelta = function (d) {
     if ('d' in d.data) {
-      return d.data.v
+      return d.data.d
     } else {
       return d.data.delta
     }
