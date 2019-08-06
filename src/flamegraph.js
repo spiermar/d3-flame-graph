@@ -736,7 +736,10 @@ export default function () {
       colorMapper = originalColorMapper
       return chart
     }
-    colorMapper = _
+    colorMapper = (d) => {
+      const originalColor = originalColorMapper(d)
+      return _(d, originalColor)
+    }
     return chart
   }
   // Kept for backwards compatibility.

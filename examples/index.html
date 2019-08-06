@@ -71,7 +71,7 @@
 
     <!-- D3.js -->
     <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
-    
+
     <!-- d3-tip -->
     <script type="text/javascript" src=https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js></script>
 
@@ -92,7 +92,9 @@
       .onClick(onClick)
       .differential(false)
       .elided(false)
-      .selfValue(false);
+      .selfValue(false)
+      .setColorMapper((d, originalColor) =>
+        d.highlight ? "#6aff8f" : originalColor);
 
 
     // Example on how to use custom tooltips using d3-tip.
@@ -107,7 +109,7 @@
     var details = document.getElementById("details");
     flameGraph.setDetailsElement(details);
 
-    // Example on how to use searchById() function in flamegraph. 
+    // Example on how to use searchById() function in flamegraph.
     // To invoke this function after loading the graph itself, this function should be registered in d3 datum(data).call()
     // (See d3.json invocation in this file)
     function invokeFind() {

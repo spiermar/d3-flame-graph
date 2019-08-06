@@ -276,12 +276,12 @@ If called with no arguments, `setSearchHandler` will reset the search handler fu
 
 <a name="setColorMapper" href="#setColorMapper">#</a> flamegraph.<b>setColorMapper</b>(<i>[function]</i>)
 
-Replaces the built-in node color hash function. Function takes a single argument, the node data structure, and returns a color string. Example:
+Replaces the built-in node color hash function. Function takes two arguments, the node data structure and the original color string for that node. It must return a color string. Example:
 
 ```js
-// Purple if highlighted, otherwise a static blue.
-flamegraph.setColorMapper(function(d) {
-    return d.highlight ? "#E600E6" : "#0A5BC4";
+// Purple if highlighted, otherwise the original color
+flamegraph.setColorMapper(function(d, originalColor) {
+    return d.highlight ? "#E600E6" : originalColor;
 });
 ```
 
