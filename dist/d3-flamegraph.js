@@ -4926,6 +4926,13 @@ var flamegraph = function () {
   };
   var originalSearchHandler = searchHandler;
 
+  let searchMatch = (d, term) => {
+    const re = new RegExp(term);
+    const label = getName(d);
+    return typeof label !== 'undefined' && label && label.match(re)
+  };
+  const originalSearchMatch = searchMatch;
+
   var detailsHandler = function (d) {
     if (detailsElement) {
       if (d) {
@@ -5121,15 +5128,13 @@ var flamegraph = function () {
   }
 
   function searchTree (d, term) {
-    var re = new RegExp(term);
     var results = [];
     var sum = 0;
 
     function searchInner (d, foundParent) {
-      var label = getName(d);
       var found = false;
 
-      if (typeof label !== 'undefined' && label && label.match(re)) {
+      if (searchMatch(d, term)) {
         d.highlight = true;
         found = true;
         if (!foundParent) {
@@ -5675,6 +5680,15 @@ var flamegraph = function () {
       return chart
     }
     detailsHandler = _;
+    return chart
+  };
+
+  chart.setSearchMatch = function (_) {
+    if (!arguments.length) {
+      searchMatch = originalSearchMatch;
+      return chart
+    }
+    searchMatch = _;
     return chart
   };
 
