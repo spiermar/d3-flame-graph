@@ -344,6 +344,9 @@ export default function () {
       var y = scaleLinear().range([0, c])
 
       reappraiseNode(root)
+
+      totalValue = root.value
+
       if (sort) root.sort(doSort)
 
       p(root)
@@ -569,10 +572,9 @@ export default function () {
   }
 
   function chart (s) {
-    var root = hierarchy(s.datum(), getChildren)
-    adoptNode(root)
+    const root = hierarchy(s.datum(), getChildren)
 
-    totalValue = root.value
+    adoptNode(root)
 
     selection = s.datum(root)
 

@@ -5209,6 +5209,9 @@ var flamegraph = function () {
       var y = linear().range([0, c]);
 
       reappraiseNode(root);
+
+      totalValue = root.value;
+
       if (sort) root.sort(doSort);
 
       p(root);
@@ -5434,10 +5437,9 @@ var flamegraph = function () {
   }
 
   function chart (s) {
-    var root = hierarchy(s.datum(), getChildren);
-    adoptNode(root);
+    const root = hierarchy(s.datum(), getChildren);
 
-    totalValue = root.value;
+    adoptNode(root);
 
     selection = s.datum(root);
 
