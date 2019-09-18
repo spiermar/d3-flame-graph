@@ -728,6 +728,7 @@ export default function () {
   }
 
   chart.merge = function (samples) {
+    if (!selection) { return chart }
     var newRoot // Need to re-create hierarchy after data changes.
     selection.each(function (root) {
       merge([root.data], [samples])
@@ -736,6 +737,20 @@ export default function () {
     })
     selection = selection.datum(newRoot)
     update()
+    return chart
+  }
+
+  chart.update = function (samples) {
+    if (!selection) { return chart }
+    var newRoot // Need to re-create hierarchy after data changes.
+    selection.each(function (root) {
+      root.data = samples
+      newRoot = hierarchy(root.data, getChildren)
+      adoptNode(newRoot)
+    })
+    selection = selection.datum(newRoot)
+    update()
+    return chart
   }
 
   chart.setColorMapper = function (_) {

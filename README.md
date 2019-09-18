@@ -193,7 +193,7 @@ Enables/disables sorting of children frames. Defaults to <i>true</i> if not set 
 
 Invert the flame graph direction. A top-down visualization of the flame graph, also known as _icicle_ plot. Defaults to <i>false</i> if not set. If a value is specified, it will enable/disable the inverted flame graphs direction, otherwise it will return the current inverted configuration.
 
-<a name="inverted" href="#inverted">#</a> flamegraph.<b>differential</b>(<i>[differential]</i>)
+<a name="differential" href="#differential">#</a> flamegraph.<b>differential</b>(<i>[differential]</i>)
 
 Use the _differential_ color hash. Frames are sized according to their `value` but colored based on the `delta` property. Blue for negative numbers, red for positive numbers.
 
@@ -285,7 +285,7 @@ flamegraph.setColorMapper(function(d, originalColor) {
 });
 ```
 
-If called with no arguments, `setColorMapper` will return reset the color hash function.
+If called with no arguments, `setColorMapper` will reset the color hash function.
 
 <a name="setSearchMatch" href="#setSearchMatch">#</a> flamegraph.<b>setSearchMatch</b>(<i>[function]</i>)
 
@@ -301,6 +301,14 @@ flamegraph.setSearchMatch(function(d, term) {
 
 If called with no arguments, `setSearchMatch` will return reset the search
 match function.
+
+<a name="merge" href="#merge">#</a> flamegraph.<b>merge</b>(<i>samples</i>)
+
+Merges the current nodes with the given nodes.
+
+<a name="update" href="#update">#</a> flamegraph.<b>update</b>(<i>samples</i>)
+
+Updates (replaces) the current set of nodes with the given nodes.
 
 **All API functions will return the flame graph object if no other behavior is specified in the function details.**
 
