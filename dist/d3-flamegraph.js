@@ -5618,6 +5618,13 @@ var flamegraph = function () {
     return chart
   };
 
+  chart.destroy = function () {
+    if (!selection) { return chart }
+    if (tooltip) tip.hide();
+    selection.selectAll('svg').remove();
+    return chart
+  };
+
   chart.setColorMapper = function (_) {
     if (!arguments.length) {
       colorMapper = originalColorMapper;

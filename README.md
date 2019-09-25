@@ -310,6 +310,10 @@ Merges the current nodes with the given nodes.
 
 Updates (replaces) the current set of nodes with the given nodes.
 
+<a name="destroy" href="#destroy">#</a> flamegraph.<b>destroy</b>()
+
+Removes the flamegraph.
+
 **All API functions will return the flame graph object if no other behavior is specified in the function details.**
 
 ## Issues

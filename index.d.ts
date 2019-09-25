@@ -63,5 +63,6 @@ declare module "d3-flame-graph" {
         clear(): void;
         merge(node: StackFrame): void;
         update(node: StackFrame): void;
+        destroy(): void;
     }
 }

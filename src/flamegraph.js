@@ -4,7 +4,7 @@ import { ascending } from 'd3-array'
 import { partition, hierarchy } from 'd3-hierarchy'
 import { scaleLinear } from 'd3-scale'
 import { easeCubic } from 'd3-ease'
-import { default as d3Tip } from 'd3-tip'
+import d3Tip from 'd3-tip'
 import 'd3-transition'
 
 export default function () {
@@ -750,6 +750,13 @@ export default function () {
     })
     selection = selection.datum(newRoot)
     update()
+    return chart
+  }
+
+  chart.destroy = function () {
+    if (!selection) { return chart }
+    if (tooltip) tip.hide()
+    selection.selectAll('svg').remove()
     return chart
   }
 
