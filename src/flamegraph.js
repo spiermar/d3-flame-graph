@@ -256,7 +256,7 @@ export default function () {
     hideSiblings(d)
     show(d)
     fadeAncestors(d)
-    update()
+    update({ resetHeight: true })
     if (typeof clickHandler === 'function') {
       clickHandler(d)
     }
@@ -338,7 +338,8 @@ export default function () {
     return nodeList
   }
 
-  function update () {
+  function update (options) {
+    options = options || {}
     selection.each(function (root) {
       var x = scaleLinear().range([0, w])
       var y = scaleLinear().range([0, c])
@@ -358,7 +359,7 @@ export default function () {
       var g = select(this).select('svg').selectAll('g').data(descendants, function (d) { return d.id })
 
       // if height is not set: set height on first update, after nodes were filtered by minFrameSize
-      if (!h) {
+      if (!h || options.resetHeight) {
         var maxDepth = Math.max.apply(null, descendants.map(function (n) { return n.depth }))
         h = (maxDepth + 2) * c
         select(this).select('svg').attr('height', h)
