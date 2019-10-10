@@ -7,6 +7,7 @@
     "example": "examples"
   },
   "scripts": {
+    "build": "gulp build",
     "pretest": "gulp build",
     "test": "tape 'test/**/*-test.js'",
     "prepare": "npm run test",
@@ -31,7 +32,7 @@
   },
   "homepage": "https://github.com/spiermar/d3-flame-graph#readme",
   "devDependencies": {
-    "browser-sync": "^2.24.7",
+    "browser-sync": "^2.26.7",
     "del": "^3.0.0",
     "eslint-config-standard": "^11.0.0",
     "eslint-plugin-import": "^2.14.0",
