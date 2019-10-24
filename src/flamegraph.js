@@ -27,6 +27,8 @@ export default function () {
   var searchSum = 0
   var totalValue = 0
   var maxDelta = 0
+  var resetHeightOnZoom = false
+  var scrollOnZoom = false
 
   var getName = function (d) {
     return d.data.n || d.data.name
@@ -256,7 +258,17 @@ export default function () {
     hideSiblings(d)
     show(d)
     fadeAncestors(d)
-    update({ resetHeight: true })
+    update()
+    if (scrollOnZoom) {
+      let chartOffset = svg._groups[0][0].parentNode.offsetTop
+      let maxFrames = (window.innerHeight - chartOffset) / c
+      let frameOffset = (d.height - maxFrames + 10) * c
+      window.scrollTo({
+        top: chartOffset + frameOffset,
+        left: 0,
+        behavior: 'smooth'
+      })
+    }
     if (typeof clickHandler === 'function') {
       clickHandler(d)
     }
@@ -338,8 +350,7 @@ export default function () {
     return nodeList
   }
 
-  function update (options) {
-    options = options || {}
+  function update () {
     selection.each(function (root) {
       var x = scaleLinear().range([0, w])
       var y = scaleLinear().range([0, c])
@@ -359,7 +370,7 @@ export default function () {
       var g = select(this).select('svg').selectAll('g').data(descendants, function (d) { return d.id })
 
       // if height is not set: set height on first update, after nodes were filtered by minFrameSize
-      if (!h || options.resetHeight) {
+      if (!h || resetHeightOnZoom) {
         var maxDepth = Math.max.apply(null, descendants.map(function (n) { return n.depth }))
         h = (maxDepth + 2) * c
         select(this).select('svg').attr('height', h)
@@ -368,7 +379,7 @@ export default function () {
       g.transition()
         .duration(transitionDuration)
         .ease(transitionEase)
-        .attr('transform', function (d) { return 'translate(' + x(d.x0) + ',' + (inverted ? y(d.depth) : (h - y(d.depth) - c)) + ')' })
+        .attr('transform', function (d) { return 'translate(' + x(d.x0) + ',' + (inverted ? y(d.depth) : (h - y(d.depth))) + ')' })
 
       g.select('rect')
         .transition()
@@ -378,7 +389,7 @@ export default function () {
 
       var node = g.enter()
         .append('svg:g')
-        .attr('transform', function (d) { return 'translate(' + x(d.x0) + ',' + (inverted ? y(d.depth) : (h - y(d.depth) - c)) + ')' })
+        .attr('transform', function (d) { return 'translate(' + x(d.x0) + ',' + (inverted ? y(d.depth) : (h - y(d.depth))) + ')' })
 
       node.append('svg:rect')
         .transition()
@@ -792,6 +803,18 @@ export default function () {
   chart.selfValue = function (_) {
     if (!arguments.length) { return selfValue }
     selfValue = _
+    return chart
+  }
+
+  chart.resetHeightOnZoom = function (_) {
+    if (!arguments.length) { return resetHeightOnZoom }
+    resetHeightOnZoom = _
+    return chart
+  }
+
+  chart.scrollOnZoom = function (_) {
+    if (!arguments.length) { return scrollOnZoom }
+    scrollOnZoom = _
     return chart
   }
 
