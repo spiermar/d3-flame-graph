@@ -1,11 +1,58 @@
 var gulp = require('gulp')
-var rollup = require('rollup-stream')
-var source = require('vinyl-source-stream')
+var rollup = require('rollup')
 var uglify = require('gulp-uglify-es').default
 var del = require('del')
 var rename = require('gulp-rename')
 var eslint = require('gulp-eslint')
 var browserSync = require('browser-sync').create()
+var resolve = require('rollup-plugin-node-resolve')
+var commonjs = require('rollup-plugin-commonjs')
+
+const rollupGlobals = {
+    'd3': 'd3'
+}
+
+const rollupInputOptions = {
+    input: './src/flamegraph.js',
+    external: Object.keys(rollupGlobals),
+    plugins: [
+        resolve({
+            mainFields: ['module', 'main', 'jsnext:main'],
+            browser: false,
+            extensions: ['.js'],
+            preferBuiltins: true,
+            jail: '/',
+            only: [
+                'd3-tip',
+                'd3-collection',
+                'd3-selection',
+                'd3-format',
+                'd3-array',
+                'd3-hierarchy',
+                'd3-scale',
+                'd3-ease',
+                'd3-interpolate',
+                'd3-time',
+                'd3-time-format',
+                'd3-color',
+                'd3-transition',
+                'd3-dispatch',
+                'd3-timer'
+            ],
+            modulesOnly: false
+        }),
+        commonjs()
+    ]
+}
+
+const rollupOutputOptions = {
+    name: 'd3.flamegraph',
+    format: 'umd',
+    extend: true,
+    sourcemap: false,
+    globals: rollupGlobals,
+    file: './dist/d3-flamegraph.js'
+}
 
 gulp.task('clean', function () {
     return del(['dist'])
@@ -18,14 +65,37 @@ gulp.task('lint', function () {
         .pipe(eslint.failAfterError())
 })
 
-gulp.task('rollup', function () {
-    return rollup('rollup.config.js')
-        .pipe(source('d3-flamegraph.js'))
+gulp.task('rollup:main', () => {
+    return rollup.rollup({
+        input: './src/colorMapper.js'
+    })
+        .then(bundle => {
+            return bundle.write({
+                file: './dist/d3-flamegraph-colorMapper.js',
+                sourcemap: false,
+                format: 'umd',
+                name: 'd3.flamegraph.colorMapper'
+            })
+        })
+})
+
+gulp.task('rollup:colorMapper', () => {
+    return rollup.rollup(rollupInputOptions)
+        .then(bundle => {
+            return bundle.write(rollupOutputOptions)
+        })
+})
+
+gulp.task('uglify:main', function () {
+    return gulp.src('./dist/d3-flamegraph.js')
+        .pipe(gulp.dest('./dist'))
+        .pipe(rename({suffix: '.min'}))
+        .pipe(uglify())
         .pipe(gulp.dest('./dist'))
 })
 
-gulp.task('uglify', function () {
-    return gulp.src('./dist/d3-flamegraph.js')
+gulp.task('uglify:colorMapper', function () {
+    return gulp.src('./dist/d3-flamegraph-colorMapper.js')
         .pipe(gulp.dest('./dist'))
         .pipe(rename({suffix: '.min'}))
         .pipe(uglify())
@@ -38,7 +108,7 @@ gulp.task('style', function () {
         .pipe(gulp.dest('./dist'))
 })
 
-gulp.task('rollup-watch', gulp.series('rollup', function (done) {
+gulp.task('rollup-watch', gulp.series('rollup:main', 'rollup:colorMapper', function (done) {
     browserSync.reload()
     done()
 }))
@@ -48,7 +118,7 @@ gulp.task('style-watch', gulp.series('style', function (done) {
     done()
 }))
 
-gulp.task('serve', gulp.series('lint', 'rollup', 'style', function () {
+gulp.task('serve', gulp.series('lint', 'rollup:main', 'rollup:colorMapper', 'style', function () {
     browserSync.init({
         server: {
             baseDir: ['examples', 'dist']
@@ -58,6 +128,6 @@ gulp.task('serve', gulp.series('lint', 'rollup', 'style', function () {
     gulp.watch('./src/*.css', gulp.series('style-watch'))
 }))
 
-gulp.task('build', gulp.series('clean', 'lint', 'rollup', 'style', 'uglify'))
+gulp.task('build', gulp.series('clean', 'lint', 'rollup:main', 'rollup:colorMapper', 'style', 'uglify:main', 'uglify:colorMapper'))
 
 gulp.task('default', gulp.series('serve'))

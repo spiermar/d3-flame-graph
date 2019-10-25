@@ -260,9 +260,9 @@ export default function () {
         fadeAncestors(d)
         update()
         if (scrollOnZoom) {
-            let chartOffset = svg._groups[0][0].parentNode.offsetTop
-            let maxFrames = (window.innerHeight - chartOffset) / c
-            let frameOffset = (d.height - maxFrames + 10) * c
+            const chartOffset = svg._groups[0][0].parentNode.offsetTop
+            const maxFrames = (window.innerHeight - chartOffset) / c
+            const frameOffset = (d.height - maxFrames + 10) * c
             window.scrollTo({
                 top: chartOffset + frameOffset,
                 left: 0,
