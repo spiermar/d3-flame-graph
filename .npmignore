@@ -1,2 +1,9 @@
 dist/*.zip
 test/
+examples/
+.github/
+rollup.config.js
+Gulpfile.js
+.travis.yml
+.eslintrc.json
+.gitignore
