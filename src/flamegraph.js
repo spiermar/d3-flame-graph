@@ -379,7 +379,7 @@ export default function () {
             g.transition()
                 .duration(transitionDuration)
                 .ease(transitionEase)
-                .attr('transform', function (d) { return 'translate(' + x(d.x0) + ',' + (inverted ? y(d.depth) : (h - y(d.depth))) + ')' })
+                .attr('transform', function (d) { return 'translate(' + x(d.x0) + ',' + (inverted ? y(d.depth) : (h - y(d.depth)) - c) + ')' })
 
             g.select('rect')
                 .transition()
@@ -389,7 +389,7 @@ export default function () {
 
             var node = g.enter()
                 .append('svg:g')
-                .attr('transform', function (d) { return 'translate(' + x(d.x0) + ',' + (inverted ? y(d.depth) : (h - y(d.depth))) + ')' })
+                .attr('transform', function (d) { return 'translate(' + x(d.x0) + ',' + (inverted ? y(d.depth) : (h - y(d.depth) - c)) + ')' })
 
             node.append('svg:rect')
                 .transition()
