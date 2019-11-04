@@ -372,14 +372,14 @@ export default function () {
             // if height is not set: set height on first update, after nodes were filtered by minFrameSize
             if (!h || resetHeightOnZoom) {
                 var maxDepth = Math.max.apply(null, descendants.map(function (n) { return n.depth }))
-                h = (maxDepth + 2) * c
+                h = (maxDepth + 3) * c
                 select(this).select('svg').attr('height', h)
             }
 
             g.transition()
                 .duration(transitionDuration)
                 .ease(transitionEase)
-                .attr('transform', function (d) { return 'translate(' + x(d.x0) + ',' + (inverted ? y(d.depth) : (h - y(d.depth))) + ')' })
+                .attr('transform', function (d) { return 'translate(' + x(d.x0) + ',' + (inverted ? y(d.depth) : (h - y(d.depth) - c)) + ')' })
 
             g.select('rect')
                 .transition()
@@ -389,7 +389,7 @@ export default function () {
 
             var node = g.enter()
                 .append('svg:g')
-                .attr('transform', function (d) { return 'translate(' + x(d.x0) + ',' + (inverted ? y(d.depth) : (h - y(d.depth))) + ')' })
+                .attr('transform', function (d) { return 'translate(' + x(d.x0) + ',' + (inverted ? y(d.depth) : (h - y(d.depth) - c)) + ')' })
 
             node.append('svg:rect')
                 .transition()
@@ -597,7 +597,7 @@ export default function () {
                 svg = select(this)
                     .append('svg:svg')
                     .attr('width', w)
-                    .attr('height', h || (root.height + 2) * c)
+                    .attr('height', h || (root.height + 3) * c)
                     .attr('class', 'partition d3-flame-graph')
                     .call(tip)
 
