@@ -60,3 +60,36 @@ export function offCpuColorMapper (d) {
 
     return 'rgb(' + r + ',' + g + ',' + b + ')'
 }
+
+export function nodeJsColorMapper (d, originalColor) {
+    let color = originalColor
+
+    const { v8_jit: v8JIT, javascript, optimized } = d.data.extras || {}
+    // Non-JS JIT frames (V8 builtins) are greyed out.
+    if (v8JIT && !javascript) {
+        color = '#dadada'
+    }
+    // JavaScript frames are colored based on optimization level
+    if (javascript) {
+        let opt = (optimized || 0) / d.value
+        let r = 255
+        let g = 0
+        let b = 0
+        if (opt < 0.4) {
+            opt = opt * 2.5
+            r = 240 - opt * 200
+        } else if (opt < 0.9) {
+            opt = (opt - 0.4) * 2
+            r = 0
+            b = 200 - (200 * opt)
+            g = 100 * opt
+        } else {
+            opt = (opt - 0.9) * 10
+            r = 0
+            b = 0
+            g = 100 + (150 * opt)
+        }
+        color = `rgb(${r} , ${g}, ${b})`
+    }
+    return color
+}
