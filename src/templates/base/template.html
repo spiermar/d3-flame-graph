@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="template_version" content="<%= htmlWebpackPlugin.options.templateVersion %>">
+    <title>Flame Graph</title>
+  </head>
+  <body>
+    <div class="controls">
+      <button id="reset-button" type="button">Reset Zoom</button>
+      <button id="clear-button" type="button">Clear</button>
+      <form id="search-form">
+        <input id="search-input" type="text" name="search">
+        <input type="submit" value="Search">
+      </form>
+    </div>
+    <div class="content">
+        <div id="chart"></div>
+        <div id="details" class="details">Loading Flame Graph...</div>
+    </div>
+
+    <script>flamegraph(/** @flamegraph_json **/);</script>
+  </body>
+</html>

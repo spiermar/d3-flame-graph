@@ -334,16 +334,21 @@ If you're working on an issue, please comment on it so we can assign you to it.
 
 If you have code to submit, follow the general pull request format. Fork the repo, make your changes, and submit a [pull request](https://github.com/spiermar/d3-flame-graph/pulls).
 
-### Gulp.js
+### Build
 
-This plugin uses Gulp.js as build system. A few tasks are already defined, including browser-sync that can be used for development. To start it, just execute the `serve` task.
+This plugin uses Webpack as build system. It includes a development server with live refresh on any changes. To start it, just execute the `serve` npm script.
 
 ```
 $ git clone https://github.com/spiermar/d3-flame-graph.git
 $ cd d3-flame-graph
 $ npm install
-$ gulp serve
+$ npm run serve
 ```
+
+### Template
+
+A standalone template with all JavaScript and CSS inlined gets built at `dist/templates/d3-flamegraph-base.html`.
+It contains a placeholder `/** @flamegraph_params **/` which needs to be replaced with the stacks in the format described in [Input Format](#input-format).
 
 ## License
 
