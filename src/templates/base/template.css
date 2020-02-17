@@ -1,0 +1,13 @@
+.controls button, .controls form {
+    display: inline;
+}
+
+.content {
+    margin: 0 auto;
+    padding: 0 30px 20px;
+}
+
+.details {
+    margin-top: 20px;
+    height: 1.2em;
+}
