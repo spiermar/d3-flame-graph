@@ -64,6 +64,9 @@ export default function () {
     var originalSearchHandler = searchHandler
 
     let searchMatch = (d, term) => {
+        if (!term) {
+            return false
+        }
         const re = new RegExp(term)
         const label = getName(d)
         return typeof label !== 'undefined' && label && label.match(re)
