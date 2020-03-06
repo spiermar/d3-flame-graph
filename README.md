@@ -137,7 +137,11 @@ Graph width in px. Defaults to 960px if not set. If <i>size</i> is specified, it
 
 <a name="height" href="#height">#</a> flamegraph.<b>height</b>(<i>[size]</i>)
 
-Graph height in px. Defaults to the number of cell rows times <a name="cellHeight" href="#cellHeight"><b>cellHeight</b></a> if not set. If <i>size</i> is specified, it will set the cell height, otherwise it will return the current graph height.
+Graph height in px. Defaults to the number of cell rows times <a name="cellHeight" href="#cellHeight"><b>cellHeight</b></a> if not set. If <i>size</i> is specified, it will set the cell height, otherwise it will return the current graph height. If <a name="minHeight" href="#minHeight"><b>minHeight</b></a> is specified, and higher than the provided or calculated values, it will override height.
+
+<a name="minHeight" href="#minHeight">#</a> flamegraph.<b>minHeight</b>(<i>[size]</i>)
+
+Minumum graph height in px. If <i>size</i> is specified, and higher than the provided or calculated <i>height</i>, it will override it.
 
 <a name="cellHeight" href="#cellHeight">#</a> flamegraph.<b>cellHeight</b>(<i>[size]</i>)
 

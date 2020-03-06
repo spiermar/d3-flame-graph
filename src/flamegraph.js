@@ -29,6 +29,7 @@ export default function () {
     var maxDelta = 0
     var resetHeightOnZoom = false
     var scrollOnZoom = false
+    var minHeight = null
 
     var getName = function (d) {
         return d.data.n || d.data.name
@@ -375,7 +376,10 @@ export default function () {
             // if height is not set: set height on first update, after nodes were filtered by minFrameSize
             if (!h || resetHeightOnZoom) {
                 var maxDepth = Math.max.apply(null, descendants.map(function (n) { return n.depth }))
+
                 h = (maxDepth + 3) * c
+                if (h < minHeight) h = minHeight
+
                 select(this).select('svg').attr('height', h)
             }
 
@@ -600,9 +604,13 @@ export default function () {
                 svg = select(this)
                     .append('svg:svg')
                     .attr('width', w)
-                    .attr('height', h || (root.height + 3) * c)
                     .attr('class', 'partition d3-flame-graph')
                     .call(tip)
+
+                if (h) {
+                    if (h < minHeight) h = minHeight
+                    svg.attr('height', h)
+                }
 
                 svg.append('svg:text')
                     .attr('class', 'title')
@@ -621,6 +629,12 @@ export default function () {
     chart.height = function (_) {
         if (!arguments.length) { return h }
         h = _
+        return chart
+    }
+
+    chart.minHeight = function (_) {
+        if (!arguments.length) { return minHeight }
+        minHeight = _
         return chart
     }
 
