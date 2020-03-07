@@ -5,7 +5,7 @@ import { partition, hierarchy } from 'd3-hierarchy'
 import { scaleLinear } from 'd3-scale'
 import { easeCubic } from 'd3-ease'
 import 'd3-transition'
-import flamegraphTooltip from './flamegraphTooltip'
+import { flamegraphTooltip } from './flamegraphTooltip'
 
 export default function () {
     var w = 960 // graph width

@@ -4,7 +4,7 @@ function defaultLabel (d) {
     return d.data.name
 }
 
-export default function () {
+export function flamegraphTooltip () {
     var rootElement = select('body')
     var tooltip = null
     var html = defaultLabel
