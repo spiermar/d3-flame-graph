@@ -1,4 +1,5 @@
 import { select, event } from 'd3-selection'
+import 'd3-transition'
 
 function defaultLabel (d) {
     return d.data.name

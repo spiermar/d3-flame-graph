@@ -97,7 +97,8 @@ gulp.task('rollup:flamegraphTooltip', () => {
                 preferBuiltins: true,
                 jail: '/',
                 only: [
-                    'd3-selection'
+                    'd3-selection',
+                    'd3-transition'
                 ],
                 modulesOnly: false
             }),
