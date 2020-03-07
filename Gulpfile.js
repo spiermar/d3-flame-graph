@@ -9,7 +9,7 @@ var resolve = require('rollup-plugin-node-resolve')
 var commonjs = require('rollup-plugin-commonjs')
 
 const rollupGlobals = {
-    'd3': 'd3'
+    d3: 'd3'
 }
 
 const rollupInputOptions = {
@@ -23,7 +23,6 @@ const rollupInputOptions = {
             preferBuiltins: true,
             jail: '/',
             only: [
-                'd3-tip',
                 'd3-collection',
                 'd3-selection',
                 'd3-format',
@@ -66,6 +65,13 @@ gulp.task('lint', function () {
 })
 
 gulp.task('rollup:main', () => {
+    return rollup.rollup(rollupInputOptions)
+        .then(bundle => {
+            return bundle.write(rollupOutputOptions)
+        })
+})
+
+gulp.task('rollup:colorMapper', () => {
     return rollup.rollup({
         input: './src/colorMapper.js'
     })
@@ -79,17 +85,39 @@ gulp.task('rollup:main', () => {
         })
 })
 
-gulp.task('rollup:colorMapper', () => {
-    return rollup.rollup(rollupInputOptions)
+gulp.task('rollup:flamegraphTooltip', () => {
+    return rollup.rollup({
+        input: './src/flamegraphTooltip.js',
+        external: Object.keys(rollupGlobals),
+        plugins: [
+            resolve({
+                mainFields: ['module', 'main', 'jsnext:main'],
+                browser: false,
+                extensions: ['.js'],
+                preferBuiltins: true,
+                jail: '/',
+                only: [
+                    'd3-selection'
+                ],
+                modulesOnly: false
+            }),
+            commonjs()
+        ]
+    })
         .then(bundle => {
-            return bundle.write(rollupOutputOptions)
+            return bundle.write({
+                file: './dist/d3-flamegraph-tooltip.js',
+                sourcemap: false,
+                format: 'umd',
+                name: 'd3.flamegraph.tooltip'
+            })
         })
 })
 
 gulp.task('uglify:main', function () {
     return gulp.src('./dist/d3-flamegraph.js')
         .pipe(gulp.dest('./dist'))
-        .pipe(rename({suffix: '.min'}))
+        .pipe(rename({ suffix: '.min' }))
         .pipe(uglify())
         .pipe(gulp.dest('./dist'))
 })
@@ -97,7 +125,15 @@ gulp.task('uglify:main', function () {
 gulp.task('uglify:colorMapper', function () {
     return gulp.src('./dist/d3-flamegraph-colorMapper.js')
         .pipe(gulp.dest('./dist'))
-        .pipe(rename({suffix: '.min'}))
+        .pipe(rename({ suffix: '.min' }))
+        .pipe(uglify())
+        .pipe(gulp.dest('./dist'))
+})
+
+gulp.task('uglify:flamegraphTooltip', function () {
+    return gulp.src('./dist/d3-flamegraph-tooltip.js')
+        .pipe(gulp.dest('./dist'))
+        .pipe(rename({ suffix: '.min' }))
         .pipe(uglify())
         .pipe(gulp.dest('./dist'))
 })
@@ -108,7 +144,7 @@ gulp.task('style', function () {
         .pipe(gulp.dest('./dist'))
 })
 
-gulp.task('rollup-watch', gulp.series('rollup:main', 'rollup:colorMapper', function (done) {
+gulp.task('rollup-watch', gulp.series('rollup:main', 'rollup:colorMapper', 'rollup:flamegraphTooltip', function (done) {
     browserSync.reload()
     done()
 }))
@@ -118,7 +154,7 @@ gulp.task('style-watch', gulp.series('style', function (done) {
     done()
 }))
 
-gulp.task('serve', gulp.series('lint', 'rollup:main', 'rollup:colorMapper', 'style', function () {
+gulp.task('serve', gulp.series('lint', 'rollup:main', 'rollup:colorMapper', 'rollup:flamegraphTooltip', 'style', function () {
     browserSync.init({
         server: {
             baseDir: ['examples', 'dist']
@@ -128,6 +164,6 @@ gulp.task('serve', gulp.series('lint', 'rollup:main', 'rollup:colorMapper', 'sty
     gulp.watch('./src/*.css', gulp.series('style-watch'))
 }))
 
-gulp.task('build', gulp.series('clean', 'lint', 'rollup:main', 'rollup:colorMapper', 'style', 'uglify:main', 'uglify:colorMapper'))
+gulp.task('build', gulp.series('clean', 'lint', 'rollup:main', 'rollup:colorMapper', 'rollup:flamegraphTooltip', 'style', 'uglify:main', 'uglify:colorMapper', 'uglify:flamegraphTooltip'))
 
 gulp.task('default', gulp.series('serve'))

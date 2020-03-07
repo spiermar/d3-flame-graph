@@ -4,8 +4,8 @@ import { ascending } from 'd3-array'
 import { partition, hierarchy } from 'd3-hierarchy'
 import { scaleLinear } from 'd3-scale'
 import { easeCubic } from 'd3-ease'
-import d3Tip from 'd3-tip'
 import 'd3-transition'
+import flamegraphTooltip from './flamegraphTooltip'
 
 export default function () {
     var w = 960 // graph width
@@ -93,10 +93,7 @@ export default function () {
         return getName(d) + ' (' + format('.3f')(100 * (d.x1 - d.x0), 3) + '%, ' + getValue(d) + ' samples)'
     }
 
-    var tip = d3Tip()
-        .direction('s')
-        .offset([8, 0])
-        .attr('class', 'd3-flame-graph-tip')
+    var tip = flamegraphTooltip()
         .html(function (d) { return labelHandler(d) })
 
     var svg
@@ -258,7 +255,7 @@ export default function () {
     }
 
     function zoom (d) {
-        tip.hide(d)
+        tip.hide()
         hideSiblings(d)
         show(d)
         fadeAncestors(d)
@@ -441,10 +438,10 @@ export default function () {
                 .remove()
 
             g.on('mouseover', function (d) {
-                if (tooltip) tip.show(d, this)
+                if (tooltip) tip.show(d)
                 detailsHandler(labelHandler(d))
-            }).on('mouseout', function (d) {
-                if (tooltip) tip.hide(d)
+            }).on('mouseout', function () {
+                if (tooltip) tip.hide()
                 detailsHandler(null)
             })
         })
