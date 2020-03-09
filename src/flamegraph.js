@@ -5,7 +5,7 @@ import { partition, hierarchy } from 'd3-hierarchy'
 import { scaleLinear } from 'd3-scale'
 import { easeCubic } from 'd3-ease'
 import 'd3-transition'
-import { flamegraphTooltip } from './flamegraphTooltip'
+import { defaultFlamegraphTooltip } from './tooltip'
 
 export default function () {
     var w = 960 // graph width
@@ -93,7 +93,7 @@ export default function () {
         return getName(d) + ' (' + format('.3f')(100 * (d.x1 - d.x0), 3) + '%, ' + getValue(d) + ' samples)'
     }
 
-    var tip = flamegraphTooltip()
+    var tip = defaultFlamegraphTooltip()
         .html(function (d) { return labelHandler(d) })
 
     var svg

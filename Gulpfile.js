@@ -85,9 +85,9 @@ gulp.task('rollup:colorMapper', () => {
         })
 })
 
-gulp.task('rollup:flamegraphTooltip', () => {
+gulp.task('rollup:tooltip', () => {
     return rollup.rollup({
-        input: './src/flamegraphTooltip.js',
+        input: './src/tooltip.js',
         external: Object.keys(rollupGlobals),
         plugins: [
             resolve({
@@ -98,7 +98,9 @@ gulp.task('rollup:flamegraphTooltip', () => {
                 jail: '/',
                 only: [
                     'd3-selection',
-                    'd3-transition'
+                    'd3-transition',
+                    'd3-dispatch',
+                    'd3-ease'
                 ],
                 modulesOnly: false
             }),
@@ -131,7 +133,7 @@ gulp.task('uglify:colorMapper', function () {
         .pipe(gulp.dest('./dist'))
 })
 
-gulp.task('uglify:flamegraphTooltip', function () {
+gulp.task('uglify:tooltip', function () {
     return gulp.src('./dist/d3-flamegraph-tooltip.js')
         .pipe(gulp.dest('./dist'))
         .pipe(rename({ suffix: '.min' }))
@@ -145,7 +147,7 @@ gulp.task('style', function () {
         .pipe(gulp.dest('./dist'))
 })
 
-gulp.task('rollup-watch', gulp.series('rollup:main', 'rollup:colorMapper', 'rollup:flamegraphTooltip', function (done) {
+gulp.task('rollup-watch', gulp.series('rollup:main', 'rollup:colorMapper', 'rollup:tooltip', function (done) {
     browserSync.reload()
     done()
 }))
@@ -155,7 +157,7 @@ gulp.task('style-watch', gulp.series('style', function (done) {
     done()
 }))
 
-gulp.task('serve', gulp.series('lint', 'rollup:main', 'rollup:colorMapper', 'rollup:flamegraphTooltip', 'style', function () {
+gulp.task('serve', gulp.series('lint', 'rollup:main', 'rollup:colorMapper', 'rollup:tooltip', 'style', function () {
     browserSync.init({
         server: {
             baseDir: ['examples', 'dist']
@@ -165,6 +167,6 @@ gulp.task('serve', gulp.series('lint', 'rollup:main', 'rollup:colorMapper', 'rol
     gulp.watch('./src/*.css', gulp.series('style-watch'))
 }))
 
-gulp.task('build', gulp.series('clean', 'lint', 'rollup:main', 'rollup:colorMapper', 'rollup:flamegraphTooltip', 'style', 'uglify:main', 'uglify:colorMapper', 'uglify:flamegraphTooltip'))
+gulp.task('build', gulp.series('clean', 'lint', 'rollup:main', 'rollup:colorMapper', 'rollup:tooltip', 'style', 'uglify:main', 'uglify:colorMapper', 'uglify:tooltip'))
 
 gulp.task('default', gulp.series('serve'))

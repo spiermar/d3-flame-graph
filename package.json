@@ -1,6 +1,6 @@
 {
   "name": "d3-flame-graph",
-  "version": "2.1.12",
+  "version": "2.1.13",
   "description": "A d3.js library to produce flame graphs.",
   "main": "index.js",
   "directories": {
@@ -56,6 +56,7 @@
     "d3-hierarchy": "^1.1.8",
     "d3-scale": "^2.2.2",
     "d3-selection": "^1.4.0",
-    "d3-transition": "^1.2.0"
+    "d3-transition": "^1.2.0",
+    "d3-dispatch": "^1.0.6"
   }
 }

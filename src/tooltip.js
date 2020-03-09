@@ -1,11 +1,13 @@
 import { select, event } from 'd3-selection'
 import 'd3-transition'
+import 'd3-dispatch'
+import 'd3-ease'
 
 function defaultLabel (d) {
     return d.data.name
 }
 
-export function flamegraphTooltip () {
+export function defaultFlamegraphTooltip () {
     var rootElement = select('body')
     var tooltip = null
     var html = defaultLabel
