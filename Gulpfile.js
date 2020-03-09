@@ -79,6 +79,7 @@ gulp.task('rollup:colorMapper', () => {
             return bundle.write({
                 file: './dist/d3-flamegraph-colorMapper.js',
                 sourcemap: false,
+                globals: rollupGlobals,
                 format: 'umd',
                 name: 'd3.flamegraph.colorMapper'
             })
@@ -114,6 +115,7 @@ gulp.task('rollup:tooltip', () => {
             return bundle.write({
                 file: './dist/d3-flamegraph-tooltip.js',
                 sourcemap: false,
+                globals: rollupGlobals,
                 format: 'umd',
                 name: 'd3.flamegraph.tooltip'
             })

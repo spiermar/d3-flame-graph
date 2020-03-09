@@ -1,4 +1,6 @@
-import { select, event } from 'd3-selection'
+/* global event */
+
+import { select } from 'd3-selection'
 import 'd3-transition'
 import 'd3-dispatch'
 import 'd3-ease'
