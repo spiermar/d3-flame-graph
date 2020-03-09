@@ -100,7 +100,10 @@ gulp.task('rollup:tooltip', () => {
                     'd3-selection',
                     'd3-transition',
                     'd3-dispatch',
-                    'd3-ease'
+                    'd3-ease',
+                    'd3-timer',
+                    'd3-interpolate',
+                    'd3-color'
                 ],
                 modulesOnly: false
             }),
