@@ -19,8 +19,7 @@ module.exports = [{
         filename: '[name].js',
         library: 'flamegraph',
         libraryExport: 'default',
-        libraryTarget: 'umd',
-        globalObject: 'd3'
+        libraryTarget: 'umd'
     },
     plugins: [
         new CopyWebpackPlugin([{
@@ -56,7 +55,7 @@ module.exports = [{
         filename: '[name].js',
         library: 'colorMapper',
         libraryTarget: 'umd',
-        globalObject: 'd3.flamegraph'
+        globalObject: 'flamegraph'
     },
     module: {
         rules: [{
@@ -83,7 +82,7 @@ module.exports = [{
         filename: '[name].js',
         library: 'tooltip',
         libraryTarget: 'umd',
-        globalObject: 'd3.flamegraph'
+        globalObject: 'flamegraph'
     },
     module: {
         rules: [{

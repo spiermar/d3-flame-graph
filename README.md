@@ -36,14 +36,14 @@ Just reference the CDN hosted CSS and JS files!
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js"></script>
   <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/spiermar/d3-flame-graph@2.0.3/dist/d3-flamegraph.min.js"></script>
   <script type="text/javascript">
-  var flamegraph = d3.flamegraph()
+  var chart = flamegraph()
     .width(960);
 
   d3.json("data.json", function(error, data) {
     if (error) return console.warn(error);
     d3.select("#chart")
       .datum(data)
-      .call(flamegraph);
+      .call(chart);
   });
   </script>
 </body>
@@ -71,14 +71,14 @@ And use it!
   <script type="text/javascript" src="node_modules/d3-tip/index.js"></script>
   <script type="text/javascript" src="node_modules/d3-flame-graph/dist/d3-flamegraph.js"></script>
   <script type="text/javascript">
-  var flamegraph = d3.flamegraph()
+  var chart = flamegraph()
     .width(960);
 
   d3.json("data.json", function(error, data) {
     if (error) return console.warn(error);
     d3.select("#chart")
       .datum(data)
-      .call(flamegraph);
+      .call(chart);
   });
   </script>
 </body>
@@ -123,7 +123,7 @@ This is a breaking change from previous versions of d3-flame-graph, which were b
 
 ## API Reference
 
-<a name="flamegraph" href="#flamegraph">#</a> d3.flamegraph()
+<a name="flamegraph" href="#flamegraph">#</a> flamegraph()
 
 Create a new Flame Graph.
 

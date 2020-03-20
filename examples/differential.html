@@ -76,7 +76,7 @@
     <script type="text/javascript" src="d3-flamegraph.js"></script>
 
     <script type="text/javascript">
-    var flameGraph = d3.flamegraph()
+    var chart = flamegraph()
       .width(960)
       .cellHeight(18)
       .transitionDuration(750)
@@ -88,14 +88,14 @@
       .selfValue(true);
 
     var details = document.getElementById("details");
-    flameGraph.setDetailsElement(details);
+    chart.setDetailsElement(details);
 
 
     d3.json("differential.json", function(error, data) {
       if (error) return console.warn(error);
       d3.select("#chart")
           .datum(data)
-          .call(flameGraph);
+          .call(chart);
     });
 
     document.getElementById("form").addEventListener("submit", function(event){
@@ -105,16 +105,16 @@
 
     function search() {
       var term = document.getElementById("term").value;
-      flameGraph.search(term);
+      chart.search(term);
     }
 
     function clear() {
       document.getElementById('term').value = '';
-      flameGraph.clear();
+      chart.clear();
     }
 
     function resetZoom() {
-      flameGraph.resetZoom();
+      chart.resetZoom();
     }
 
     function onClick(d) {

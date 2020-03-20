@@ -77,7 +77,7 @@
     <script type="text/javascript" src="d3-flamegraph-tooltip.js"></script>
 
     <script type="text/javascript">
-    var flameGraph = d3.flamegraph()
+    var chart = flamegraph()
       .width(960)
       .cellHeight(18)
       .transitionDuration(750)
@@ -95,11 +95,11 @@
         d.highlight ? "#6aff8f" : originalColor);
 
     // Example on how to use custom a tooltip.
-    var tip = d3.flamegraph.tooltip.defaultFlamegraphTooltip()
+    var tip = flamegraph.tooltip.defaultFlamegraphTooltip()
       .html(function(d) { return "name: " + d.data.name + ", value: " + d.data.value; });
 
     var details = document.getElementById("details");
-    flameGraph.setDetailsElement(details);
+    chart.setDetailsElement(details);
 
     // Example on how to use searchById() function in flamegraph.
     // To invoke this function after loading the graph itself, this function should be registered in d3 datum(data).call()
@@ -115,16 +115,16 @@
     // var label = function(d) {
     //  return "name: " + d.name + ", value: " + d.value;
     // }
-    // flameGraph.label(label);
+    // chart.label(label);
 
     // Example of how to set fixed chart height
-    // flameGraph.height(540);
+    // chart.height(540);
 
     d3.json("stacks.json", function(error, data) {
       if (error) return console.warn(error);
       d3.select("#chart")
           .datum(data)
-          .call(flameGraph)
+          .call(chart)
           .call(invokeFind);
     });
 
@@ -135,24 +135,24 @@
 
     function search() {
       var term = document.getElementById("term").value;
-      flameGraph.search(term);
+      chart.search(term);
     }
 
     function find(id) {
-      var elem = flameGraph.findById(id);
+      var elem = chart.findById(id);
       if (elem){
         console.log(elem)
-        flameGraph.zoomTo(elem);
+        chart.zoomTo(elem);
       }
     }
 
     function clear() {
       document.getElementById('term').value = '';
-      flameGraph.clear();
+      chart.clear();
     }
 
     function resetZoom() {
-      flameGraph.resetZoom();
+      chart.resetZoom();
     }
 
     function onClick(d) {

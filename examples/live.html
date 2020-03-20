@@ -76,7 +76,7 @@
     <script type="text/javascript" src="d3-flamegraph.js"></script>
 
     <script type="text/javascript">
-    var flameGraph = d3.flamegraph()
+    var chart = flamegraph()
       .height(1080)
       .width(960)
       .cellHeight(18)
@@ -87,7 +87,7 @@
       .title("");
 
     var details = document.getElementById("details");
-    flameGraph.setDetailsElement(details);
+    chart.setDetailsElement(details);
 
     var start = {
       "name": "root",
@@ -97,14 +97,14 @@
 
     d3.select("#chart")
       .datum(start)
-      .call(flameGraph);
+      .call(chart);
 
     d3.json("live.json", function(error, data) {
       if (error) return console.warn(error);
       var i = 1;
       for (var value in data) {
         setTimeout(function(timestamp) {
-          flameGraph.merge(data[timestamp]);
+          chart.merge(data[timestamp]);
         }, 1000 * i, value);
         i++;
       }
@@ -117,16 +117,16 @@
 
     function search() {
       var term = document.getElementById("term").value;
-      flameGraph.search(term);
+      chart.search(term);
     }
 
     function clear() {
       document.getElementById('term').value = '';
-      flameGraph.clear();
+      chart.clear();
     }
 
     function resetZoom() {
-      flameGraph.resetZoom();
+      chart.resetZoom();
     }
     </script>
   </body>
