@@ -1,6 +1,6 @@
 {
   "name": "d3-flame-graph",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "A d3.js library to produce flame graphs.",
   "main": "index.js",
   "directories": {
@@ -12,7 +12,7 @@
     "pretest": "webpack --mode production",
     "test": "tape 'test/**/*-test.js'",
     "prepare": "npm run test",
-    "postpublish": "zip -j dist/d3-flamegraph.zip -- LICENSE README.md dist/d3-flamegraph.js dist/d3-flamegraph.min.js dist/d3-flamegraph-colorMapper.js dist/d3-flamegraph-colorMapper.min.js dist/d3-flamegraph.css"
+    "postpublish": "zip -j dist/d3-flamegraph.zip -- LICENSE README.md dist/d3-flamegraph.js dist/d3-flamegraph.min.js dist/d3-flamegraph-colorMapper.js dist/d3-flamegraph-colorMapper.min.js dist/d3-flamegraph-tooltip.js dist/d3-flamegraph-tooltip.min.js dist/d3-flamegraph.css"
   },
   "repository": {
     "type": "git",
