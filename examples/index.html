@@ -72,11 +72,9 @@
     <!-- D3.js -->
     <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
 
-    <!-- d3-tip -->
-    <script type="text/javascript" src=https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js></script>
-
     <!-- d3-flamegraph -->
     <script type="text/javascript" src="d3-flamegraph.js"></script>
+    <script type="text/javascript" src="d3-flamegraph-tooltip.js"></script>
 
     <script type="text/javascript">
     var flameGraph = d3.flamegraph()
@@ -96,15 +94,9 @@
       .setColorMapper((d, originalColor) =>
         d.highlight ? "#6aff8f" : originalColor);
 
-
-    // Example on how to use custom tooltips using d3-tip.
-    // var tip = d3.tip()
-    //   .direction("s")
-    //   .offset([8, 0])
-    //   .attr('class', 'd3-flame-graph-tip')
-    //   .html(function(d) { return "name: " + d.data.name + ", value: " + d.data.value; });
-
-    // flameGraph.tooltip(tip);
+    // Example on how to use custom a tooltip.
+    var tip = d3.flamegraph.tooltip.defaultFlamegraphTooltip()
+      .html(function(d) { return "name: " + d.data.name + ", value: " + d.data.value; });
 
     var details = document.getElementById("details");
     flameGraph.setDetailsElement(details);
