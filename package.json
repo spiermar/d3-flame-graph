@@ -1,6 +1,6 @@
 {
   "name": "d3-flame-graph",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "A d3.js library to produce flame graphs.",
   "main": "index.js",
   "directories": {
