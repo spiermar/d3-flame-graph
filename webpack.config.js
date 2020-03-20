@@ -53,9 +53,8 @@ module.exports = [{
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: '[name].js',
-        library: 'colorMapper',
-        libraryTarget: 'umd',
-        globalObject: 'flamegraph'
+        library: ['flamegraph', 'colorMapper'],
+        libraryTarget: 'umd'
     },
     module: {
         rules: [{
@@ -80,9 +79,8 @@ module.exports = [{
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: '[name].js',
-        library: 'tooltip',
-        libraryTarget: 'umd',
-        globalObject: 'flamegraph'
+        library: ['flamegraph', 'tooltip'],
+        libraryTarget: 'umd'
     },
     module: {
         rules: [{
