@@ -11,8 +11,8 @@ const packageFile = require('./package.json')
 module.exports = [{
     context: path.join(__dirname, 'src'),
     entry: {
-        './d3-flamegraph': './flamegraph.js',
-        './d3-flamegraph.min': './flamegraph.js'
+        'd3-flamegraph': './flamegraph.js',
+        'd3-flamegraph.min': './flamegraph.js'
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
@@ -47,39 +47,15 @@ module.exports = [{
 }, {
     context: path.join(__dirname, 'src'),
     entry: {
-        './d3-flamegraph-colorMapper': './colorMapper.js',
-        './d3-flamegraph-colorMapper.min': './colorMapper.js'
+        'colorMapper': './colorMapper.js',
+        'colorMapper.min': './colorMapper.js',
+        'tooltip': './tooltip.js',
+        'tooltip.min': './tooltip.js',
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: '[name].js',
-        library: ['flamegraph', 'colorMapper'],
-        libraryTarget: 'umd'
-    },
-    module: {
-        rules: [{
-            test: /\.js$/,
-            exclude: /node_modules/,
-            loader: 'eslint-loader'
-        }]
-    },
-    optimization: {
-        minimizer: [
-            new TerserPlugin({
-                test: /\.min\.js$/i
-            })
-        ]
-    }
-}, {
-    context: path.join(__dirname, 'src'),
-    entry: {
-        './d3-flamegraph-tooltip': './tooltip.js',
-        './d3-flamegraph-tooltip.min': './tooltip.js'
-    },
-    output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: '[name].js',
-        library: ['flamegraph', 'tooltip'],
+        filename: 'd3-flamegraph-[name].js',
+        library: ['flamegraph', '[name]'],
         libraryTarget: 'umd'
     },
     module: {

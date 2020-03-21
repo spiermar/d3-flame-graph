@@ -97,7 +97,7 @@
     // Example on how to use custom a tooltip.
     var tip = flamegraph.tooltip.defaultFlamegraphTooltip()
       .html(function(d) { return "name: " + d.data.name + ", value: " + d.data.value; });
-    chart.tooltip(tip)
+    chart.tooltip(tip);
 
     var details = document.getElementById("details");
     chart.setDetailsElement(details);
