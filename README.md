@@ -28,13 +28,12 @@ Just reference the CDN hosted CSS and JS files!
 
 ```html
 <head>
-  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/spiermar/d3-flame-graph@2.0.3/dist/d3-flamegraph.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/spiermar/d3-flame-graph@3.1.0/dist/d3-flamegraph.css">
 </head>
 <body>
   <div id="chart"></div>
   <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/spiermar/d3-flame-graph@2.0.3/dist/d3-flamegraph.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/spiermar/d3-flame-graph@3.1.0/dist/d3-flamegraph.min.js"></script>
   <script type="text/javascript">
   var chart = flamegraph()
     .width(960);
@@ -68,7 +67,6 @@ And use it!
 <body>
   <div id="chart"></div>
   <script type="text/javascript" src="node_modules/d3/d3.js"></script>
-  <script type="text/javascript" src="node_modules/d3-tip/index.js"></script>
   <script type="text/javascript" src="node_modules/d3-flame-graph/dist/d3-flamegraph.js"></script>
   <script type="text/javascript">
   var chart = flamegraph()
@@ -155,17 +153,32 @@ Minimum size of a frame, in px, to be displayed in the flame graph. Defaults to 
 
 Title displayed on top of graph. Defaults to empty if not set. If <i>title</i> is specified, it will set the title displayed on the graph, otherwise it will return the current title.
 
-<a name="tooltip" href="#tooltip">#</a> flamegraph.<b>tooltip</b>(<i>[enabled]</i>)
+<a name="tooltip" href="#tooltip">#</a> flamegraph.<b>tooltip</b>(<i>[function]</i>)
 
-Enables/disables display of tooltips on frames. Defaults to <i>true</i> if not set. It can be set to a [d3-tip configurable function](https://github.com/Caged/d3-tip/blob/master/docs/initializing-tooltips.md), which will replace the default function and display a fully customized tooltip. Else, if a truthy value, uses a default label function. If a value is specified, it will enable/disable tooltips, otherwise it will return the current tooltip configuration.
+Sets a tooltip for the flamegraph frames. The tooltip function should implement two methods, `.show(d)` and `.hide()`, that will be called when the tooltip should be made visible or hidden respectively. The `.show` method takes a single argument, which is the flamegraph frame. The <i>d3-flame-graph</i> package includes a simple tooltip function, `flamegraph.tooltip.defaultFlamegraphTooltip()`.
 
-Class should be specified in order to correctly render the tooltip. The default "d3-flame-graph-tip" is available for use too.
-
-```js
-.attr('class', 'd3-flame-graph-tip')
+```html
+<script type="text/javascript" src="d3-flamegraph-tooltip.js"></script>
 ```
 
-See [d3-tip](https://github.com/Caged/d3-tip/tree/master/docs) for more details.
+```js
+var tip = flamegraph.tooltip.defaultFlamegraphTooltip()
+    .html(function(d) { return "name: " + d.data.name + ", value: " + d.data.value; });
+flamegraph.tooltip(tip)
+```
+
+The <a name="tooltip" href="#tooltip"><b>tooltip</b></a> is compatible with [d3-tip](https://github.com/Caged/d3-tip). This was the default library until version <i>2.1.10</i>.
+
+```html
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js"></script>
+```
+
+```js
+var tip = d3.tip()
+  .attr('class', 'd3-flame-graph-tip')
+  .html(function(d) { return "name: " + d.data.name + ", value: " + d.data.value; });
+flamegraph.tooltip(tip)
+```
 
 <a name="transitionDuration" href="#transitionDuration">#</a> flamegraph.<b>transitionDuration</b>(<i>[duration]</i>)
 

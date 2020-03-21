@@ -5,14 +5,13 @@ import { partition, hierarchy } from 'd3-hierarchy'
 import { scaleLinear } from 'd3-scale'
 import { easeCubic } from 'd3-ease'
 import 'd3-transition'
-import { defaultFlamegraphTooltip } from './tooltip'
 
 export default function () {
     var w = 960 // graph width
     var h = null // graph height
     var c = 18 // cell height
     var selection = null // selection
-    var tooltip = true // enable tooltip
+    var tooltip = null // tooltip
     var title = '' // graph title
     var transitionDuration = 750
     var transitionEase = easeCubic // tooltip offset
@@ -92,9 +91,6 @@ export default function () {
     var labelHandler = function (d) {
         return getName(d) + ' (' + format('.3f')(100 * (d.x1 - d.x0), 3) + '%, ' + getValue(d) + ' samples)'
     }
-
-    var tip = defaultFlamegraphTooltip()
-        .html(function (d) { return labelHandler(d) })
 
     var svg
 
@@ -255,7 +251,7 @@ export default function () {
     }
 
     function zoom (d) {
-        tip.hide()
+        if (tooltip) tooltip.hide()
         hideSiblings(d)
         show(d)
         fadeAncestors(d)
@@ -438,10 +434,10 @@ export default function () {
                 .remove()
 
             g.on('mouseover', function (d) {
-                if (tooltip) tip.show(d)
+                if (tooltip) tooltip.show(d)
                 detailsHandler(labelHandler(d))
             }).on('mouseout', function () {
-                if (tooltip) tip.hide()
+                if (tooltip) tooltip.hide()
                 detailsHandler(null)
             })
         })
@@ -602,7 +598,6 @@ export default function () {
                     .append('svg:svg')
                     .attr('width', w)
                     .attr('class', 'partition d3-flame-graph')
-                    .call(tip)
 
                 if (h) {
                     if (h < minHeight) h = minHeight
@@ -616,6 +611,8 @@ export default function () {
                     .attr('x', w / 2)
                     .attr('fill', '#808080')
                     .text(title)
+
+                if (tooltip) svg.call(tooltip)
             }
         })
 
@@ -650,9 +647,8 @@ export default function () {
     chart.tooltip = function (_) {
         if (!arguments.length) { return tooltip }
         if (typeof _ === 'function') {
-            tip = _
+            tooltip = _
         }
-        tooltip = !!_
         return chart
     }
 
@@ -781,7 +777,7 @@ export default function () {
 
     chart.destroy = function () {
         if (!selection) { return chart }
-        if (tooltip) tip.hide()
+        if (tooltip) tooltip.hide()
         selection.selectAll('svg').remove()
         return chart
     }
