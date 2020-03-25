@@ -434,7 +434,7 @@ export default function () {
                 .remove()
 
             g.on('mouseover', function (d) {
-                if (tooltip) tooltip.show(d)
+                if (tooltip) tooltip.show(d, this)
                 detailsHandler(labelHandler(d))
             }).on('mouseout', function () {
                 if (tooltip) tooltip.hide()
