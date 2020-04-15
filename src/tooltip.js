@@ -34,8 +34,8 @@ export function defaultFlamegraphTooltip () {
 
         tooltip
             .html(html(d))
-            .style('left', event.pageX + 'px')
-            .style('top', event.pageY + 'px')
+            .style('left', event.pageX + 5 + 'px')
+            .style('top', event.pageY + 5 + 'px')
 
         return tip
     }
