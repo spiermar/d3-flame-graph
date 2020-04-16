@@ -89,7 +89,10 @@ module.exports = [{
             template: 'template.html',
             filename: 'd3-flamegraph-base.html',
             inject: 'head',
-            templateVersion: packageFile.version
+            meta: {
+                template_version: packageFile.version
+            },
+            minify: false
         }),
         new ScriptExtHtmlWebpackPlugin({
             inline: ['bundle.js']
