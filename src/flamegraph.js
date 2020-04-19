@@ -67,8 +67,19 @@ export default function () {
         if (!term) {
             return false
         }
-        const re = new RegExp(term)
-        const label = getName(d)
+        // work in progress -------
+        // idea is to have a flag for case sensitive search which will be configurable
+        // if the flag is disabled then validate for case insensitive match as well
+        // for now, hardcoding the flag value
+        const caseSensitiveFlagEnabled = false
+        let re = new RegExp(term)
+        let label = getName(d)
+        if (!caseSensitiveFlagEnabled) {
+            term = term.toLowerCase()
+            re = new RegExp(term)
+            label = label.toLowerCase()
+            // if we convert both the strings to their lowercases and perform the match, it will be a case-insensitive match
+        }
         return typeof label !== 'undefined' && label && label.match(re)
     }
     const originalSearchMatch = searchMatch
