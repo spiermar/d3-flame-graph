@@ -63,12 +63,12 @@ export default function () {
     }
     var originalSearchHandler = searchHandler
 
-    let searchMatch = (d, term, caseSensitive = false) => {
+    let searchMatch = (d, term, ignoreCase = false) => {
         if (!term) {
             return false
         }
         let label = getName(d)
-        if (!caseSensitive) {
+        if (ignoreCase) {
             term = term.toLowerCase()
             label = label.toLowerCase()
         }

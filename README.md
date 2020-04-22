@@ -307,7 +307,7 @@ If called with no arguments, `setColorMapper` will reset the color hash function
 <a name="setSearchMatch" href="#setSearchMatch">#</a> flamegraph.<b>setSearchMatch</b>(<i>[function]</i>)
 
 Replaces the built-in node search match function. Function takes three arguments,
-the node data structure, the search term and an optional boolean argument for case-sensitive search. If the third argument is not provided, the search will not be case-sensitive. It must return a boolean. Example:
+the node data structure, the search term and an optional boolean argument to ignore case during search. If the third argument is not provided, the search will be case-sensitive by default. The function must return a boolean. Example:
 
 ```js
 flamegraph.setSearchMatch(function(d, term, true) {
