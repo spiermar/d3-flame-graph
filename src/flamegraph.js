@@ -63,12 +63,16 @@ export default function () {
     }
     var originalSearchHandler = searchHandler
 
-    let searchMatch = (d, term) => {
+    let searchMatch = (d, term, ignoreCase = false) => {
         if (!term) {
             return false
         }
+        let label = getName(d)
+        if (ignoreCase) {
+            term = term.toLowerCase()
+            label = label.toLowerCase()
+        }
         const re = new RegExp(term)
-        const label = getName(d)
         return typeof label !== 'undefined' && label && label.match(re)
     }
     const originalSearchMatch = searchMatch
