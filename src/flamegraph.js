@@ -443,6 +443,9 @@ export default function () {
             }).on('mouseout', function () {
                 if (tooltip) tooltip.hide()
                 detailsHandler(null)
+            }).on('mousemove', function (d) {
+                if (tooltip) tooltip.show(d, this)
+                detailsHandler(labelHandler(d))
             })
         })
     }
