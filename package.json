@@ -9,8 +9,9 @@
   "scripts": {
     "build": "webpack --mode production",
     "serve": "webpack-dev-server --mode development",
+    "lint": "eslint src test",
     "pretest": "webpack --mode production",
-    "test": "tape 'test/**/*-test.js'",
+    "test": "jest",
     "prepare": "npm run test",
     "postpublish": "zip -j dist/d3-flamegraph.zip -- LICENSE README.md dist/d3-flamegraph.js dist/d3-flamegraph.min.js dist/d3-flamegraph-colorMapper.js dist/d3-flamegraph-colorMapper.min.js dist/d3-flamegraph-tooltip.js dist/d3-flamegraph-tooltip.min.js dist/d3-flamegraph.css"
   },
@@ -30,33 +31,35 @@
   },
   "homepage": "https://github.com/spiermar/d3-flame-graph#readme",
   "devDependencies": {
+    "babel-preset-env": "^1.7.0",
     "clean-webpack-plugin": "^3.0.0",
     "copy-webpack-plugin": "^5.1.1",
-    "css-loader": "^3.4.2",
+    "css-loader": "^3.5.2",
     "eslint": "^6.8.0",
-    "eslint-config-standard": "^14.0.0",
-    "eslint-loader": "^3.0.3",
-    "eslint-plugin-import": "^2.20.1",
-    "eslint-plugin-node": "^11.0.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-loader": "^4.0.0",
+    "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.0.0",
     "eslint-plugin-standard": "^4.0.1",
-    "html-webpack-plugin": "^3.2.0",
+    "html-webpack-plugin": "^4.2.0",
+    "jest": "^25.4.0",
+    "prettier": "^2.0.4",
     "script-ext-html-webpack-plugin": "^2.1.4",
-    "style-loader": "^1.1.3",
-    "tape": "^4.13.2",
+    "style-loader": "^1.1.4",
     "terser-webpack-plugin": "^2.3.5",
-    "webpack": "^4.42.0",
+    "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.10.3"
   },
   "dependencies": {
     "d3-array": "^2.4.0",
+    "d3-dispatch": "^1.0.6",
     "d3-ease": "^1.0.6",
-    "d3-format": "^1.4.3",
+    "d3-format": "^1.4.4",
     "d3-hierarchy": "^1.1.9",
     "d3-scale": "^3.2.1",
     "d3-selection": "^1.4.1",
-    "d3-transition": "^1.3.2",
-    "d3-dispatch": "^1.0.6"
+    "d3-transition": "^1.3.2"
   }
 }
