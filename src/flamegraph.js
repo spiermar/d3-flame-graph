@@ -437,14 +437,13 @@ export default function () {
             g.exit()
                 .remove()
 
-            g.on('mouseover', function (d) {
-                if (tooltip) tooltip.show(d, this)
-                detailsHandler(labelHandler(d))
-            }).on('mouseout', function () {
+            g.on('mouseout', function () {
                 if (tooltip) tooltip.hide()
                 detailsHandler(null)
             }).on('mousemove', function (d) {
-                if (tooltip) tooltip.show(d, this)
+                const chartBoundingClientRect = svg._groups[0][0].parentNode.getBoundingClientRect()
+                const chartRightBoundary = chartBoundingClientRect.x + chartBoundingClientRect.width
+                if (tooltip) tooltip.show(d, chartRightBoundary, this)
                 detailsHandler(labelHandler(d))
             })
         })

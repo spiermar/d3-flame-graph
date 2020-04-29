@@ -24,7 +24,7 @@ export function defaultFlamegraphTooltip () {
             .attr('class', 'd3-flame-graph-tip')
     }
 
-    tip.show = function (d) {
+    tip.show = function (d, chartRightBoundary) {
         tooltip
             .style('display', 'block')
             .transition()
@@ -32,9 +32,18 @@ export function defaultFlamegraphTooltip () {
             .style('opacity', 1)
             .style('pointer-events', 'all')
 
+        const tooltipAreaWidth = tooltip.nodes()[0].getBoundingClientRect().width
+        const tooltipRightBoundary = event.pageX + 10 + tooltipAreaWidth
+
+        let tooltipLeft = event.pageX + 10
+
+        if (tooltipRightBoundary > chartRightBoundary) {
+            tooltipLeft = tooltipLeft - tooltipAreaWidth - 12
+        }
+
         tooltip
             .html(html(d))
-            .style('left', event.pageX + 5 + 'px')
+            .style('left', tooltipLeft + 'px')
             .style('top', event.pageY + 5 + 'px')
 
         return tip
