@@ -10,9 +10,12 @@ function defaultLabel (d) {
 }
 
 export function defaultFlamegraphTooltip () {
-    var rootElement = select('body')
-    var tooltip = null
-    var html = defaultLabel
+    const rootElement = select('body')
+    const chartElement = select('#chart')
+    const chartBoundingClientRect = chartElement._groups[0][0].getBoundingClientRect()
+    const chartRightBoundary = chartBoundingClientRect.x + chartBoundingClientRect.width
+    let tooltip = null
+    let html = defaultLabel
 
     function tip () {
         tooltip = rootElement
@@ -24,7 +27,7 @@ export function defaultFlamegraphTooltip () {
             .attr('class', 'd3-flame-graph-tip')
     }
 
-    tip.show = function (d, chartRightBoundary) {
+    tip.show = function (d) {
         tooltip
             .style('display', 'block')
             .transition()

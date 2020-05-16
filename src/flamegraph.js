@@ -441,9 +441,7 @@ export default function () {
                 if (tooltip) tooltip.hide()
                 detailsHandler(null)
             }).on('mousemove', function (d) {
-                const chartBoundingClientRect = svg._groups[0][0].parentNode.getBoundingClientRect()
-                const chartRightBoundary = chartBoundingClientRect.x + chartBoundingClientRect.width
-                if (tooltip) tooltip.show(d, chartRightBoundary, this)
+                if (tooltip) tooltip.show(d)
                 detailsHandler(labelHandler(d))
             })
         })
