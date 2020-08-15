@@ -298,6 +298,12 @@ flamegraph.setColorMapper(function(d, originalColor) {
 
 If called with no arguments, `setColorMapper` will reset the color hash function.
 
+<a name="setColorHue" href="#setColorHue">#</a> flamegraph.<b>setColorHue</b>(<i>[string]</i>)
+
+Sets the flame graph color hue. Options are `warm`, `cold`, `red`, `orange`, `yellow`, `green` and `aqua`.
+
+If called with no arguments, `setColorHue` will reset the color hash function.
+
 <a name="setSearchMatch" href="#setSearchMatch">#</a> flamegraph.<b>setSearchMatch</b>(<i>[function]</i>)
 
 Replaces the built-in node search match function. Function takes three arguments,

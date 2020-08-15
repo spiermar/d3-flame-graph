@@ -54,6 +54,8 @@ declare module "d3-flame-graph" {
         setSearchHandler(): FlameGraph;
         setColorMapper(val: ColorMapper): FlameGraph;
         setColorMapper(): FlameGraph;
+        setColorHue(val: string): FlameGraph;
+        setColorHue(): FlameGraph;
         setSearchMatch(val: SearchMatch): FlameGraph;
         setSearchMatch(): FlameGraph;
 

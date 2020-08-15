@@ -27,6 +27,7 @@ export default function () {
     var scrollOnZoom = false
     var minHeight = null
     var computeDelta = false
+    var colorHue = null
 
     var getName = function (d) {
         return d.data.n || d.data.name
@@ -138,9 +139,9 @@ export default function () {
         var b
 
         // default when libtype is not in use
-        var hue = 'warm'
+        var hue = colorHue || 'warm'
 
-        if (!(typeof libtype === 'undefined' || libtype === '')) {
+        if (!colorHue && !(typeof libtype === 'undefined' || libtype === '')) {
             // Select hue. Order is important.
             hue = 'red'
             if (typeof name !== 'undefined' && name && name.match(/::/)) {
@@ -774,6 +775,15 @@ export default function () {
     }
     // Kept for backwards compatibility.
     chart.color = chart.setColorMapper
+
+    chart.setColorHue = function (_) {
+        if (!arguments.length) {
+            colorHue = null
+            return chart
+        }
+        colorHue = _
+        return chart
+    }
 
     chart.minFrameSize = function (_) {
         if (!arguments.length) { return minFrameSize }
