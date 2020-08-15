@@ -99,10 +99,10 @@ export function differentialColorMapper (d) {
     let g = 220
     let b = 220
 
-    const delta = d.delta
+    const delta = d.delta || d.data.d || d.data.delta
     const unsignedDelta = Math.abs(delta)
 
-    let value = d.value
+    let value = d.value || d.data.v || d.data.value
     if (value <= unsignedDelta) value = unsignedDelta
 
     if (delta > 0) {
