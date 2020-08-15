@@ -14,8 +14,6 @@ If you don't know what flame graphs are, check [Brendan Gregg's post](http://www
 
 Click [here](http://spiermar.github.io/d3-flame-graph/) to check the demo, and [source](https://github.com/spiermar/d3-flame-graph/blob/gh-pages/index.html).
 
-Click [here](http://spiermar.github.io/d3-flame-graph/differential.html) to check the differential flame graph demo, and [source](https://github.com/spiermar/d3-flame-graph/blob/gh-pages/differential.html)
-
 Click [here](http://spiermar.github.io/d3-flame-graph/live.html) to check the animated assembly demo, and [source](https://github.com/spiermar/d3-flame-graph/blob/gh-pages/live.html)
 
 Click [here](http://bl.ocks.org/spiermar/4509343495f8d6e214cb) to check the simplified demo on bl.ocks.org.
@@ -206,17 +204,13 @@ flamegraph.label(function(d) {
 
 Enables/disables sorting of children frames. Defaults to <i>true</i> if not set to sort in ascending order by frame's name. If set to a function, the function takes two frames (a,b) and returns -1 if frame a is less than b, 1 if greater, or 0 if equal. If a value is specified, it will enable/disable sorting, otherwise it will return the current sort configuration.
 
-<a name="inverted" href="#inverted">#</a> flamegraph.<b>inverted</b>(<i>[inverted]</i>)
+<a name="inverted" href="#inverted">#</a> flamegraph.<b>inverted</b>(<i>[bool]</i>)
 
 Invert the flame graph direction. A top-down visualization of the flame graph, also known as _icicle_ plot. Defaults to <i>false</i> if not set. If a value is specified, it will enable/disable the inverted flame graphs direction, otherwise it will return the current inverted configuration.
 
-<a name="differential" href="#differential">#</a> flamegraph.<b>differential</b>(<i>[differential]</i>)
+<a name="computeDelta" href="#computeDelta">#</a> flamegraph.<b>computeDelta</b>(<i>[bool]</i>)
 
-Use the _differential_ color hash. Frames are sized according to their `value` but colored based on the `delta` property. Blue for negative numbers, red for positive numbers.
-
-<a name="elided" href="#elided">#</a> flamegraph.<b>elided</b>(<i>[elided]</i>)
-
-Use the _elided_ color hash to show elided frames in a differential heat map. The _elided_ color hash is _cold / blue_ to differentiate from the regular _warm_ palette.
+If enabled, computes delta for all nodes. Delta value of each node is a sum if its own value from the <i>getDelta(node)</i> function, plus its children. Defaults to <i>false</i> if not set. If a value is specified, it will enable/disable the delta computation, otherwise it will return the current inverted configuration.
 
 <a name="resetZoom" href="#resetZoom">#</a> flamegraph.<b>resetZoom</b>()
 

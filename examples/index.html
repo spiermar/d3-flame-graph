@@ -88,8 +88,6 @@
       //.sort(function(a,b){ return d3.descending(a.name, b.name);})
       .title("")
       .onClick(onClick)
-      .differential(false)
-      .elided(false)
       .selfValue(false)
       .setColorMapper((d, originalColor) =>
         d.highlight ? "#6aff8f" : originalColor);

@@ -21,14 +21,12 @@ export default function () {
     var minFrameSize = 0
     var detailsElement = null
     var selfValue = false
-    var differential = false
-    var elided = false
     var searchSum = 0
     var totalValue = 0
-    var maxDelta = 0
     var resetHeightOnZoom = false
     var scrollOnZoom = false
     var minHeight = null
+    var computeDelta = false
 
     var getName = function (d) {
         return d.data.n || d.data.name
@@ -103,7 +101,7 @@ export default function () {
     }
 
     var colorMapper = function (d) {
-        return d.highlight ? '#E600E6' : colorHash(getName(d), getLibtype(d), getDelta(d))
+        return d.highlight ? '#E600E6' : colorHash(getName(d), getLibtype(d))
     }
     var originalColorMapper = colorMapper
 
@@ -131,7 +129,7 @@ export default function () {
         return hash
     }
 
-    function colorHash (name, libtype, delta) {
+    function colorHash (name, libtype) {
     // Return a color for the given name and library type. The library type
     // selects the hue, and the name is hashed to a color in that hue.
 
@@ -139,83 +137,65 @@ export default function () {
         var g
         var b
 
-        if (differential) {
-            r = 220
-            g = 220
-            b = 220
+        // default when libtype is not in use
+        var hue = 'warm'
 
-            if (!delta) {
-                delta = 0
+        if (!(typeof libtype === 'undefined' || libtype === '')) {
+            // Select hue. Order is important.
+            hue = 'red'
+            if (typeof name !== 'undefined' && name && name.match(/::/)) {
+                hue = 'yellow'
             }
+            if (libtype === 'kernel') {
+                hue = 'orange'
+            } else if (libtype === 'jit') {
+                hue = 'green'
+            } else if (libtype === 'inlined') {
+                hue = 'aqua'
+            }
+        }
 
-            if (delta > 0) {
-                b = Math.round(210 * (maxDelta - delta) / maxDelta)
-                g = b
-            } else if (delta < 0) {
-                r = Math.round(210 * (maxDelta + delta) / maxDelta)
-                g = r
+        // calculate hash
+        var vector = 0
+        if (name) {
+            var nameArr = name.split('`')
+            if (nameArr.length > 1) {
+                name = nameArr[nameArr.length - 1] // drop module name if present
             }
+            name = name.split('(')[0] // drop extra info
+            vector = generateHash(name)
+        }
+
+        // calculate color
+        if (hue === 'red') {
+            r = 200 + Math.round(55 * vector)
+            g = 50 + Math.round(80 * vector)
+            b = g
+        } else if (hue === 'orange') {
+            r = 190 + Math.round(65 * vector)
+            g = 90 + Math.round(65 * vector)
+            b = 0
+        } else if (hue === 'yellow') {
+            r = 175 + Math.round(55 * vector)
+            g = r
+            b = 50 + Math.round(20 * vector)
+        } else if (hue === 'green') {
+            r = 50 + Math.round(60 * vector)
+            g = 200 + Math.round(55 * vector)
+            b = r
+        } else if (hue === 'aqua') {
+            r = 50 + Math.round(60 * vector)
+            g = 165 + Math.round(55 * vector)
+            b = g
+        } else if (hue === 'cold') {
+            r = 0 + Math.round(55 * (1 - vector))
+            g = 0 + Math.round(230 * (1 - vector))
+            b = 200 + Math.round(55 * vector)
         } else {
-            // default when libtype is not in use
-            var hue = elided ? 'cold' : 'warm'
-
-            if (!elided && !(typeof libtype === 'undefined' || libtype === '')) {
-                // Select hue. Order is important.
-                hue = 'red'
-                if (typeof name !== 'undefined' && name && name.match(/::/)) {
-                    hue = 'yellow'
-                }
-                if (libtype === 'kernel') {
-                    hue = 'orange'
-                } else if (libtype === 'jit') {
-                    hue = 'green'
-                } else if (libtype === 'inlined') {
-                    hue = 'aqua'
-                }
-            }
-
-            // calculate hash
-            var vector = 0
-            if (name) {
-                var nameArr = name.split('`')
-                if (nameArr.length > 1) {
-                    name = nameArr[nameArr.length - 1] // drop module name if present
-                }
-                name = name.split('(')[0] // drop extra info
-                vector = generateHash(name)
-            }
-
-            // calculate color
-            if (hue === 'red') {
-                r = 200 + Math.round(55 * vector)
-                g = 50 + Math.round(80 * vector)
-                b = g
-            } else if (hue === 'orange') {
-                r = 190 + Math.round(65 * vector)
-                g = 90 + Math.round(65 * vector)
-                b = 0
-            } else if (hue === 'yellow') {
-                r = 175 + Math.round(55 * vector)
-                g = r
-                b = 50 + Math.round(20 * vector)
-            } else if (hue === 'green') {
-                r = 50 + Math.round(60 * vector)
-                g = 200 + Math.round(55 * vector)
-                b = r
-            } else if (hue === 'aqua') {
-                r = 50 + Math.round(60 * vector)
-                g = 165 + Math.round(55 * vector)
-                b = g
-            } else if (hue === 'cold') {
-                r = 0 + Math.round(55 * (1 - vector))
-                g = 0 + Math.round(230 * (1 - vector))
-                b = 200 + Math.round(55 * vector)
-            } else {
-                // original warm palette
-                r = 200 + Math.round(55 * vector)
-                g = 0 + Math.round(230 * (1 - vector))
-                b = 0 + Math.round(55 * (1 - vector))
-            }
+            // original warm palette
+            r = 200 + Math.round(55 * vector)
+            g = 0 + Math.round(230 * (1 - vector))
+            b = 0 + Math.round(55 * (1 - vector))
         }
 
         return 'rgb(' + r + ',' + g + ',' + b + ')'
@@ -493,18 +473,9 @@ export default function () {
     }
 
     function adoptNode (node) {
-        maxDelta = 0
         let id = 0
-        let delta = 0
-        const wantDelta = differential
         forEachNode(node, function (n) {
             n.id = id++
-            if (wantDelta) {
-                delta = Math.abs(getDelta(n))
-                if (maxDelta < delta) {
-                    maxDelta = delta
-                }
-            }
         })
     }
 
@@ -591,6 +562,16 @@ export default function () {
         const root = hierarchy(s.datum(), getChildren)
 
         adoptNode(root)
+
+        if (computeDelta) {
+            root.eachAfter((node) => {
+                let sum = getDelta(node)
+                const children = node.children
+                let i = children && children.length
+                while (--i >= 0) sum += children[i].delta
+                node.delta = sum
+            })
+        }
 
         selection = s.datum(root)
 
@@ -686,15 +667,9 @@ export default function () {
         return chart
     }
 
-    chart.differential = function (_) {
-        if (!arguments.length) { return differential }
-        differential = _
-        return chart
-    }
-
-    chart.elided = function (_) {
-        if (!arguments.length) { return elided }
-        elided = _
+    chart.computeDelta = function (_) {
+        if (!arguments.length) { return computeDelta }
+        computeDelta = _
         return chart
     }
 

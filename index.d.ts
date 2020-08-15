@@ -40,10 +40,8 @@ declare module "d3-flame-graph" {
         sort(): boolean;
         inverted(val: boolean): FlameGraph;
         inverted(): boolean;
-        differential(val: boolean): FlameGraph;
-        differential(): boolean;
-        elided(val: boolean): FlameGraph;
-        elided(): boolean;
+        computeDelta(val: boolean): FlameGraph;
+        computeDelta(): boolean;
 
         resetZoom(): void;
         onClick(val: ClickHandler): FlameGraph;

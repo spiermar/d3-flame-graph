@@ -93,3 +93,25 @@ export function nodeJsColorMapper (d, originalColor) {
     }
     return color
 }
+
+export function differentialColorMapper (d) {
+    let r = 220
+    let g = 220
+    let b = 220
+
+    const delta = d.delta
+    const unsignedDelta = Math.abs(delta)
+
+    let value = d.value
+    if (value <= unsignedDelta) value = unsignedDelta
+
+    if (delta > 0) {
+        b = Math.round(210 * (1 - (unsignedDelta / value)))
+        g = b
+    } else if (delta < 0) {
+        r = Math.round(210 * (1 - (unsignedDelta / value)))
+        g = r
+    }
+
+    return 'rgb(' + r + ',' + g + ',' + b + ')'
+}
