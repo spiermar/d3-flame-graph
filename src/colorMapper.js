@@ -101,16 +101,25 @@ export function differentialColorMapper (d) {
 
     const delta = d.delta || d.data.d || d.data.delta
     const unsignedDelta = Math.abs(delta)
-
     let value = d.value || d.data.v || d.data.value
     if (value <= unsignedDelta) value = unsignedDelta
+    const vector = unsignedDelta / value
 
     if (delta > 0) {
-        b = Math.round(210 * (1 - (unsignedDelta / value)))
-        g = b
+        // an increase, color red
+        r = 200 + Math.round(55 * vector)
+        g = 50 + Math.round(80 * vector)
+        b = g
     } else if (delta < 0) {
-        r = Math.round(210 * (1 - (unsignedDelta / value)))
+        // a decrease, color blue
+        r = 50 + Math.round(80 * vector)
         g = r
+        b = 200 + Math.round(55 * vector)
+    } else if (delta === value) {
+        // likely a new frame, color orange
+        r = 190 + Math.round(65 * vector)
+        g = 90 + Math.round(65 * vector)
+        b = 0
     }
 
     return 'rgb(' + r + ',' + g + ',' + b + ')'
