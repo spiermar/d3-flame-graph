@@ -95,6 +95,8 @@ export function nodeJsColorMapper (d, originalColor) {
 }
 
 export function differentialColorMapper (d) {
+    if (d.highlight) return '#E600E6'
+
     let r = 220
     let g = 220
     let b = 220
