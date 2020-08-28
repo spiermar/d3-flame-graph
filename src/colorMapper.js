@@ -31,8 +31,8 @@ function generateHash (name) {
     return hash
 }
 
-export function allocationColorMapper (d) {
-    if (d.highlight) return 'rgb(230, 0, 230)'
+export function allocationColorMapper (d, originalColor) {
+    if (d.highlight) return originalColor
 
     const self = d.data.value
     const total = d.value
@@ -41,8 +41,8 @@ export function allocationColorMapper (d) {
     return `rgb(${color.join()})`
 }
 
-export function offCpuColorMapper (d) {
-    if (d.highlight) return '#E600E6'
+export function offCpuColorMapper (d, originalColor) {
+    if (d.highlight) return originalColor
 
     let name = d.data.n || d.data.name
     let vector = 0
@@ -94,8 +94,8 @@ export function nodeJsColorMapper (d, originalColor) {
     return color
 }
 
-export function differentialColorMapper (d) {
-    if (d.highlight) return '#E600E6'
+export function differentialColorMapper (d, originalColor) {
+    if (d.highlight) return originalColor
 
     let r = 220
     let g = 220
