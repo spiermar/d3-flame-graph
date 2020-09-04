@@ -109,19 +109,17 @@ export function differentialColorMapper (d, originalColor) {
 
     if (delta === value) {
         // likely a new frame, color orange
-        r = 190 + Math.round(65 * vector)
-        g = 90 + Math.round(65 * vector)
+        r = Math.round(235 * (1 - vector))
+        g = Math.round(135 * (1 - vector))
         b = 0
     } else if (delta > 0) {
         // an increase, color red
-        r = 200 + Math.round(55 * vector)
-        g = 50 + Math.round(80 * vector)
-        b = g
+        b = Math.round(235 * (1 - vector))
+        g = b
     } else if (delta < 0) {
         // a decrease, color blue
-        r = 50 + Math.round(80 * vector)
+        r = Math.round(235 * (1 - vector))
         g = r
-        b = 200 + Math.round(55 * vector)
     }
 
     return 'rgb(' + r + ',' + g + ',' + b + ')'
