@@ -109,9 +109,9 @@ export function differentialColorMapper (d, originalColor) {
 
     if (delta === value) {
         // likely a new frame, color orange
-        r = Math.round(235 * (1 - vector))
-        g = Math.round(135 * (1 - vector))
-        b = 0
+        r = 255
+        g = 190
+        b = 90
     } else if (delta > 0) {
         // an increase, color red
         b = Math.round(235 * (1 - vector))
