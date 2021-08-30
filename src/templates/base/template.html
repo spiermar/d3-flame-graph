@@ -5,7 +5,8 @@
     <title>Flame Graph</title>
   </head>
   <body>
-    <div class="controls">
+    <div id="controls">
+      <button id="context-button" type="button">Context</button>
       <button id="reset-button" type="button">Reset Zoom</button>
       <button id="clear-button" type="button">Clear</button>
       <form id="search-form">
@@ -13,11 +14,17 @@
         <input type="submit" value="Search">
       </form>
     </div>
-    <div class="content">
+    <div id="content">
+        <pre id="context" style="display: none"></pre>
         <div id="chart"></div>
-        <div id="details" class="details">Loading Flame Graph...</div>
+        <div id="details">Loading Flame Graph...</div>
     </div>
 
-    <script>flamegraph(/** @flamegraph_json **/);</script>
+    <script>
+      const stacks = [/** @flamegraph_json **/];
+      const options = [/** @options_json **/];
+
+      flamegraph(stacks[0], options[0]);
+    </script>
   </body>
 </html>
