@@ -37,6 +37,7 @@ declare module "d3-flame-graph" {
         label(val: LabelHandler): FlameGraph;
         label(): LabelHandler;
         sort(val: boolean): FlameGraph;
+        sort(comparator: (a: StackFrame, b: StackFrame) => number): FlameGraph;
         sort(): boolean;
         inverted(val: boolean): FlameGraph;
         inverted(): boolean;
