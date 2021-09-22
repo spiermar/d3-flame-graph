@@ -26,12 +26,12 @@ Just reference the CDN hosted CSS and JS files!
 
 ```html
 <head>
-  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/d3-flame-graph@4.0.6/dist/d3-flamegraph.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/d3-flame-graph@4.0.7/dist/d3-flamegraph.css">
 </head>
 <body>
   <div id="chart"></div>
   <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/d3-flame-graph@4.0.6/dist/d3-flamegraph.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/d3-flame-graph@4.0.7/dist/d3-flamegraph.min.js"></script>
   <script type="text/javascript">
   var chart = flamegraph()
     .width(960);
