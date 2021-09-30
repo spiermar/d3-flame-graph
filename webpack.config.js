@@ -121,7 +121,7 @@ module.exports = [{
             },
             minify: false
         }),
-        new InlineChunkHtmlPlugin(HtmlWebpackPlugin, ['bundle.js'])
+        new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/bundle.js/])
     ],
     module: {
         rules: [
