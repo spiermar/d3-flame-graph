@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import flamegraph from 'flamegraph'
 import { select } from 'd3-selection'
 
