@@ -4,7 +4,7 @@ const {
 } = require('clean-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const ScriptExtHtmlWebpackPlugin = require('script-ext-html-webpack-plugin')
+const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
 const TerserPlugin = require('terser-webpack-plugin')
 const packageFile = require('./package.json')
 
@@ -22,10 +22,13 @@ module.exports = [{
         libraryTarget: 'umd'
     },
     plugins: [
-        new CopyWebpackPlugin([{
-            from: 'flamegraph.css',
-            to: 'd3-flamegraph.css'
-        }])
+        new CopyWebpackPlugin(
+            {
+                patterns: [
+                    { from: 'flamegraph.css', to: 'd3-flamegraph.css' }
+                ]
+            }
+        )
     ],
     module: {
         rules: [{
@@ -118,9 +121,7 @@ module.exports = [{
             },
             minify: false
         }),
-        new ScriptExtHtmlWebpackPlugin({
-            inline: ['bundle.js']
-        })
+        new InlineChunkHtmlPlugin(HtmlWebpackPlugin, ['bundle.js'])
     ],
     module: {
         rules: [
