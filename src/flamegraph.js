@@ -350,12 +350,12 @@ export default function () {
             g.exit()
                 .remove()
 
-            g.on('mouseover', function (d) {
-                if (tooltip) tooltip.show(d, this)
-                detailsHandler(labelHandler(d))
-            }).on('mouseout', function () {
+            g.on('mouseout', function () {
                 if (tooltip) tooltip.hide()
                 detailsHandler(null)
+            }).on('mousemove', function (d) {
+                if (tooltip) tooltip.show(d)
+                detailsHandler(labelHandler(d))
             })
         })
     }

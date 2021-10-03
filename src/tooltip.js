@@ -10,9 +10,12 @@ function defaultLabel (d) {
 }
 
 export function defaultFlamegraphTooltip () {
-    var rootElement = select('body')
-    var tooltip = null
-    var html = defaultLabel
+    const rootElement = select('body')
+    const chartElement = select('#chart')
+    const chartBoundingClientRect = chartElement._groups[0][0].getBoundingClientRect()
+    const chartRightBoundary = chartBoundingClientRect.x + chartBoundingClientRect.width
+    let tooltip = null
+    let html = defaultLabel
 
     function tip () {
         tooltip = rootElement
@@ -32,9 +35,18 @@ export function defaultFlamegraphTooltip () {
             .style('opacity', 1)
             .style('pointer-events', 'all')
 
+        const tooltipAreaWidth = tooltip.nodes()[0].getBoundingClientRect().width
+        const tooltipRightBoundary = event.pageX + 10 + tooltipAreaWidth
+
+        let tooltipLeft = event.pageX + 10
+
+        if (tooltipRightBoundary > chartRightBoundary) {
+            tooltipLeft = tooltipLeft - tooltipAreaWidth - 12
+        }
+
         tooltip
             .html(html(d))
-            .style('left', event.pageX + 5 + 'px')
+            .style('left', tooltipLeft + 'px')
             .style('top', event.pageY + 5 + 'px')
 
         return tip
