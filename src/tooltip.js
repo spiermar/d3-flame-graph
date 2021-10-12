@@ -57,5 +57,9 @@ export function defaultFlamegraphTooltip () {
         return tip
     }
 
+    tip.destroy = function () {
+        tooltip.remove()
+    }
+
     return tip
 }

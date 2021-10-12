@@ -689,7 +689,12 @@ export default function () {
 
     chart.destroy = function () {
         if (!selection) { return chart }
-        if (tooltip) tooltip.hide()
+        if (tooltip) {
+            tooltip.hide()
+            if (typeof tooltip.destroy === 'function') {
+                tooltip.destroy()
+            }
+        }
         selection.selectAll('svg').remove()
         return chart
     }
