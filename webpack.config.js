@@ -47,15 +47,39 @@ module.exports = [{
 }, {
     context: path.join(__dirname, 'src'),
     entry: {
-        'colorMapper': './colorMapper.js',
-        'colorMapper.min': './colorMapper.js',
-        'tooltip': './tooltip.js',
-        'tooltip.min': './tooltip.js',
+        colorMapper: './colorMapper.js',
+        'colorMapper.min': './colorMapper.js'
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'd3-flamegraph-[name].js',
-        library: ['flamegraph', '[name]'],
+        library: ['flamegraph', 'colorMapper'],
+        libraryTarget: 'umd'
+    },
+    module: {
+        rules: [{
+            test: /\.js$/,
+            exclude: /node_modules/,
+            loader: 'eslint-loader'
+        }]
+    },
+    optimization: {
+        minimizer: [
+            new TerserPlugin({
+                test: /\.min\.js$/i
+            })
+        ]
+    }
+}, {
+    context: path.join(__dirname, 'src'),
+    entry: {
+        tooltip: './tooltip.js',
+        'tooltip.min': './tooltip.js'
+    },
+    output: {
+        path: path.resolve(__dirname, 'dist'),
+        filename: 'd3-flamegraph-[name].js',
+        library: ['flamegraph', 'tooltip'],
         libraryTarget: 'umd'
     },
     module: {
