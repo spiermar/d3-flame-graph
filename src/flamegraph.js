@@ -282,7 +282,10 @@ export default function () {
             function width (d) { return (d.x1 - d.x0) * kx }
 
             var descendants = filterNodes(root)
-            var g = select(this).select('svg').selectAll('g').data(descendants, function (d) { return d.id })
+            var svg = select(this).select('svg')
+            svg.attr('width', w)
+
+            var g = svg.selectAll('g').data(descendants, function (d) { return d.id })
 
             // if height is not set: set height on first update, after nodes were filtered by minFrameSize
             if (!h || resetHeightOnZoom) {
@@ -688,13 +691,15 @@ export default function () {
 
     chart.update = function (samples) {
         if (!selection) { return chart }
-        var newRoot // Need to re-create hierarchy after data changes.
-        selection.each(function (root) {
-            root.data = samples
-            newRoot = hierarchy(root.data, getChildren)
-            adoptNode(newRoot)
-        })
-        selection = selection.datum(newRoot)
+        if (arguments.length > 0) {
+            var newRoot // Need to re-create hierarchy after data changes.
+            selection.each(function (root) {
+                root.data = samples
+                newRoot = hierarchy(root.data, getChildren)
+                adoptNode(newRoot)
+            })
+            selection = selection.datum(newRoot)
+        }
         update()
         return chart
     }

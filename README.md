@@ -332,13 +332,13 @@ flamegraph.setSearchMatch(function(d, term, true) {
 If called with no arguments, `setSearchMatch` will return reset the search
 match function.
 
-<a name="merge" href="#merge">#</a> flamegraph.<b>merge</b>(<i>samples</i>)
+<a name="merge" href="#merge">#</a> flamegraph.<b>merge</b>(<i>date</i>)
 
-Merges the current nodes with the given nodes.
+Merges the current data with the given data.
 
-<a name="update" href="#update">#</a> flamegraph.<b>update</b>(<i>samples</i>)
+<a name="update" href="#update">#</a> flamegraph.<b>update</b>(<i>[data]</i>)
 
-Updates (replaces) the current set of nodes with the given nodes.
+Updates the current chart. If the `data` parameters is passed, replaces the current data.
 
 <a name="destroy" href="#destroy">#</a> flamegraph.<b>destroy</b>()
 
