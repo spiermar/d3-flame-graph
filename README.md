@@ -228,6 +228,19 @@ flamegraph.onClick(function (d) {
 
 If called with no arguments, `onClick` will return the click handler. 
 
+<a name="onHover" href="#onHover">#</a> flamegraph.<b>onHover</b>(<i>[function]</i>)
+
+Adds a function that will be called when the user hovers on a frame. Example:
+
+```js
+flamegraph.onHover(function (d) {
+    console.info("You hovered over frame "+ d.data.name);
+});
+```
+
+If called with no arguments, `onHover` will return the hover handler. 
+
+
 <a name="setDetailsElement" href="#setDetailsElement">#</a> flamegraph.<b>setDetailsElement</b>(<i>[element]</i>)
 
 Sets the element that should be updated with the focused sample details text. Example:

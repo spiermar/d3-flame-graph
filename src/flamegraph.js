@@ -20,6 +20,7 @@ export default function () {
     var sort = false
     var inverted = false // invert the graph direction
     var clickHandler = null
+    var hoverHandler = null
     var minFrameSize = 0
     var detailsElement = null
     var selfValue = false
@@ -353,6 +354,9 @@ export default function () {
             g.on('mouseover', function (d) {
                 if (tooltip) tooltip.show(d, this)
                 detailsHandler(labelHandler(d))
+                if (typeof hoverHandler === 'function') {
+                    hoverHandler(d)
+                }
             }).on('mouseout', function () {
                 if (tooltip) tooltip.hide()
                 detailsHandler(null)
@@ -658,6 +662,14 @@ export default function () {
             return clickHandler
         }
         clickHandler = _
+        return chart
+    }
+
+    chart.onHover = function (_) {
+        if (!arguments.length) {
+            return hoverHandler
+        }
+        hoverHandler = _
         return chart
     }
 
