@@ -5,13 +5,13 @@ function generateHash (name) {
     // 6 characters are considered.
     const MAX_CHAR = 6
 
-    var hash = 0
-    var maxHash = 0
-    var weight = 1
-    var mod = 10
+    let hash = 0
+    let maxHash = 0
+    let weight = 1
+    const mod = 10
 
     if (name) {
-        for (var i = 0; i < name.length; i++) {
+        for (let i = 0; i < name.length; i++) {
             if (i > MAX_CHAR) { break }
             hash += weight * (name.charCodeAt(i) % mod)
             maxHash += weight * (mod - 1)
@@ -23,9 +23,9 @@ function generateHash (name) {
 }
 
 export function generateColorVector (name) {
-    var vector = 0
+    let vector = 0
     if (name) {
-        var nameArr = name.split('`')
+        const nameArr = name.split('`')
         if (nameArr.length > 1) {
             name = nameArr[nameArr.length - 1] // drop module name if present
         }

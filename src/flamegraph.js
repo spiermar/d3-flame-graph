@@ -9,33 +9,33 @@ import { generateColorVector } from './colorUtils'
 import { calculateColor } from './colorScheme'
 
 export default function () {
-    var w = 960 // graph width
-    var h = null // graph height
-    var c = 18 // cell height
-    var selection = null // selection
-    var tooltip = null // tooltip
-    var title = '' // graph title
-    var transitionDuration = 750
-    var transitionEase = easeCubic // tooltip offset
-    var sort = false
-    var inverted = false // invert the graph direction
-    var clickHandler = null
-    var hoverHandler = null
-    var minFrameSize = 0
-    var detailsElement = null
-    var searchDetails = null
-    var selfValue = false
-    var resetHeightOnZoom = false
-    var scrollOnZoom = false
-    var minHeight = null
-    var computeDelta = false
-    var colorHue = null
+    let w = 960 // graph width
+    let h = null // graph height
+    let c = 18 // cell height
+    let selection = null // selection
+    let tooltip = null // tooltip
+    let title = '' // graph title
+    let transitionDuration = 750
+    let transitionEase = easeCubic // tooltip offset
+    let sort = false
+    let inverted = false // invert the graph direction
+    let clickHandler = null
+    let hoverHandler = null
+    let minFrameSize = 0
+    let detailsElement = null
+    let searchDetails = null
+    let selfValue = false
+    let resetHeightOnZoom = false
+    let scrollOnZoom = false
+    let minHeight = null
+    let computeDelta = false
+    let colorHue = null
 
-    var getName = function (d) {
+    let getName = function (d) {
         return d.data.n || d.data.name
     }
 
-    var getValue = function (d) {
+    let getValue = function (d) {
         if ('v' in d) {
             return d.v
         } else {
@@ -43,15 +43,15 @@ export default function () {
         }
     }
 
-    var getChildren = function (d) {
+    let getChildren = function (d) {
         return d.c || d.children
     }
 
-    var getLibtype = function (d) {
+    let getLibtype = function (d) {
         return d.data.l || d.data.libtype
     }
 
-    var getDelta = function (d) {
+    let getDelta = function (d) {
         if ('d' in d.data) {
             return d.data.d
         } else {
@@ -59,7 +59,7 @@ export default function () {
         }
     }
 
-    var searchHandler = function (searchResults, searchSum, totalValue) {
+    let searchHandler = function (searchResults, searchSum, totalValue) {
         searchDetails = () => {
             if (detailsElement) {
                 detailsElement.innerHTML = 'search: ' + searchSum + ' of ' + totalValue + ' total samples ( ' + format('.3f')(100 * (searchSum / totalValue), 3) + '%)'
@@ -67,7 +67,7 @@ export default function () {
         }
         searchDetails()
     }
-    var originalSearchHandler = searchHandler
+    const originalSearchHandler = searchHandler
 
     let searchMatch = (d, term, ignoreCase = false) => {
         if (!term) {
@@ -83,7 +83,7 @@ export default function () {
     }
     const originalSearchMatch = searchMatch
 
-    var detailsHandler = function (d) {
+    let detailsHandler = function (d) {
         if (detailsElement) {
             if (d) {
                 detailsElement.innerHTML = d
@@ -96,23 +96,23 @@ export default function () {
             }
         }
     }
-    var originalDetailsHandler = detailsHandler
+    const originalDetailsHandler = detailsHandler
 
-    var labelHandler = function (d) {
+    let labelHandler = function (d) {
         return getName(d) + ' (' + format('.3f')(100 * (d.x1 - d.x0), 3) + '%, ' + getValue(d) + ' samples)'
     }
 
-    var colorMapper = function (d) {
+    let colorMapper = function (d) {
         return d.highlight ? '#E600E6' : colorHash(getName(d), getLibtype(d))
     }
-    var originalColorMapper = colorMapper
+    const originalColorMapper = colorMapper
 
     function colorHash (name, libtype) {
     // Return a color for the given name and library type. The library type
     // selects the hue, and the name is hashed to a color in that hue.
 
         // default when libtype is not in use
-        var hue = colorHue || 'warm'
+        let hue = colorHue || 'warm'
 
         if (!colorHue && !(typeof libtype === 'undefined' || libtype === '')) {
             // Select hue. Order is important.
@@ -188,11 +188,11 @@ export default function () {
     }
 
     function searchTree (d, term) {
-        var results = []
-        var sum = 0
+        const results = []
+        let sum = 0
 
         function searchInner (d, foundParent) {
-            var found = false
+            let found = false
 
             if (searchMatch(d, term)) {
                 d.highlight = true
@@ -220,10 +220,10 @@ export default function () {
         if (d.id === id) {
             return d
         } else {
-            var children = getChildren(d)
+            const children = getChildren(d)
             if (children) {
-                for (var i = 0; i < children.length; i++) {
-                    var found = findTree(children[i], id)
+                for (let i = 0; i < children.length; i++) {
+                    const found = findTree(children[i], id)
                     if (found) {
                         return found
                     }
@@ -249,12 +249,12 @@ export default function () {
         }
     }
 
-    var p = partition()
+    const p = partition()
 
     function filterNodes (root) {
-        var nodeList = root.descendants()
+        let nodeList = root.descendants()
         if (minFrameSize > 0) {
-            var kx = w / (root.x1 - root.x0)
+            const kx = w / (root.x1 - root.x0)
             nodeList = nodeList.filter(function (el) {
                 return ((el.x1 - el.x0) * kx) > minFrameSize
             })
@@ -264,8 +264,8 @@ export default function () {
 
     function update () {
         selection.each(function (root) {
-            var x = scaleLinear().range([0, w])
-            var y = scaleLinear().range([0, c])
+            const x = scaleLinear().range([0, w])
+            const y = scaleLinear().range([0, c])
 
             reappraiseNode(root)
 
@@ -273,18 +273,18 @@ export default function () {
 
             p(root)
 
-            var kx = w / (root.x1 - root.x0)
+            const kx = w / (root.x1 - root.x0)
             function width (d) { return (d.x1 - d.x0) * kx }
 
-            var descendants = filterNodes(root)
-            var svg = select(this).select('svg')
+            const descendants = filterNodes(root)
+            const svg = select(this).select('svg')
             svg.attr('width', w)
 
-            var g = svg.selectAll('g').data(descendants, function (d) { return d.id })
+            let g = svg.selectAll('g').data(descendants, function (d) { return d.id })
 
             // if height is not set: set height on first update, after nodes were filtered by minFrameSize
             if (!h || resetHeightOnZoom) {
-                var maxDepth = Math.max.apply(null, descendants.map(function (n) { return n.depth }))
+                const maxDepth = Math.max.apply(null, descendants.map(function (n) { return n.depth }))
 
                 h = (maxDepth + 3) * c
                 if (h < minHeight) h = minHeight
@@ -303,7 +303,7 @@ export default function () {
                 .ease(transitionEase)
                 .attr('width', width)
 
-            var node = g.enter()
+            const node = g.enter()
                 .append('svg:g')
                 .attr('transform', function (d) { return 'translate(' + x(d.x0) + ',' + (inverted ? y(d.depth) : (h - y(d.depth) - c)) + ')' })
 
@@ -364,7 +364,7 @@ export default function () {
 
     function merge (data, samples) {
         samples.forEach(function (sample) {
-            var node = data.find(function (element) {
+            const node = data.find(function (element) {
                 return (element.name === sample.name)
             })
 
@@ -533,7 +533,7 @@ export default function () {
         // create chart svg
         selection.each(function (data) {
             if (select(this).select('svg').size() === 0) {
-                var svg = select(this)
+                const svg = select(this)
                     .append('svg:svg')
                     .attr('width', w)
                     .attr('class', 'partition d3-flame-graph')

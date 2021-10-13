@@ -1,7 +1,7 @@
 export function calculateColor (hue, vector) {
-    var r
-    var g
-    var b
+    let r
+    let g
+    let b
 
     if (hue === 'red') {
         r = 200 + Math.round(55 * vector)
