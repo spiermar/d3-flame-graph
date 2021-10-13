@@ -70,7 +70,7 @@
     </div>
 
     <!-- D3.js -->
-    <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+    <script src="https://d3js.org/d3.v7.js" charset="utf-8"></script>
 
     <!-- d3-flamegraph -->
     <script type="text/javascript" src="d3-flamegraph.js"></script>
@@ -119,13 +119,16 @@
     // Example of how to set fixed chart height
     // chart.height(540);
 
-    d3.json("stacks.json", function(error, data) {
-      if (error) return console.warn(error);
-      d3.select("#chart")
+    d3.json("stacks.json")
+      .then((data) => {
+        d3.select("#chart")
           .datum(data)
           .call(chart)
           .call(invokeFind);
-    });
+      })
+      .catch(error => {
+        return console.warn(error);
+      });
 
     document.getElementById("form").addEventListener("submit", function(event){
       event.preventDefault();

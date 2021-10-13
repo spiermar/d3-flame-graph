@@ -70,7 +70,7 @@
     </div>
 
     <!-- D3.js -->
-    <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+    <script src="https://d3js.org/d3.v7.js" charset="utf-8"></script>
 
     <!-- d3-flamegraph -->
     <script type="text/javascript" src="d3-flamegraph.js"></script>
@@ -99,16 +99,19 @@
       .datum(start)
       .call(chart);
 
-    d3.json("live.json", function(error, data) {
-      if (error) return console.warn(error);
-      var i = 1;
-      for (var value in data) {
-        setTimeout(function(timestamp) {
-          chart.merge(data[timestamp]);
-        }, 1000 * i, value);
-        i++;
-      }
-    });
+    d3.json("live.json")
+      .then((data) => {
+        var i = 1;
+        for (var value in data) {
+          setTimeout(function(timestamp) {
+            chart.merge(data[timestamp]);
+          }, 1000 * i, value);
+          i++;
+        }
+      })
+      .catch(error => {
+        return console.warn(error);
+      });
 
     document.getElementById("form").addEventListener("submit", function(event){
       event.preventDefault();
