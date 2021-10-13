@@ -23,9 +23,8 @@ export default function () {
     var hoverHandler = null
     var minFrameSize = 0
     var detailsElement = null
+    var searchDetails = null
     var selfValue = false
-    var searchSum = 0
-    var totalValue = 0
     var resetHeightOnZoom = false
     var scrollOnZoom = false
     var minHeight = null
@@ -60,8 +59,13 @@ export default function () {
         }
     }
 
-    var searchHandler = function () {
-        if (detailsElement) { setSearchDetails() }
+    var searchHandler = function (searchResults, searchSum, totalValue) {
+        searchDetails = () => {
+            if (detailsElement) {
+                detailsElement.innerHTML = 'search: ' + searchSum + ' of ' + totalValue + ' total samples ( ' + format('.3f')(100 * (searchSum / totalValue), 3) + '%)'
+            }
+        }
+        searchDetails()
     }
     var originalSearchHandler = searchHandler
 
@@ -84,8 +88,8 @@ export default function () {
             if (d) {
                 detailsElement.innerHTML = d
             } else {
-                if (searchSum) {
-                    setSearchDetails()
+                if (typeof searchDetails === 'function') {
+                    searchDetails()
                 } else {
                     detailsElement.innerHTML = ''
                 }
@@ -96,12 +100,6 @@ export default function () {
 
     var labelHandler = function (d) {
         return getName(d) + ' (' + format('.3f')(100 * (d.x1 - d.x0), 3) + '%, ' + getValue(d) + ' samples)'
-    }
-
-    var svg
-
-    function setSearchDetails () {
-        detailsElement.innerHTML = searchSum + ' of ' + totalValue + ' samples ( ' + format('.3f')(100 * (searchSum / totalValue), 3) + '%)'
     }
 
     var colorMapper = function (d) {
@@ -175,7 +173,7 @@ export default function () {
         fadeAncestors(d)
         update()
         if (scrollOnZoom) {
-            const chartOffset = svg._groups[0][0].parentNode.offsetTop
+            const chartOffset = select(this).select('svg')._groups[0][0].parentNode.offsetTop
             const maxFrames = (window.innerHeight - chartOffset) / c
             const frameOffset = (d.height - maxFrames + 10) * c
             window.scrollTo({
@@ -213,10 +211,9 @@ export default function () {
                 })
             }
         }
-
         searchInner(d, false)
-        searchSum = sum
-        searchHandler(results, sum, totalValue)
+
+        return [results, sum]
     }
 
     function findTree (d, id) {
@@ -272,8 +269,6 @@ export default function () {
 
             reappraiseNode(root)
 
-            totalValue = root.value
-
             if (sort) root.sort(doSort)
 
             p(root)
@@ -294,7 +289,7 @@ export default function () {
                 h = (maxDepth + 3) * c
                 if (h < minHeight) h = minHeight
 
-                select(this).select('svg').attr('height', h)
+                svg.attr('height', h)
             }
 
             g.transition()
@@ -323,7 +318,7 @@ export default function () {
                 .append('xhtml:div')
 
             // Now we have to re-select to see the new elements (why?).
-            g = select(this).select('svg').selectAll('g').data(descendants, function (d) { return d.id })
+            g = svg.selectAll('g').data(descendants, function (d) { return d.id })
 
             g.attr('width', width)
                 .attr('height', function (d) { return c })
@@ -374,11 +369,7 @@ export default function () {
             })
 
             if (node) {
-                if (node.original) {
-                    node.original += sample.value
-                } else {
-                    node.value += sample.value
-                }
+                node.value += sample.value
                 if (sample.children) {
                     if (!node.children) {
                         node.children = []
@@ -498,28 +489,51 @@ export default function () {
         }
     }
 
+    function processData () {
+        selection.datum((data) => {
+            if (data.constructor.name !== 'Node') {
+                // creating a root hierarchical structure
+                const root = hierarchy(data, getChildren)
+
+                // augumenting nodes with ids
+                adoptNode(root)
+
+                // calculate actual value
+                reappraiseNode(root)
+
+                // store value for later use
+                root.originalValue = root.value
+
+                // computing deltas for differentials
+                if (computeDelta) {
+                    root.eachAfter((node) => {
+                        let sum = getDelta(node)
+                        const children = node.children
+                        let i = children && children.length
+                        while (--i >= 0) sum += children[i].delta
+                        node.delta = sum
+                    })
+                }
+
+                // setting the bound data for the selection
+                return root
+            }
+        })
+    }
+
     function chart (s) {
-        const root = hierarchy(s.datum(), getChildren)
+        if (!arguments.length) { return chart }
 
-        adoptNode(root)
+        // saving the selection on `.call`
+        selection = s
 
-        if (computeDelta) {
-            root.eachAfter((node) => {
-                let sum = getDelta(node)
-                const children = node.children
-                let i = children && children.length
-                while (--i >= 0) sum += children[i].delta
-                node.delta = sum
-            })
-        }
+        // processing raw data to be used in the chart
+        processData()
 
-        selection = s.datum(root)
-
-        if (!arguments.length) return chart
-
+        // create chart svg
         selection.each(function (data) {
-            if (!svg) {
-                svg = select(this)
+            if (select(this).select('svg').size() === 0) {
+                var svg = select(this)
                     .append('svg:svg')
                     .attr('width', w)
                     .attr('class', 'partition d3-flame-graph')
@@ -622,10 +636,17 @@ export default function () {
     chart.label = chart.setLabelHandler
 
     chart.search = function (term) {
+        const searchResults = []
+        let searchSum = 0
+        let totalValue = 0
         selection.each(function (data) {
-            searchTree(data, term)
-            update()
+            const res = searchTree(data, term)
+            searchResults.push(...res[0])
+            searchSum += res[1]
+            totalValue += data.originalValue
         })
+        searchHandler(searchResults, searchSum, totalValue)
+        update()
     }
 
     chart.findById = function (id) {
@@ -642,10 +663,9 @@ export default function () {
     }
 
     chart.clear = function () {
-        searchSum = 0
         detailsHandler(null)
-        selection.each(function (data) {
-            clear(data)
+        selection.each(function (root) {
+            clear(root)
             update()
         })
     }
@@ -655,8 +675,8 @@ export default function () {
     }
 
     chart.resetZoom = function () {
-        selection.each(function (data) {
-            zoom(data) // zoom to root
+        selection.each(function (root) {
+            zoom(root) // zoom to root
         })
     }
 
@@ -676,29 +696,34 @@ export default function () {
         return chart
     }
 
-    chart.merge = function (samples) {
+    chart.merge = function (data) {
         if (!selection) { return chart }
-        var newRoot // Need to re-create hierarchy after data changes.
-        selection.each(function (root) {
-            merge([root.data], [samples])
-            newRoot = hierarchy(root.data, getChildren)
-            adoptNode(newRoot)
+
+        // TODO: Fix merge with zoom
+        // Merging a zoomed chart doesn't work properly, so
+        //  clearing zoom before merge.
+        // To apply zoom on merge, we would need to set hide
+        //  and fade on new data according to current data.
+        // New ids are generated for the whole data structure,
+        //  so previous ids might not be the same. For merge to
+        //  work with zoom, previous ids should be maintained.
+        this.resetZoom()
+
+        selection.datum((root) => {
+            merge([root.data], [data])
+            return root.data
         })
-        selection = selection.datum(newRoot)
+        processData()
         update()
+        // TODO: redo search
         return chart
     }
 
-    chart.update = function (samples) {
+    chart.update = function (data) {
         if (!selection) { return chart }
-        if (arguments.length > 0) {
-            var newRoot // Need to re-create hierarchy after data changes.
-            selection.each(function (root) {
-                root.data = samples
-                newRoot = hierarchy(root.data, getChildren)
-                adoptNode(newRoot)
-            })
-            selection = selection.datum(newRoot)
+        if (data) {
+            selection.datum(data)
+            processData()
         }
         update()
         return chart
