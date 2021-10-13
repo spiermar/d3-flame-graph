@@ -4,8 +4,9 @@ const {
 } = require('clean-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
+const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin')
 const TerserPlugin = require('terser-webpack-plugin')
+const ESLintPlugin = require('eslint-webpack-plugin')
 const packageFile = require('./package.json')
 
 module.exports = [{
@@ -28,15 +29,9 @@ module.exports = [{
                     { from: 'flamegraph.css', to: 'd3-flamegraph.css' }
                 ]
             }
-        )
+        ),
+        new ESLintPlugin()
     ],
-    module: {
-        rules: [{
-            test: /\.js$/,
-            exclude: /node_modules/,
-            loader: 'eslint-loader'
-        }]
-    },
     optimization: {
         minimizer: [
             new TerserPlugin({
@@ -45,7 +40,7 @@ module.exports = [{
         ]
     },
     devServer: {
-        contentBase: [path.join(__dirname, 'examples'), path.join(__dirname, 'dist')]
+        static: [path.join(__dirname, 'examples'), path.join(__dirname, 'dist')]
     }
 }, {
     context: path.join(__dirname, 'src'),
@@ -58,13 +53,6 @@ module.exports = [{
         filename: 'd3-flamegraph-[name].js',
         library: ['flamegraph', 'colorMapper'],
         libraryTarget: 'umd'
-    },
-    module: {
-        rules: [{
-            test: /\.js$/,
-            exclude: /node_modules/,
-            loader: 'eslint-loader'
-        }]
     },
     optimization: {
         minimizer: [
@@ -84,13 +72,6 @@ module.exports = [{
         filename: 'd3-flamegraph-[name].js',
         library: ['flamegraph', 'tooltip'],
         libraryTarget: 'umd'
-    },
-    module: {
-        rules: [{
-            test: /\.js$/,
-            exclude: /node_modules/,
-            loader: 'eslint-loader'
-        }]
     },
     optimization: {
         minimizer: [
@@ -125,11 +106,6 @@ module.exports = [{
     ],
     module: {
         rules: [
-            {
-                test: /\.js$/,
-                exclude: /node_modules/,
-                loader: 'eslint-loader'
-            },
             {
                 test: /\.css$/i,
                 use: ['style-loader', 'css-loader']
