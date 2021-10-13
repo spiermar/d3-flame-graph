@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import flamegraph from 'flamegraph'
+import flamegraph from 'd3-flamegraph'
 import { select } from 'd3-selection'
 
 describe('flame graph library', () => {

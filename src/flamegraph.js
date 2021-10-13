@@ -344,12 +344,12 @@ export default function () {
                 .delay(transitionDuration)
                 .text(getName)
 
-            g.on('click', zoom)
+            g.on('click', (_, d) => { zoom(d) })
 
             g.exit()
                 .remove()
 
-            g.on('mouseover', function (d) {
+            g.on('mouseover', function (_, d) {
                 if (tooltip) tooltip.show(d, this)
                 detailsHandler(labelHandler(d))
                 if (typeof hoverHandler === 'function') {
