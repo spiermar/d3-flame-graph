@@ -709,13 +709,20 @@ export default function () {
         //  work with zoom, previous ids should be maintained.
         this.resetZoom()
 
+        // Clear search details
+        // Merge requires a new search, updating data and
+        //  the details handler with search results.
+        // Since we don't store the search term, can't
+        //  perform search again.
+        searchDetails = null
+        detailsHandler(null)
+
         selection.datum((root) => {
             merge([root.data], [data])
             return root.data
         })
         processData()
         update()
-        // TODO: redo search
         return chart
     }
 
