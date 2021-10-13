@@ -206,11 +206,11 @@ Enables/disables sorting of children frames. Defaults to <i>true</i> if not set 
 
 <a name="inverted" href="#inverted">#</a> flamegraph.<b>inverted</b>(<i>[bool]</i>)
 
-Invert the flame graph direction. A top-down visualization of the flame graph, also known as _icicle_ plot. Defaults to <i>false</i> if not set. If a value is specified, it will enable/disable the inverted flame graphs direction, otherwise it will return the current inverted configuration.
+Invert the flame graph direction. A top-down visualization of the flame graph, also known as _icicle_ plot. Defaults to <i>false</i> if not set. If a value is specified, it will enable/disable the inverted flame graphs direction, otherwise it will return the current `inverted` configuration.
 
 <a name="computeDelta" href="#computeDelta">#</a> flamegraph.<b>computeDelta</b>(<i>[bool]</i>)
 
-If enabled, computes delta for all nodes. Delta value of each node is a sum if its own value from the <i>getDelta(node)</i> function, plus its children. Defaults to <i>false</i> if not set. If a value is specified, it will enable/disable the delta computation, otherwise it will return the current inverted configuration.
+If enabled, computes delta for all nodes. Delta value of each node is a sum of its own value from the <i>getDelta(node)</i> function, plus its children. Defaults to <i>false</i> if not set. If a value is specified, it will enable/disable the delta computation, otherwise it will return the current `computeDelta` configuration.
 
 <a name="resetZoom" href="#resetZoom">#</a> flamegraph.<b>resetZoom</b>()
 
@@ -260,19 +260,30 @@ If called with no arguments, `setDetailsElement` will return the current details
 
 Sets the handler function that is called when the `details` element needs to be updated. The function receives a single paramenter, the details text to be set. Example:
 
+let detailsHandler = function (d) {
+        if (detailsElement) {
+            if (d) {
+                detailsElement.innerHTML = d
+            } else {
+                if (typeof searchDetails === 'function') {
+                    searchDetails()
+                } else {
+                    detailsElement.innerHTML = ''
+                }
+            }
+        }
+    }
+
+
 ```js
 flamegraph.setDetailsHandler(
   function (d) {
     if (detailsElement) {
-      if (d) {
-        detailsElement.innerHTML = d
-      } else {
-        if (searchSum) {
-          setSearchDetails()
+        if (d) {
+            detailsElement.innerHTML = d
         } else {
-          detailsElement.innerHTML = ''
+            detailsElement.innerHTML = ''
         }
-      }
     }
   }
 );
@@ -286,10 +297,24 @@ If called with no arguments, `setDetailsHandler` will reset the details handler 
 
 Sets the handler function that is called when search results are returned. The function receives a three paramenters, the search results array, the search sample sum, and root value, Example:
 
+let searchHandler = function (searchResults, searchSum, totalValue) {
+        searchDetails = () => {
+            if (detailsElement) {
+                detailsElement.innerHTML = 'search: ' + searchSum + ' of ' + totalValue + ' total samples ( ' + format('.3f')(100 * (searchSum / totalValue), 3) + '%)'
+            }
+        }
+        searchDetails()
+    }
+
 ```js
 flamegraph.setSearchHandler(
-  function (searchResults, searchSum, totalValue) {
-    if (detailsElement) { detailsElement.innerHTML = `${searchSum} of ${totalValue} samples (${format('.3f')(100 * (searchSum / totalValue), 3)}%)`}
+  (searchResults, searchSum, totalValue) => {
+    searchDetails = () => { // searchDetails is a global variable
+        if (detailsElement) {
+            detailsElement.innerHTML = 'search: ' + searchSum + ' of ' + totalValue + ' total samples ( ' + format('.3f')(100 * (searchSum / totalValue), 3) + '%)'
+        }
+    }
+    searchDetails()
   }
 );
 ```
