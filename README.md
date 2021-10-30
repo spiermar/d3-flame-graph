@@ -263,20 +263,21 @@ If called with no arguments, `setDetailsElement` will return the current details
 
 Sets the handler function that is called when the `details` element needs to be updated. The function receives a single paramenter, the details text to be set. Example:
 
+```js
 let detailsHandler = function (d) {
-        if (detailsElement) {
-            if (d) {
-                detailsElement.innerHTML = d
+    if (detailsElement) {
+        if (d) {
+            detailsElement.innerHTML = d
+        } else {
+            if (typeof searchDetails === 'function') {
+                searchDetails()
             } else {
-                if (typeof searchDetails === 'function') {
-                    searchDetails()
-                } else {
-                    detailsElement.innerHTML = ''
-                }
+                detailsElement.innerHTML = ''
             }
         }
     }
-
+}
+```
 
 ```js
 flamegraph.setDetailsHandler(
@@ -300,14 +301,16 @@ If called with no arguments, `setDetailsHandler` will reset the details handler 
 
 Sets the handler function that is called when search results are returned. The function receives a three paramenters, the search results array, the search sample sum, and root value, Example:
 
+```js
 let searchHandler = function (searchResults, searchSum, totalValue) {
-        searchDetails = () => {
-            if (detailsElement) {
-                detailsElement.innerHTML = 'search: ' + searchSum + ' of ' + totalValue + ' total samples ( ' + format('.3f')(100 * (searchSum / totalValue), 3) + '%)'
-            }
+    searchDetails = () => {
+        if (detailsElement) {
+            detailsElement.innerHTML = 'search: ' + searchSum + ' of ' + totalValue + ' total samples ( ' + format('.3f')(100 * (searchSum / totalValue), 3) + '%)'
         }
-        searchDetails()
     }
+    searchDetails()
+}
+```
 
 ```js
 flamegraph.setSearchHandler(
