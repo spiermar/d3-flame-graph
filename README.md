@@ -36,12 +36,14 @@ Just reference the CDN hosted CSS and JS files!
   var chart = flamegraph()
     .width(960);
 
-  d3.json("data.json", function(error, data) {
-    if (error) return console.warn(error);
-    d3.select("#chart")
-      .datum(data)
-      .call(chart);
-  });
+  d3.json("data.json")
+    .then(data => {
+      d3.select("#chart")
+        .datum(data)
+        .call(chart);
+    }).catch(error => {
+      return console.warn(error);
+    });
   </script>
 </body>
 ```
