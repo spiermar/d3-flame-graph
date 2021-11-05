@@ -62,7 +62,7 @@ export default function () {
     let searchHandler = function (searchResults, searchSum, totalValue) {
         searchDetails = () => {
             if (detailsElement) {
-                detailsElement.innerHTML = 'search: ' + searchSum + ' of ' + totalValue + ' total samples ( ' + format('.3f')(100 * (searchSum / totalValue), 3) + '%)'
+                detailsElement.textContent = 'search: ' + searchSum + ' of ' + totalValue + ' total samples ( ' + format('.3f')(100 * (searchSum / totalValue), 3) + '%)'
             }
         }
         searchDetails()

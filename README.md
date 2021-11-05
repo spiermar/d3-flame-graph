@@ -307,7 +307,7 @@ Sets the handler function that is called when search results are returned. The f
 let searchHandler = function (searchResults, searchSum, totalValue) {
     searchDetails = () => {
         if (detailsElement) {
-            detailsElement.innerHTML = 'search: ' + searchSum + ' of ' + totalValue + ' total samples ( ' + format('.3f')(100 * (searchSum / totalValue), 3) + '%)'
+            detailsElement.textContent = 'search: ' + searchSum + ' of ' + totalValue + ' total samples ( ' + format('.3f')(100 * (searchSum / totalValue), 3) + '%)'
         }
     }
     searchDetails()
@@ -319,7 +319,7 @@ flamegraph.setSearchHandler(
   (searchResults, searchSum, totalValue) => {
     searchDetails = () => { // searchDetails is a global variable
         if (detailsElement) {
-            detailsElement.innerHTML = 'search: ' + searchSum + ' of ' + totalValue + ' total samples ( ' + format('.3f')(100 * (searchSum / totalValue), 3) + '%)'
+            detailsElement.textContent = 'search: ' + searchSum + ' of ' + totalValue + ' total samples ( ' + format('.3f')(100 * (searchSum / totalValue), 3) + '%)'
         }
     }
     searchDetails()
