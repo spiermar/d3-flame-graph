@@ -86,12 +86,12 @@ export default function () {
     let detailsHandler = function (d) {
         if (detailsElement) {
             if (d) {
-                detailsElement.innerHTML = d
+                detailsElement.textContent = d
             } else {
                 if (typeof searchDetails === 'function') {
                     searchDetails()
                 } else {
-                    detailsElement.innerHTML = ''
+                    detailsElement.textContent = ''
                 }
             }
         }

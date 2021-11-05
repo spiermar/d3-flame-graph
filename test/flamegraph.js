@@ -116,7 +116,7 @@ describe('flame graph library', () => {
         `)
     })
 
-    it('does not HTML-escape in details element', () => {
+    it('HTML-escapes profile frames in details element', () => {
         const detailsElem = document.createElement('div')
         const chart = flamegraph().setDetailsElement(detailsElem)
         const stacks = {
@@ -132,8 +132,7 @@ describe('flame graph library', () => {
             .dispatch('mouseover')
         expect(detailsElem).toMatchInlineSnapshot(`
             <div>
-              <img />
-               (100.000%, 1 samples)
+              &lt;img&gt; (100.000%, 1 samples)
             </div>
         `)
     })
