@@ -170,19 +170,6 @@ var tip = flamegraph.tooltip.defaultFlamegraphTooltip()
 flamegraph.tooltip(tip)
 ```
 
-The <a name="tooltip" href="#tooltip"><b>tooltip</b></a> is compatible with [d3-tip](https://github.com/Caged/d3-tip). This was the default library until version <i>2.1.10</i>.
-
-```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js"></script>
-```
-
-```js
-var tip = d3.tip()
-  .attr('class', 'd3-flame-graph-tip')
-  .html(function(d) { return "name: " + d.data.name + ", value: " + d.data.value; });
-flamegraph.tooltip(tip)
-```
-
 <a name="transitionDuration" href="#transitionDuration">#</a> flamegraph.<b>transitionDuration</b>(<i>[duration]</i>)
 
 Specifies transition duration in milliseconds. The default duration is 750ms. If <i>duration</i> is not specified, returns the current transition duration.
