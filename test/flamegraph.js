@@ -3,6 +3,7 @@
  */
 
 import flamegraph from 'd3-flamegraph'
+import { defaultFlamegraphTooltip } from 'd3-flamegraph-tooltip'
 import { select } from 'd3-selection'
 
 describe('flame graph library', () => {
@@ -317,6 +318,30 @@ describe('flame graph library', () => {
                   </foreignobject>
                 </g>
               </svg>
+            </div>
+        `)
+    })
+
+    it('tooltip does not HTML-escape contents', () => {
+        const chart = flamegraph().tooltip(defaultFlamegraphTooltip())
+        const stacks = {
+            name: '<img>',
+            value: 1,
+            children: [],
+        }
+
+        select(chartElem)
+            .datum(stacks)
+            .call(chart)
+            .select('g')
+            .dispatch('mouseover')
+
+        expect(document.querySelector('.d3-flame-graph-tip')).toMatchInlineSnapshot(`
+            <div
+              class="d3-flame-graph-tip"
+              style="display: block; position: absolute; opacity: 0; pointer-events: none;"
+            >
+              <img />
             </div>
         `)
     })
