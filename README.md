@@ -166,7 +166,7 @@ Sets a tooltip for the flamegraph frames. The tooltip function should implement 
 
 ```js
 var tip = flamegraph.tooltip.defaultFlamegraphTooltip()
-    .html(function(d) { return "name: " + d.data.name + ", value: " + d.data.value; });
+    .text(d => "name: " + d.data.name + ", value: " + d.data.value);
 flamegraph.tooltip(tip)
 ```
 
