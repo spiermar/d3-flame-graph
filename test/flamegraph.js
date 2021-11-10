@@ -64,6 +64,118 @@ describe('flame graph library', () => {
         `)
     })
 
+    it('HTML-escapes profile HTML in SVG titles', () => {
+        const chart = flamegraph()
+        const stacks = {
+            name: "<img>",
+            value: 1,
+            children: [],
+        }
+
+        select(chartElem).datum(stacks).call(chart)
+        expect(chartElem).toMatchInlineSnapshot(`
+            <div>
+              <svg
+                class="partition d3-flame-graph"
+                height="54"
+                width="960"
+              >
+                <text
+                  class="title"
+                  fill="#808080"
+                  text-anchor="middle"
+                  x="480"
+                  y="25"
+                />
+                <g
+                  class="frame"
+                  height="18"
+                  name="<img>"
+                  transform="translate(0,36)"
+                  width="960"
+                >
+                  <rect
+                    fill="rgb(221,143,34)"
+                    height="18"
+                  />
+                  <title>
+                    &lt;img&gt; (100.000%, 1 samples)
+                  </title>
+                  <foreignobject
+                    height="18"
+                    width="960"
+                  >
+                    <div
+                      class="d3-flame-graph-label"
+                      style="display: block;"
+                    />
+                  </foreignobject>
+                </g>
+              </svg>
+            </div>
+        `)
+    })
+
+    it('HTML-escapes profile frames in details element', () => {
+        const detailsElem = document.createElement('div')
+        const chart = flamegraph().setDetailsElement(detailsElem)
+        const stacks = {
+            name: '<img>',
+            value: 1,
+            children: [],
+        }
+
+        select(chartElem)
+            .datum(stacks)
+            .call(chart)
+            .select('g')
+            .dispatch('mouseover')
+        expect(detailsElem).toMatchInlineSnapshot(`
+            <div>
+              &lt;img&gt; (100.000%, 1 samples)
+            </div>
+        `)
+    })
+
+    it('empties the details element on mouseout', () => {
+        const detailsElem = document.createElement('div')
+        const chart = flamegraph().setDetailsElement(detailsElem)
+        const stacks = {
+            name: 'root',
+            value: 1,
+            children: [],
+        }
+
+        const g = select(chartElem).datum(stacks).call(chart).select('g')
+        g.dispatch('mouseover')
+        expect(detailsElem).toMatchInlineSnapshot(`
+            <div>
+              root (100.000%, 1 samples)
+            </div>
+        `)
+        g.dispatch('mouseout')
+        expect(detailsElem).toMatchInlineSnapshot(`<div />`)
+    })
+
+    it('search should update details element', () => {
+        const detailsElem = document.createElement('div')
+        const chart = flamegraph().setDetailsElement(detailsElem)
+        const stacks = {
+            name: '<img>',
+            value: 1,
+            children: [],
+        }
+
+        select(chartElem).datum(stacks).call(chart)
+        chart.search('img')
+
+        expect(detailsElem).toMatchInlineSnapshot(`
+            <div>
+              search: 1 of 1 total samples ( 100.000%)
+            </div>
+        `)
+    })
+
     it('should generate a graph with multiple stacks, using the self value logic', () => {
         const sortByValue = (lhs, rhs) => {
             if (lhs.value === rhs.value) return 0

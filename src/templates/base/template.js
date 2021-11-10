@@ -113,7 +113,7 @@ class FlameGraphUI {
         window.addEventListener('resize', this.handleWindowResize.bind(this), true)
 
         this.context.textContent = this.options.context
-        this.details.innerHTML = ''
+        this.details.textContent = ''
         select(this.chart)
             .datum(this.stacks)
             .call(this.flameGraph)
