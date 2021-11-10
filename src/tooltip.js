@@ -12,7 +12,12 @@ function defaultLabel (d) {
 export function defaultFlamegraphTooltip () {
     var rootElement = select('body')
     var tooltip = null
+    // Function to get HTML content from data.
     var html = defaultLabel
+    // Function to get text content from data.
+    var text = defaultLabel
+    // Whether to use d3's .html() to set content, otherwise use .text().
+    var contentIsHTML = false
 
     function tip () {
         tooltip = rootElement
@@ -31,11 +36,14 @@ export function defaultFlamegraphTooltip () {
             .duration(200)
             .style('opacity', 1)
             .style('pointer-events', 'all')
-
-        tooltip
-            .html(html(d))
             .style('left', event.pageX + 5 + 'px')
             .style('top', event.pageY + 5 + 'px')
+
+        if (contentIsHTML) {
+            tooltip.html(html(d))
+        } else {
+            tooltip.text(text(d))
+        }
 
         return tip
     }
@@ -51,9 +59,29 @@ export function defaultFlamegraphTooltip () {
         return tip
     }
 
+    /**
+     * Gets/sets a function converting the d3 data into the tooltip's textContent.
+     * 
+     * Cannot be combined with tip.html().
+     */
+    tip.text = function (_) {
+        if (!arguments.length) return text
+        text = _
+        contentIsHTML = false
+        return tip
+    }
+
+    /**
+     * Gets/sets a function converting the d3 data into the tooltip's innerHTML.
+     * 
+     * Cannot be combined with tip.text().
+     *
+     * @deprecated prefer tip.text().
+     */
     tip.html = function (_) {
         if (!arguments.length) return html
         html = _
+        contentIsHTML = true
         return tip
     }
 

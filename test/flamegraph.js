@@ -363,7 +363,7 @@ describe('flame graph library', () => {
         tooltip.destroy() // clean up the DOM for other tests
     })
 
-    it('tooltip does not HTML-escape contents', () => {
+    it('tooltip HTML-escapes contents by default', () => {
         const tooltip = defaultFlamegraphTooltip()
         const chart = flamegraph().tooltip(tooltip)
         const stacks = {
@@ -384,7 +384,7 @@ describe('flame graph library', () => {
             class="d3-flame-graph-tip"
             style="display: block; position: absolute; opacity: 0; pointer-events: none;"
           >
-            <img />
+            &lt;img&gt;
           </div>,
         ]
         `)
@@ -416,6 +416,35 @@ describe('flame graph library', () => {
             <a>
               HTML
             </a>
+          </div>,
+        ]
+        `)
+        tooltip.destroy() // clean up the DOM for other tests
+    })
+
+    it('tooltip with custom text does not interpret text as HTML', () => {
+        const tooltip = defaultFlamegraphTooltip()
+            .text(d => 'name: ' + d.data.name + ', value: ' + d.data.value)
+        const chart = flamegraph().tooltip(tooltip)
+        const stacks = {
+            name: '<root>',
+            value: 1,
+            children: [],
+        }
+
+        select(chartElem)
+            .datum(stacks)
+            .call(chart)
+            .select('g')
+            .dispatch('mouseover')
+
+        expect(document.querySelectorAll('.d3-flame-graph-tip')).toMatchInlineSnapshot(`
+        NodeList [
+          <div
+            class="d3-flame-graph-tip"
+            style="display: block; position: absolute; opacity: 0; pointer-events: none;"
+          >
+            name: &lt;root&gt;, value: 1
           </div>,
         ]
         `)
