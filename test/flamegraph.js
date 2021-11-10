@@ -322,8 +322,50 @@ describe('flame graph library', () => {
         `)
     })
 
+    it('tooltip contains name of stack frame by default, hiding on mouseout', () => {
+        const tooltip = defaultFlamegraphTooltip()
+        const chart = flamegraph().tooltip(tooltip)
+        const stacks = {
+            name: 'main',
+            value: 1,
+            children: [],
+        }
+
+        const g = select(chartElem)
+            .datum(stacks)
+            .call(chart)
+            .select('g')
+            .dispatch('mouseover')
+
+        expect(document.querySelectorAll('.d3-flame-graph-tip')).toMatchInlineSnapshot(`
+        NodeList [
+          <div
+            class="d3-flame-graph-tip"
+            style="display: block; position: absolute; opacity: 0; pointer-events: none;"
+          >
+            main
+          </div>,
+        ]
+        `)
+
+        g.dispatch('mouseout')
+        expect(document.querySelectorAll('.d3-flame-graph-tip')).toMatchInlineSnapshot(`
+        NodeList [
+          <div
+            class="d3-flame-graph-tip"
+            style="display: none; position: absolute; opacity: 0; pointer-events: none;"
+          >
+            main
+          </div>,
+        ]
+        `)
+
+        tooltip.destroy() // clean up the DOM for other tests
+    })
+
     it('tooltip does not HTML-escape contents', () => {
-        const chart = flamegraph().tooltip(defaultFlamegraphTooltip())
+        const tooltip = defaultFlamegraphTooltip()
+        const chart = flamegraph().tooltip(tooltip)
         const stacks = {
             name: '<img>',
             value: 1,
@@ -336,13 +378,47 @@ describe('flame graph library', () => {
             .select('g')
             .dispatch('mouseover')
 
-        expect(document.querySelector('.d3-flame-graph-tip')).toMatchInlineSnapshot(`
-            <div
-              class="d3-flame-graph-tip"
-              style="display: block; position: absolute; opacity: 0; pointer-events: none;"
-            >
-              <img />
-            </div>
+        expect(document.querySelectorAll('.d3-flame-graph-tip')).toMatchInlineSnapshot(`
+        NodeList [
+          <div
+            class="d3-flame-graph-tip"
+            style="display: block; position: absolute; opacity: 0; pointer-events: none;"
+          >
+            <img />
+          </div>,
+        ]
         `)
+        tooltip.destroy() // clean up the DOM for other tests
+    })
+
+    it('tooltip with custom html does not HTML-escape contents', () => {
+        const tooltip = defaultFlamegraphTooltip()
+            .html(d => '<a>HTML</a>')
+        const chart = flamegraph().tooltip(tooltip)
+        const stacks = {
+            name: '<img>',
+            value: 1,
+            children: [],
+        }
+
+        select(chartElem)
+            .datum(stacks)
+            .call(chart)
+            .select('g')
+            .dispatch('mouseover')
+
+        expect(document.querySelectorAll('.d3-flame-graph-tip')).toMatchInlineSnapshot(`
+        NodeList [
+          <div
+            class="d3-flame-graph-tip"
+            style="display: block; position: absolute; opacity: 0; pointer-events: none;"
+          >
+            <a>
+              HTML
+            </a>
+          </div>,
+        ]
+        `)
+        tooltip.destroy() // clean up the DOM for other tests
     })
 })
