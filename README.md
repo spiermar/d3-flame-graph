@@ -166,20 +166,7 @@ Sets a tooltip for the flamegraph frames. The tooltip function should implement 
 
 ```js
 var tip = flamegraph.tooltip.defaultFlamegraphTooltip()
-    .html(function(d) { return "name: " + d.data.name + ", value: " + d.data.value; });
-flamegraph.tooltip(tip)
-```
-
-The <a name="tooltip" href="#tooltip"><b>tooltip</b></a> is compatible with [d3-tip](https://github.com/Caged/d3-tip). This was the default library until version <i>2.1.10</i>.
-
-```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js"></script>
-```
-
-```js
-var tip = d3.tip()
-  .attr('class', 'd3-flame-graph-tip')
-  .html(function(d) { return "name: " + d.data.name + ", value: " + d.data.value; });
+    .text(d => "name: " + d.data.name + ", value: " + d.data.value);
 flamegraph.tooltip(tip)
 ```
 

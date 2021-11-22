@@ -3,6 +3,7 @@
  */
 
 import flamegraph from 'd3-flamegraph'
+import { defaultFlamegraphTooltip } from 'd3-flamegraph-tooltip'
 import { select } from 'd3-selection'
 
 describe('flame graph library', () => {
@@ -319,5 +320,134 @@ describe('flame graph library', () => {
               </svg>
             </div>
         `)
+    })
+
+    it('tooltip contains name of stack frame by default, hiding on mouseout', () => {
+        const tooltip = defaultFlamegraphTooltip()
+        const chart = flamegraph().tooltip(tooltip)
+        const stacks = {
+            name: 'main',
+            value: 1,
+            children: [],
+        }
+
+        const g = select(chartElem)
+            .datum(stacks)
+            .call(chart)
+            .select('g')
+            .dispatch('mouseover')
+
+        expect(document.querySelectorAll('.d3-flame-graph-tip')).toMatchInlineSnapshot(`
+        NodeList [
+          <div
+            class="d3-flame-graph-tip"
+            style="display: block; position: absolute; opacity: 0; pointer-events: none;"
+          >
+            main
+          </div>,
+        ]
+        `)
+
+        g.dispatch('mouseout')
+        expect(document.querySelectorAll('.d3-flame-graph-tip')).toMatchInlineSnapshot(`
+        NodeList [
+          <div
+            class="d3-flame-graph-tip"
+            style="display: none; position: absolute; opacity: 0; pointer-events: none;"
+          >
+            main
+          </div>,
+        ]
+        `)
+
+        tooltip.destroy() // clean up the DOM for other tests
+    })
+
+    it('tooltip HTML-escapes contents by default', () => {
+        const tooltip = defaultFlamegraphTooltip()
+        const chart = flamegraph().tooltip(tooltip)
+        const stacks = {
+            name: '<img>',
+            value: 1,
+            children: [],
+        }
+
+        select(chartElem)
+            .datum(stacks)
+            .call(chart)
+            .select('g')
+            .dispatch('mouseover')
+
+        expect(document.querySelectorAll('.d3-flame-graph-tip')).toMatchInlineSnapshot(`
+        NodeList [
+          <div
+            class="d3-flame-graph-tip"
+            style="display: block; position: absolute; opacity: 0; pointer-events: none;"
+          >
+            &lt;img&gt;
+          </div>,
+        ]
+        `)
+        tooltip.destroy() // clean up the DOM for other tests
+    })
+
+    it('tooltip with custom html does not HTML-escape contents', () => {
+        const tooltip = defaultFlamegraphTooltip()
+            .html(d => '<a>HTML</a>')
+        const chart = flamegraph().tooltip(tooltip)
+        const stacks = {
+            name: '<img>',
+            value: 1,
+            children: [],
+        }
+
+        select(chartElem)
+            .datum(stacks)
+            .call(chart)
+            .select('g')
+            .dispatch('mouseover')
+
+        expect(document.querySelectorAll('.d3-flame-graph-tip')).toMatchInlineSnapshot(`
+        NodeList [
+          <div
+            class="d3-flame-graph-tip"
+            style="display: block; position: absolute; opacity: 0; pointer-events: none;"
+          >
+            <a>
+              HTML
+            </a>
+          </div>,
+        ]
+        `)
+        tooltip.destroy() // clean up the DOM for other tests
+    })
+
+    it('tooltip with custom text does not interpret text as HTML', () => {
+        const tooltip = defaultFlamegraphTooltip()
+            .text(d => 'name: ' + d.data.name + ', value: ' + d.data.value)
+        const chart = flamegraph().tooltip(tooltip)
+        const stacks = {
+            name: '<root>',
+            value: 1,
+            children: [],
+        }
+
+        select(chartElem)
+            .datum(stacks)
+            .call(chart)
+            .select('g')
+            .dispatch('mouseover')
+
+        expect(document.querySelectorAll('.d3-flame-graph-tip')).toMatchInlineSnapshot(`
+        NodeList [
+          <div
+            class="d3-flame-graph-tip"
+            style="display: block; position: absolute; opacity: 0; pointer-events: none;"
+          >
+            name: &lt;root&gt;, value: 1
+          </div>,
+        ]
+        `)
+        tooltip.destroy() // clean up the DOM for other tests
     })
 })
