@@ -32,12 +32,12 @@ export function defaultFlamegraphTooltip () {
     tip.show = function (d) {
         tooltip
             .style('display', 'block')
+            .style('left', event.pageX + 5 + 'px')
+            .style('top', event.pageY + 5 + 'px')
             .transition()
             .duration(200)
             .style('opacity', 1)
             .style('pointer-events', 'all')
-            .style('left', event.pageX + 5 + 'px')
-            .style('top', event.pageY + 5 + 'px')
 
         if (contentIsHTML) {
             tooltip.html(html(d))
@@ -61,7 +61,7 @@ export function defaultFlamegraphTooltip () {
 
     /**
      * Gets/sets a function converting the d3 data into the tooltip's textContent.
-     * 
+     *
      * Cannot be combined with tip.html().
      */
     tip.text = function (_) {
@@ -73,7 +73,7 @@ export function defaultFlamegraphTooltip () {
 
     /**
      * Gets/sets a function converting the d3 data into the tooltip's innerHTML.
-     * 
+     *
      * Cannot be combined with tip.text().
      *
      * @deprecated prefer tip.text().
