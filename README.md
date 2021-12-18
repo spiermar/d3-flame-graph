@@ -184,11 +184,39 @@ See [d3-ease](https://github.com/d3/d3-ease).
 
 <a name="label" href="#label">#</a> flamegraph.<b>label</b>(<i>[function]</i>)
 
-Adds a function that returns a formatted label. Example:
+Adds a function that returns a formatted label.
+
+Example:
 
 ```js
 flamegraph.label(function(d) {
     return "name: " + d.name + ", value: " + d.value;
+});
+```
+
+Or a custom field `customNameField`:
+
+```js
+flamegraph.label(function(d) {
+    return "name: " + d.data.customNameField;
+});
+```
+
+<a name="getName" href="#getName">#</a> flamegraph.<b>getName</b>(<i>[function]</i>)
+
+Adds a function that returns the name of a node element. Example:
+
+```js
+flamegraph.label(function(d) {
+    return "name: " + d.name + ", value: " + d.value;
+});
+```
+
+Or a custom field `customLabel`:
+
+```js
+flamegraph.getName(function(d) {
+    return "name: " + d.data.customLabel;
 });
 ```
 
