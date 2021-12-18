@@ -7,6 +7,7 @@ declare module "d3-flame-graph" {
     }
 
     type LabelHandler = (node: any) => string;
+    type NameHandler = (node: any) => string;
     type ClickHandler = (node: any) => void;
     type DetailsHandler = (node: any) => void;
     type SearchHandler = (results: any, sum: any, totalValue: any) => void;
@@ -36,6 +37,8 @@ declare module "d3-flame-graph" {
         transitionEase(): string;
         label(val: LabelHandler): FlameGraph;
         label(): LabelHandler;
+        getName(val: NameHandler): FlameGraph;
+        getName(): NameHandler;
         sort(val: boolean): FlameGraph;
         sort(comparator: (a: StackFrame, b: StackFrame) => number): FlameGraph;
         sort(): boolean;
