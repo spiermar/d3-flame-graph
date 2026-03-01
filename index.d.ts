@@ -29,8 +29,8 @@ declare module "d3-flame-graph" {
         minFrameSize(): number;
         title(val: string): FlameGraph;
         title(): string;
-        tooltip(val: boolean): FlameGraph;
-        tooltip(): boolean;
+        tooltip(val: any): FlameGraph;
+        tooltip(): any;
         transitionDuration(val: number): FlameGraph;
         transitionDuration(): number;
         transitionEase(val: string): FlameGraph;
