@@ -4,10 +4,16 @@ import { ascending } from 'd3-array'
 import { partition, hierarchy } from 'd3-hierarchy'
 import { scaleLinear } from 'd3-scale'
 import { easeCubic } from 'd3-ease'
-import 'd3-transition'
+import { select as selectTransition } from 'd3-selection'
+import 'd3-transition/transition'
 import { generateColorVector } from './colorUtils'
 import { calculateColor } from './colorScheme'
 
+/**
+ * D3 Flame Graph
+ * A D3.js library to produce flame graphs.
+ * @returns {Function} The flame graph chart function
+ */
 export default function () {
     let w = 960 // graph width
     let h = null // graph height
@@ -166,14 +172,14 @@ export default function () {
         }
     }
 
-    function zoom (d) {
+    function zoom (d, node) {
         if (tooltip) tooltip.hide()
         hideSiblings(d)
         show(d)
         fadeAncestors(d)
         update()
         if (scrollOnZoom) {
-            const chartOffset = select(this).select('svg')._groups[0][0].parentNode.offsetTop
+            const chartOffset = node.parentNode.offsetTop
             const maxFrames = (window.innerHeight - chartOffset) / c
             const frameOffset = (d.height - maxFrames + 10) * c
             window.scrollTo({
@@ -344,7 +350,7 @@ export default function () {
                 .delay(transitionDuration)
                 .text(getName)
 
-            g.on('click', (_, d) => { zoom(d) })
+            g.on('click', function (event, d) { zoom(d, this) })
 
             g.exit()
                 .remove()
@@ -495,7 +501,7 @@ export default function () {
                 // creating a root hierarchical structure
                 const root = hierarchy(data, getChildren)
 
-                // augumenting nodes with ids
+                // augmenting nodes with ids
                 adoptNode(root)
 
                 // calculate actual value
@@ -559,30 +565,55 @@ export default function () {
         update()
     }
 
+    /**
+     * Get or set the graph height.
+     * @param {number} [_] - The height in pixels
+     * @returns {number|Chart} Height value or chart instance
+     */
     chart.height = function (_) {
         if (!arguments.length) { return h }
         h = _
         return chart
     }
 
+    /**
+     * Get or set the minimum graph height.
+     * @param {number} [_] - The minimum height in pixels
+     * @returns {number|Chart} Min height value or chart instance
+     */
     chart.minHeight = function (_) {
         if (!arguments.length) { return minHeight }
         minHeight = _
         return chart
     }
 
+    /**
+     * Get or set the graph width.
+     * @param {number} [_] - The width in pixels
+     * @returns {number|Chart} Width value or chart instance
+     */
     chart.width = function (_) {
         if (!arguments.length) { return w }
         w = _
         return chart
     }
 
+    /**
+     * Get or set the cell height.
+     * @param {number} [_] - The cell height in pixels
+     * @returns {number|Chart} Cell height value or chart instance
+     */
     chart.cellHeight = function (_) {
         if (!arguments.length) { return c }
         c = _
         return chart
     }
 
+    /**
+     * Get or set the tooltip.
+     * @param {Function} [_] - Tooltip show/hide function
+     * @returns {Function|Chart} Tooltip function or chart instance
+     */
     chart.tooltip = function (_) {
         if (!arguments.length) { return tooltip }
         if (typeof _ === 'function') {
@@ -591,42 +622,77 @@ export default function () {
         return chart
     }
 
+    /**
+     * Get or set the graph title.
+     * @param {string} [_] - The title text
+     * @returns {string|Chart} Title or chart instance
+     */
     chart.title = function (_) {
         if (!arguments.length) { return title }
         title = _
         return chart
     }
 
+    /**
+     * Get or set the transition duration.
+     * @param {number} [_] - Duration in milliseconds
+     * @returns {number|Chart} Duration or chart instance
+     */
     chart.transitionDuration = function (_) {
         if (!arguments.length) { return transitionDuration }
         transitionDuration = _
         return chart
     }
 
+    /**
+     * Get or set the transition ease function.
+     * @param {Function} [_] - D3 ease function
+     * @returns {Function|Chart} Ease function or chart instance
+     */
     chart.transitionEase = function (_) {
         if (!arguments.length) { return transitionEase }
         transitionEase = _
         return chart
     }
 
+    /**
+     * Get or set the sort order.
+     * @param {boolean|Function} [_] - Boolean or custom sort function
+     * @returns {boolean|Function|Chart} Sort value/function or chart instance
+     */
     chart.sort = function (_) {
         if (!arguments.length) { return sort }
         sort = _
         return chart
     }
 
+    /**
+     * Get or set the inverted flag (flips graph direction).
+     * @param {boolean} [_] - Inverted flag
+     * @returns {boolean|Chart} Inverted flag or chart instance
+     */
     chart.inverted = function (_) {
         if (!arguments.length) { return inverted }
         inverted = _
         return chart
     }
 
+    /**
+     * Get or set the computeDelta flag.
+     * @param {boolean} [_] - Delta computation flag
+     * @returns {boolean|Chart} Delta flag or chart instance
+     */
     chart.computeDelta = function (_) {
         if (!arguments.length) { return computeDelta }
         computeDelta = _
         return chart
     }
 
+    /**
+     * Get or set the label handler function.
+     * @param {Function} [_] - Label handler function
+     * @returns {Function|Chart} Label handler or chart instance
+     */
     chart.setLabelHandler = function (_) {
         if (!arguments.length) { return labelHandler }
         labelHandler = _
@@ -635,6 +701,10 @@ export default function () {
     // Kept for backwards compatibility.
     chart.label = chart.setLabelHandler
 
+    /**
+     * Search the flame graph for nodes matching the given term.
+     * @param {string} term - The search term
+     */
     chart.search = function (term) {
         const searchResults = []
         let searchSum = 0
@@ -649,6 +719,11 @@ export default function () {
         update()
     }
 
+    /**
+     * Find a node in the flame graph by its ID.
+     * @param {number} id - The node ID
+     * @returns {Object|null} The found node or null
+     */
     chart.findById = function (id) {
         if (typeof (id) === 'undefined' || id === null) {
             return null
@@ -662,6 +737,9 @@ export default function () {
         return found
     }
 
+    /**
+     * Clear all highlights and search results.
+     */
     chart.clear = function () {
         detailsHandler(null)
         selection.each(function (root) {
@@ -670,16 +748,28 @@ export default function () {
         })
     }
 
+    /**
+     * Zoom to a specific node.
+     * @param {Object} d - The node to zoom to
+     */
     chart.zoomTo = function (d) {
-        zoom(d)
+        zoom(d, selection.node())
     }
 
+    /**
+     * Reset zoom to the root node.
+     */
     chart.resetZoom = function () {
         selection.each(function (root) {
-            zoom(root) // zoom to root
+            zoom(root, selection.node()) // zoom to root
         })
     }
 
+    /**
+     * Get or set the click handler.
+     * @param {Function} [_] - Click handler function
+     * @returns {Function|Chart} Click handler or chart instance
+     */
     chart.onClick = function (_) {
         if (!arguments.length) {
             return clickHandler
@@ -688,6 +778,11 @@ export default function () {
         return chart
     }
 
+    /**
+     * Get or set the hover handler.
+     * @param {Function} [_] - Hover handler function
+     * @returns {Function|Chart} Hover handler or chart instance
+     */
     chart.onHover = function (_) {
         if (!arguments.length) {
             return hoverHandler
@@ -696,6 +791,11 @@ export default function () {
         return chart
     }
 
+    /**
+     * Merge additional data into the flame graph.
+     * @param {Object} data - The data to merge
+     * @returns {Chart} The chart instance
+     */
     chart.merge = function (data) {
         if (!selection) { return chart }
 
@@ -726,6 +826,11 @@ export default function () {
         return chart
     }
 
+    /**
+     * Update the flame graph with new data.
+     * @param {Object} [data] - Optional new data to set
+     * @returns {Chart} The chart instance
+     */
     chart.update = function (data) {
         if (!selection) { return chart }
         if (data) {
@@ -736,6 +841,10 @@ export default function () {
         return chart
     }
 
+    /**
+     * Destroy the flame graph and remove all elements.
+     * @returns {Chart} The chart instance
+     */
     chart.destroy = function () {
         if (!selection) { return chart }
         if (tooltip) {
@@ -748,6 +857,11 @@ export default function () {
         return chart
     }
 
+    /**
+     * Get or set the color mapper function.
+     * @param {Function} [_] - Color mapper function
+     * @returns {Function|Chart} Color mapper or chart instance
+     */
     chart.setColorMapper = function (_) {
         if (!arguments.length) {
             colorMapper = originalColorMapper
@@ -762,6 +876,11 @@ export default function () {
     // Kept for backwards compatibility.
     chart.color = chart.setColorMapper
 
+    /**
+     * Get or set the color hue.
+     * @param {string} [_] - Color hue (e.g., 'warm', 'red', 'blue')
+     * @returns {string|Chart} Color hue or chart instance
+     */
     chart.setColorHue = function (_) {
         if (!arguments.length) {
             colorHue = null
@@ -771,12 +890,22 @@ export default function () {
         return chart
     }
 
+    /**
+     * Get or set the minimum frame size.
+     * @param {number} [_] - Minimum frame size in pixels
+     * @returns {number|Chart} Min frame size or chart instance
+     */
     chart.minFrameSize = function (_) {
         if (!arguments.length) { return minFrameSize }
         minFrameSize = _
         return chart
     }
 
+    /**
+     * Get or set the details element.
+     * @param {HTMLElement} [_] - DOM element for details
+     * @returns {HTMLElement|Chart} Details element or chart instance
+     */
     chart.setDetailsElement = function (_) {
         if (!arguments.length) { return detailsElement }
         detailsElement = _
