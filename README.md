@@ -182,14 +182,14 @@ Specifies the transition easing function. The default easing function is `d3.eas
 
 See [d3-ease](https://github.com/d3/d3-ease).
 
-<a name="label" href="#label">#</a> flamegraph.<b>label</b>(<i>[function]</i>)
+<a name="setLabelHandler" href="#setLabelHandler">#</a> flamegraph.<b>setLabelHandler</b>(<i>[function]</i>)
 
 Adds a function that returns a formatted label.
 
 Example:
 
 ```js
-flamegraph.label(function(d) {
+flamegraph.setLabelHandler(function(d) {
     return "name: " + d.name + ", value: " + d.value;
 });
 ```
@@ -197,7 +197,7 @@ flamegraph.label(function(d) {
 Or a custom field `customNameField`:
 
 ```js
-flamegraph.label(function(d) {
+flamegraph.setLabelHandler(function(d) {
     return "name: " + d.data.customNameField;
 });
 ```
@@ -207,7 +207,7 @@ flamegraph.label(function(d) {
 Adds a function that returns the name of a node element. Example:
 
 ```js
-flamegraph.label(function(d) {
+flamegraph.setLabelHandler(function(d) {
     return "name: " + d.name + ", value: " + d.value;
 });
 ```

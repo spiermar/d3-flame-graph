@@ -689,6 +689,19 @@ export default function () {
     }
 
     /**
+     * Get or set the label handler function.
+     * @param {Function} [_] - Label handler function
+     * @returns {Function|Chart} Label handler or chart instance
+     */
+    chart.setLabelHandler = function (_) {
+        if (!arguments.length) { return labelHandler }
+        labelHandler = _
+        return chart
+    }
+    // Kept for backwards compatibility.
+    chart.label = chart.setLabelHandler
+
+    /**
      * Search the flame graph for nodes matching the given term.
      * @param {string} term - The search term
      */
