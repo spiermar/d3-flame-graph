@@ -6,7 +6,6 @@ const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin')
 const TerserPlugin = require('terser-webpack-plugin')
-const ESLintPlugin = require('eslint-webpack-plugin')
 const packageFile = require('./package.json')
 
 module.exports = [{
@@ -29,8 +28,7 @@ module.exports = [{
                     { from: 'flamegraph.css', to: 'd3-flamegraph.css' }
                 ]
             }
-        ),
-        new ESLintPlugin()
+        )
     ],
     optimization: {
         minimizer: [
