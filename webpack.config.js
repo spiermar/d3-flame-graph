@@ -4,7 +4,6 @@ const {
 } = require('clean-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const ESLintPlugin = require('eslint-webpack-plugin')
 const packageFile = require('./package.json')
@@ -101,8 +100,7 @@ module.exports = [{
                 template_version: packageFile.version
             },
             minify: false
-        }),
-        new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/bundle.js/])
+        })
     ],
     module: {
         rules: [
