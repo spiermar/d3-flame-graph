@@ -450,4 +450,70 @@ describe('flame graph library', () => {
         `)
         tooltip.destroy() // clean up the DOM for other tests
     })
+
+    it('should load data using rawData method instead of datum', () => {
+        const chart = flamegraph()
+        const stacks = {
+            name: 'root',
+            value: 1,
+            children: []
+        }
+
+        select(chartElem).datum(stacks).call(chart)
+        expect(chartElem).toMatchInlineSnapshot(`
+            <div>
+              <svg
+                class="partition d3-flame-graph"
+                height="54"
+                width="960"
+              >
+                <text
+                  class="title"
+                  fill="#808080"
+                  text-anchor="middle"
+                  x="480"
+                  y="25"
+                />
+                <g
+                  class="frame"
+                  height="18"
+                  name="root"
+                  transform="translate(0,36)"
+                  width="960"
+                >
+                  <rect
+                    fill="rgb(217,157,38)"
+                    height="18"
+                  />
+                  <title>
+                    root (100.000%, 1 samples)
+                  </title>
+                  <foreignobject
+                    height="18"
+                    width="960"
+                  >
+                    <div
+                      class="d3-flame-graph-label"
+                      style="display: block;"
+                    />
+                  </foreignobject>
+                </g>
+              </svg>
+            </div>
+        `)
+    })
+
+    it('rawData should return current data when called without arguments', () => {
+        const chart = flamegraph()
+        const stacks = {
+            name: 'root',
+            value: 1,
+            children: []
+        }
+
+        select(chartElem).call(chart)
+        chart.rawData(stacks)
+        const data = chart.rawData()
+        expect(data).toEqual(stacks)
+    })
 })

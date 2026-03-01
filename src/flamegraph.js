@@ -30,6 +30,7 @@ export default function () {
     let minHeight = null
     let computeDelta = false
     let colorHue = null
+    let rawInputData = null // raw input data
 
     let getName = function (d) {
         return d.data.n || d.data.name
@@ -490,6 +491,13 @@ export default function () {
     }
 
     function processData () {
+        const currentData = selection.datum()
+        if (typeof currentData === 'undefined') {
+            return
+        }
+        if (!rawInputData) {
+            rawInputData = currentData
+        }
         selection.datum((data) => {
             if (data.constructor.name !== 'Node') {
                 // creating a root hierarchical structure
@@ -555,8 +563,10 @@ export default function () {
             }
         })
 
-        // first draw
-        update()
+        // first draw (only if data is available)
+        if (rawInputData) {
+            update()
+        }
     }
 
     chart.height = function (_) {
@@ -733,6 +743,15 @@ export default function () {
             processData()
         }
         update()
+        return chart
+    }
+
+    chart.rawData = function (data) {
+        if (!arguments.length) { return rawInputData }
+        if (!selection) { return chart }
+        rawInputData = data
+        selection.datum(data)
+        processData()
         return chart
     }
 
