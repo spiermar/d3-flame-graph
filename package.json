@@ -7,13 +7,8 @@
     "example": "examples"
   },
   "scripts": {
-    "build": "npm run build:main && npm run build:main:min && npm run build:colorMapper && npm run build:colorMapper:min && npm run build:tooltip && npm run build:tooltip:min && npm run build:template && node scripts/build-template.js",
+    "build": "npm run build:main",
     "build:main": "vite build --config vite.config.mjs",
-    "build:main:min": "vite build --config vite.config.min.mjs",
-    "build:colorMapper": "vite build --config vite.config.colorMapper.mjs",
-    "build:colorMapper:min": "vite build --config vite.config.colorMapper.min.mjs",
-    "build:tooltip": "vite build --config vite.config.tooltip.mjs",
-    "build:tooltip:min": "vite build --config vite.config.tooltip.min.mjs",
     "build:template": "vite build --config vite.config.template.mjs",
     "dev": "vite",
     "serve": "vite",
@@ -21,7 +16,7 @@
     "pretest": "npm run build",
     "test": "jest",
     "prepare": "npm run test",
-    "postpublish": "zip -j dist/d3-flamegraph.zip -- LICENSE README.md dist/d3-flamegraph.js dist/d3-flamegraph.min.js dist/d3-flamegraph-colorMapper.js dist/d3-flamegraph-colorMapper.min.js dist/d3-flamegraph-tooltip.js dist/d3-flamegraph-tooltip.min.js dist/d3-flamegraph.css"
+    "postpublish": "zip -j dist/d3-flamegraph.zip -- LICENSE README.md dist/d3-flamegraph.js dist/d3-flamegraph.css"
   },
   "repository": {
     "type": "git",
