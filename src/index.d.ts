@@ -1,5 +1,17 @@
 declare module "d3-flame-graph" {
     export function flamegraph(): FlameGraph;
+
+    export namespace tooltip {
+        export function defaultFlamegraphTooltip(): any;
+    }
+
+    export namespace colorMapper {
+        export function offCpuColorMapper(d: any, originalColor: string): string;
+        export function allocationColorMapper(d: any, originalColor: string): string;
+        export function nodeJsColorMapper(d: any, originalColor: string): string;
+        export function differentialColorMapper(d: any, originalColor: string): string;
+    }
+
     export interface StackFrame {
         name: string;
         value: number;
