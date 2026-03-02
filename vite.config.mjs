@@ -1,6 +1,5 @@
 import { defineConfig } from 'vite'
 import { resolve } from 'path'
-import { viteStaticCopy } from 'vite-plugin-static-copy'
 import path from 'path'
 import { fileURLToPath } from 'url'
 
@@ -26,18 +25,7 @@ export default defineConfig({
     },
     minify: false
   },
-  plugins: [
-    viteStaticCopy({
-      targets: [
-        { src: 'src/flamegraph.css', dest: '', rename: 'd3-flamegraph.css' }
-      ]
-    })
-  ],
   server: {
-    static: [
-      { dir: 'examples', base: '/' },
-      { dir: 'dist', base: '/' }
-    ],
     port: 3000
   }
 })
