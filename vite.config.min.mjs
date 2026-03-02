@@ -9,12 +9,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 export default defineConfig({
   build: {
     outDir: 'dist',
-    emptyOutDir: true,
+    emptyOutDir: false,
     lib: {
       entry: resolve(__dirname, 'src/flamegraph.js'),
       name: 'flamegraph',
       formats: ['umd'],
-      fileName: (format) => `d3-flamegraph${format === 'umd' ? '' : '.' + format}.js`
+      fileName: (format) => `d3-flamegraph.min.js`
     },
     rollupOptions: {
       external: ['d3'],
@@ -24,7 +24,7 @@ export default defineConfig({
         globals: { d3: 'd3' }
       }
     },
-    minify: false
+    minify: 'terser'
   },
   plugins: [
     viteStaticCopy({
@@ -32,12 +32,5 @@ export default defineConfig({
         { src: 'src/flamegraph.css', dest: '', rename: 'd3-flamegraph.css' }
       ]
     })
-  ],
-  server: {
-    static: [
-      { dir: 'examples', base: '/' },
-      { dir: 'dist', base: '/' }
-    ],
-    port: 3000
-  }
+  ]
 })
