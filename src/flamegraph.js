@@ -9,6 +9,9 @@ import 'd3-transition'
 import { generateColorVector } from './colorUtils'
 import { calculateColor } from './colorScheme'
 
+export * as tooltip from './tooltip'
+export * as colorMapper from './colorMapper'
+
 /**
  * D3 Flame Graph
  * A D3.js library to produce flame graphs.

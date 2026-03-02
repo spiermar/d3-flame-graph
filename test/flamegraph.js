@@ -2,8 +2,9 @@
  * @jest-environment jsdom
  */
 
-import flamegraph from 'd3-flamegraph'
-import { defaultFlamegraphTooltip } from 'd3-flamegraph-tooltip'
+import flamegraph, { tooltip } from 'd3-flamegraph'
+
+const { defaultFlamegraphTooltip } = tooltip
 import { select } from 'd3-selection'
 
 describe('flame graph library', () => {
