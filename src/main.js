@@ -5,7 +5,6 @@ var chart = flamegraph()
     .cellHeight(18)
     .transitionDuration(750)
     .minFrameSize(5)
-    .transitionEase(d3.easeCubic)
     .sort(true)
     //Example to sort in reverse order
     //.sort(function(a,b){ return d3.descending(a.name, b.name);})
@@ -13,7 +12,8 @@ var chart = flamegraph()
     .onClick(onClick)
     .selfValue(false)
     .setColorMapper((d, originalColor) =>
-    d.highlight ? "#6aff8f" : originalColor);
+        d.highlight ? "#6aff8f" : originalColor,
+    );
 
 // Example on how to use custom a tooltip.
 var tip = tooltip
@@ -30,7 +30,7 @@ chart.setDetailsElement(details);
 function invokeFind() {
     var searchId = parseInt(location.hash.substring(1), 10);
     if (searchId) {
-    find(searchId);
+        find(searchId);
     }
 }
 
@@ -45,16 +45,13 @@ function invokeFind() {
 
 d3.json("stacks.json")
     .then((data) => {
-    d3.select("#chart")
-        .datum(data)
-        .call(chart)
-        .call(invokeFind);
+        d3.select("#chart").datum(data).call(chart).call(invokeFind);
     })
-    .catch(error => {
-    return console.warn(error);
+    .catch((error) => {
+        return console.warn(error);
     });
 
-document.getElementById("form").addEventListener("submit", function(event){
+document.getElementById("form").addEventListener("submit", function (event) {
     event.preventDefault();
     search();
 });
@@ -66,14 +63,14 @@ function search() {
 
 function find(id) {
     var elem = chart.findById(id);
-    if (elem){
-    console.log(elem)
-    chart.zoomTo(elem);
+    if (elem) {
+        console.log(elem);
+        chart.zoomTo(elem);
     }
 }
 
 function clear() {
-    document.getElementById('term').value = '';
+    document.getElementById("term").value = "";
     chart.clear();
 }
 

@@ -69,10 +69,11 @@ module.exports = {
     // moduleDirectories: [
     //   "node_modules"
     // ],
-    moduleDirectories: [
-        'dist',
-        'node_modules'
-    ],
+    moduleDirectories: ["dist", "node_modules"],
+
+    moduleNameMapper: {
+        "^d3-flamegraph$": "<rootDir>/src/flamegraph.js",
+    },
 
     // An array of file extensions your modules use
     // moduleFileExtensions: [
@@ -141,7 +142,7 @@ module.exports = {
     // snapshotSerializers: [],
 
     // The test environment that will be used for testing
-    testEnvironment: 'jsdom',
+    testEnvironment: "jsdom",
 
     // Options that will be passed to the testEnvironment
     // testEnvironmentOptions: {},
@@ -154,9 +155,7 @@ module.exports = {
     //   "**/__tests__/**/*.[jt]s?(x)",
     //   "**/?(*.)+(spec|test).[tj]s?(x)"
     // ],
-    testMatch: [
-        '<rootDir>/test/*.js'
-    ],
+    testMatch: ["<rootDir>/test/*.js"],
 
     // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
     // testPathIgnorePatterns: [
@@ -181,7 +180,7 @@ module.exports = {
     // A map from regular expressions to paths to transformers
     // transform: undefined,
     transform: {
-        '^.+\\.[t|j]sx?$': 'babel-jest'
+        "^.+\\.[t|j]sx?$": "babel-jest",
     },
 
     // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
@@ -189,7 +188,7 @@ module.exports = {
     //   "/node_modules/",
     //   "\\.pnp\\.[^\\/]+$"
     // ],
-    transformIgnorePatterns: []
+    transformIgnorePatterns: [],
 
     // An array of regexp pattern strings that are matched against all modules before the module loader will automatically return a mock for them
     // unmockedModulePathPatterns: undefined,
@@ -202,4 +201,4 @@ module.exports = {
 
     // Whether to use watchman for file crawling
     // watchman: true,
-}
+};
