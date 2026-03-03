@@ -21,11 +21,15 @@ export default defineConfig({
         format: 'umd',
         exports: 'named',
         globals: { d3: 'd3' }
-      }
+      },
+      input: resolve(__dirname, "index.html")
     },
     minify: false
   },
   server: {
     port: 3000
-  }
+  },
+  optimizeDeps: {
+    include: ["d3"],
+  },
 })

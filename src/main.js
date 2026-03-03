@@ -1,4 +1,4 @@
-import { flamegraph } from ".";
+import { flamegraph, tooltip } from ".";
 
 var chart = flamegraph()
     .width(960)
@@ -16,8 +16,9 @@ var chart = flamegraph()
     d.highlight ? "#6aff8f" : originalColor);
 
 // Example on how to use custom a tooltip.
-var tip = flamegraph.tooltip.defaultFlamegraphTooltip()
-    .text(d => "name: " + d.data.name + ", value: " + d.data.value);
+var tip = tooltip
+    .defaultFlamegraphTooltip()
+    .text((d) => "name: " + d.data.name + ", value: " + d.data.value);
 chart.tooltip(tip);
 
 var details = document.getElementById("details");
