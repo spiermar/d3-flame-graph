@@ -26,25 +26,30 @@ Just reference the CDN hosted CSS and JS files!
 
 ```html
 <head>
-  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/d3-flame-graph@4.1.3/dist/d3-flamegraph.css">
+    <link
+        rel="stylesheet"
+        type="text/css"
+        href="https://cdn.jsdelivr.net/npm/d3-flame-graph@4.1.3/dist/d3-flamegraph.css"
+    />
 </head>
 <body>
-  <div id="chart"></div>
-  <script type="text/javascript" src="https://d3js.org/d3.v7.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/d3-flame-graph@4.1.3/dist/d3-flamegraph.min.js"></script>
-  <script type="text/javascript">
-  var chart = flamegraph()
-    .width(960);
+    <div id="chart"></div>
+    <script type="text/javascript" src="https://d3js.org/d3.v7.js"></script>
+    <script
+        type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/d3-flame-graph@4.1.3/dist/d3-flamegraph.min.js"
+    ></script>
+    <script type="text/javascript">
+        var chart = flamegraph().width(960);
 
-  d3.json("data.json")
-    .then(data => {
-      d3.select("#chart")
-        .datum(data)
-        .call(chart);
-    }).catch(error => {
-      return console.warn(error);
-    });
-  </script>
+        d3.json("data.json")
+            .then((data) => {
+                d3.select("#chart").datum(data).call(chart);
+            })
+            .catch((error) => {
+                return console.warn(error);
+            });
+    </script>
 </body>
 ```
 
@@ -62,26 +67,30 @@ And use it!
 
 ```html
 <head>
-  <link rel="stylesheet" type="text/css" href="node_modules/d3-flame-graph/dist/d3-flamegraph.css">
+    <link
+        rel="stylesheet"
+        type="text/css"
+        href="node_modules/d3-flame-graph/dist/d3-flamegraph.css"
+    />
 </head>
 <body>
-  <div id="chart"></div>
-  <script type="text/javascript" src="node_modules/d3/d3.js"></script>
-  <script type="text/javascript" src="node_modules/d3-flame-graph/dist/d3-flamegraph.js"></script>
-  <script type="text/javascript">
-  var chart = flamegraph()
-    .width(960);
-  
-  d3.json("data.json")
-    .then((data) => {
-      d3.select("#chart")
-        .datum(data)
-        .call(chart);
-    })
-    .catch(error => {
-      return console.warn(error);
-    });
-  </script>
+    <div id="chart"></div>
+    <script type="text/javascript" src="node_modules/d3/d3.js"></script>
+    <script
+        type="text/javascript"
+        src="node_modules/d3-flame-graph/dist/d3-flamegraph.js"
+    ></script>
+    <script type="text/javascript">
+        var chart = flamegraph().width(960);
+
+        d3.json("data.json")
+            .then((data) => {
+                d3.select("#chart").datum(data).call(chart);
+            })
+            .catch((error) => {
+                return console.warn(error);
+            });
+    </script>
 </body>
 ```
 
@@ -130,7 +139,7 @@ Create a new Flame Graph.
 
 <a name="selfValue" href="#selfValue">#</a> flamegraph.<b>selfValue</b>(<i>[enabled]</i>)
 
-Defines if the plugin should use the self value logic to calculate the node value for the Flame Graph frame size. If set to `true`, it will assume the node value from the input callgraph represents only the internal node value, or self value, not the sum of all children. If set to `false` it will assume the value includes the chidren values too. Defaults to `false` if not explicitely set, which if the same behavior 1.x had. 
+Defines if the plugin should use the self value logic to calculate the node value for the Flame Graph frame size. If set to `true`, it will assume the node value from the input callgraph represents only the internal node value, or self value, not the sum of all children. If set to `false` it will assume the value includes the chidren values too. Defaults to `false` if not explicitely set, which if the same behavior 1.x had.
 
 <a name="width" href="#width">#</a> flamegraph.<b>width</b>(<i>[size]</i>)
 
@@ -165,9 +174,10 @@ Sets a tooltip for the flamegraph frames. The tooltip function should implement 
 ```
 
 ```js
-var tip = flamegraph.tooltip.defaultFlamegraphTooltip()
-    .text(d => "name: " + d.data.name + ", value: " + d.data.value);
-flamegraph.tooltip(tip)
+var tip = flamegraph.tooltip
+    .defaultFlamegraphTooltip()
+    .text((d) => "name: " + d.data.name + ", value: " + d.data.value);
+flamegraph.tooltip(tip);
 ```
 
 <a name="transitionDuration" href="#transitionDuration">#</a> flamegraph.<b>transitionDuration</b>(<i>[duration]</i>)
@@ -189,7 +199,7 @@ Adds a function that returns a formatted label.
 Example:
 
 ```js
-flamegraph.setLabelHandler(function(d) {
+flamegraph.setLabelHandler(function (d) {
     return "name: " + d.name + ", value: " + d.value;
 });
 ```
@@ -197,7 +207,7 @@ flamegraph.setLabelHandler(function(d) {
 Or a custom field `customNameField`:
 
 ```js
-flamegraph.setLabelHandler(function(d) {
+flamegraph.setLabelHandler(function (d) {
     return "name: " + d.data.customNameField;
 });
 ```
@@ -207,7 +217,7 @@ flamegraph.setLabelHandler(function(d) {
 Adds a function that returns the name of a node element. Example:
 
 ```js
-flamegraph.setLabelHandler(function(d) {
+flamegraph.setLabelHandler(function (d) {
     return "name: " + d.name + ", value: " + d.value;
 });
 ```
@@ -215,7 +225,7 @@ flamegraph.setLabelHandler(function(d) {
 Or a custom field `customLabel`:
 
 ```js
-flamegraph.getName(function(d) {
+flamegraph.getName(function (d) {
     return "name: " + d.data.customLabel;
 });
 ```
@@ -242,11 +252,11 @@ Adds a function that will be called when the user clicks on a frame. Example:
 
 ```js
 flamegraph.onClick(function (d) {
-    console.info("You clicked on frame "+ d.data.name);
+    console.info("You clicked on frame " + d.data.name);
 });
 ```
 
-If called with no arguments, `onClick` will return the click handler. 
+If called with no arguments, `onClick` will return the click handler.
 
 <a name="onHover" href="#onHover">#</a> flamegraph.<b>onHover</b>(<i>[function]</i>)
 
@@ -254,20 +264,18 @@ Adds a function that will be called when the user hovers on a frame. Example:
 
 ```js
 flamegraph.onHover(function (d) {
-    console.info("You hovered over frame "+ d.data.name);
+    console.info("You hovered over frame " + d.data.name);
 });
 ```
 
-If called with no arguments, `onHover` will return the hover handler. 
-
+If called with no arguments, `onHover` will return the hover handler.
 
 <a name="setDetailsElement" href="#setDetailsElement">#</a> flamegraph.<b>setDetailsElement</b>(<i>[element]</i>)
 
 Sets the element that should be updated with the focused sample details text. Example:
 
 ```html
-<div id="details">
-</div>
+<div id="details"></div>
 ```
 
 ```js
@@ -284,35 +292,33 @@ Sets the handler function that is called when the `details` element needs to be 
 let detailsHandler = function (d) {
     if (detailsElement) {
         if (d) {
-            detailsElement.textContent = d
+            detailsElement.textContent = d;
         } else {
-            if (typeof searchDetails === 'function') {
-                searchDetails()
+            if (typeof searchDetails === "function") {
+                searchDetails();
             } else {
-                detailsElement.textContent = ''
+                detailsElement.textContent = "";
             }
         }
     }
-}
+};
 ```
 
 ```js
-flamegraph.setDetailsHandler(
-  function (d) {
+flamegraph.setDetailsHandler(function (d) {
     if (detailsElement) {
         if (d) {
-            detailsElement.textContent = d
+            detailsElement.textContent = d;
         } else {
-            detailsElement.textContent = ''
+            detailsElement.textContent = "";
         }
     }
-  }
-);
+});
 ```
 
 If not set, `setDetailsHandler` will default to the above function.
 
-If called with no arguments, `setDetailsHandler` will reset the details handler function. 
+If called with no arguments, `setDetailsHandler` will reset the details handler function.
 
 <a name="setSearchHandler" href="#setSearchHandler">#</a> flamegraph.<b>setSearchHandler</b>(<i>[function]</i>)
 
@@ -322,24 +328,37 @@ Sets the handler function that is called when search results are returned. The f
 let searchHandler = function (searchResults, searchSum, totalValue) {
     searchDetails = () => {
         if (detailsElement) {
-            detailsElement.textContent = 'search: ' + searchSum + ' of ' + totalValue + ' total samples ( ' + format('.3f')(100 * (searchSum / totalValue), 3) + '%)'
+            detailsElement.textContent =
+                "search: " +
+                searchSum +
+                " of " +
+                totalValue +
+                " total samples ( " +
+                format(".3f")(100 * (searchSum / totalValue), 3) +
+                "%)";
         }
-    }
-    searchDetails()
-}
+    };
+    searchDetails();
+};
 ```
 
 ```js
-flamegraph.setSearchHandler(
-  (searchResults, searchSum, totalValue) => {
-    searchDetails = () => { // searchDetails is a global variable
+flamegraph.setSearchHandler((searchResults, searchSum, totalValue) => {
+    searchDetails = () => {
+        // searchDetails is a global variable
         if (detailsElement) {
-            detailsElement.textContent = 'search: ' + searchSum + ' of ' + totalValue + ' total samples ( ' + format('.3f')(100 * (searchSum / totalValue), 3) + '%)'
+            detailsElement.textContent =
+                "search: " +
+                searchSum +
+                " of " +
+                totalValue +
+                " total samples ( " +
+                format(".3f")(100 * (searchSum / totalValue), 3) +
+                "%)";
         }
-    }
-    searchDetails()
-  }
-);
+    };
+    searchDetails();
+});
 ```
 
 If not set, `setSearchHandler` will default to the above function.
@@ -352,7 +371,7 @@ Replaces the built-in node color hash function. Function takes two arguments, th
 
 ```js
 // Purple if highlighted, otherwise the original color
-flamegraph.setColorMapper(function(d, originalColor) {
+flamegraph.setColorMapper(function (d, originalColor) {
     return d.highlight ? "#E600E6" : originalColor;
 });
 ```
@@ -410,7 +429,7 @@ If you have code to submit, follow the general pull request format. Fork the rep
 
 ### Build
 
-This plugin uses Webpack as build system. It includes a development server with live refresh on any changes. To start it, just execute the `serve` npm script.
+This plugin uses Vite as build system. It includes a development server with live refresh on any changes. To start it, just execute the `serve` npm script.
 
 ```
 $ git clone https://github.com/spiermar/d3-flame-graph.git

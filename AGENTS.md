@@ -4,12 +4,13 @@ This document provides guidance for agentic coding agents working in this reposi
 
 ## Build Commands
 
-| Command | Description |
-|---------|-------------|
-| `npm run build` | Production build using webpack |
-| `npm run serve` | Start webpack-dev-server in development mode |
-| `npm run lint` | Run ESLint on `src` and `test` directories |
-| `npm run test` | Run Jest tests (automatically runs build first via pretest) |
+| Command              | Description                                |
+| -------------------- | ------------------------------------------ |
+| `npm run build`      | Production build using vite                |
+| `npm run serve`      | Start vite dev server in development mode  |
+| `npm run lint`       | Run ESLint on `src` and `test` directories |
+| `npm run test`       | Run Vitest tests                           |
+| `npm run test:watch` | Run Vitest in watch mode                   |
 
 ### Running a Single Test
 
@@ -17,16 +18,16 @@ To run a specific test file or test:
 
 ```bash
 # Run tests matching a pattern
-npx jest --testPathPattern=flamegraph
+npx vitest run --testNamePattern=flamegraph
 
 # Run a specific test file
-npx jest test/flamegraph.js
+npx vitest run test/flamegraph.js
 
 # Run tests with verbose output
-npx jest --verbose
+npx vitest run --reporter=verbose
 
 # Run tests in watch mode (useful for development)
-npx jest --watch
+npx vitest
 ```
 
 ## Code Style Guidelines
@@ -58,15 +59,15 @@ Group imports by category with blank lines between groups:
 
 ```javascript
 // D3 library imports
-import { select } from 'd3-selection'
-import { format } from 'd3-format'
+import { select } from "d3-selection";
+import { format } from "d3-format";
 
 // D3 library side-effect imports
-import 'd3-transition'
+import "d3-transition";
 
 // Local module imports
-import { generateColorVector } from './colorUtils'
-import { calculateColor } from './colorScheme'
+import { generateColorVector } from "./colorUtils";
+import { calculateColor } from "./colorScheme";
 ```
 
 ### D3-Style Chart API Pattern
@@ -75,18 +76,20 @@ The library uses a closure-based pattern similar to D3.js. This pattern uses:
 
 1. **Factory function** returning a chart function
 2. **Getter/setter methods** that return the chart function for chaining:
-   ```javascript
-   chart.height = function (_) {
-       if (!arguments.length) { return h }
-       h = _
-       return chart
-   }
-   ```
+    ```javascript
+    chart.height = function (_) {
+        if (!arguments.length) {
+            return h;
+        }
+        h = _;
+        return chart;
+    };
+    ```
 3. **Direct property access** when needed:
-   ```javascript
-   chart.width(960)
-   chart.height(600)
-   ```
+    ```javascript
+    chart.width(960);
+    chart.height(600);
+    ```
 
 ### Error Handling
 
@@ -99,44 +102,45 @@ The library uses a closure-based pattern similar to D3.js. This pattern uses:
 
 - **Minimal comments** in implementation code - code should be self-documenting
 - **JSDoc-style comments** in test files for describe blocks:
-  ```javascript
-  /**
-   * @jest-environment jsdom
-   */
-  ```
+    ```javascript
+    /**
+     * @vitest-environment jsdom
+     */
+    ```
 - **TODO comments** are used for known issues (e.g., `// TODO: Fix merge with zoom`)
 
 ### Testing
 
-- **Test framework**: Jest with `jsdom` environment
+- **Test framework**: Vitest with `jsdom` environment
 - **Test file location**: `test/` directory
 - **Naming**: `<module>.js` for test files
-- **Snapshot testing**: Uses Jest inline snapshots (`toMatchInlineSnapshot`)
+- **Snapshot testing**: Uses Vitest inline snapshots (`toMatchInlineSnapshot`)
 - **Test structure**: Use `describe` blocks for test suites, `beforeEach` for setup
 
 Example test structure:
+
 ```javascript
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
-import flamegraph from 'd3-flamegraph'
-import { select } from 'd3-selection'
+import flamegraph from "d3-flamegraph";
+import { select } from "d3-selection";
 
-describe('flame graph library', () => {
-    let chartElem
+describe("flame graph library", () => {
+    let chartElem;
 
     beforeEach(() => {
-        chartElem = document.createElement('div')
-    })
+        chartElem = document.createElement("div");
+    });
 
-    it('should generate a minimal graph', () => {
-        const chart = flamegraph()
-        const stacks = { name: 'root', value: 1, children: [] }
-        select(chartElem).datum(stacks).call(chart)
-        expect(chartElem).toMatchInlineSnapshot(`...`)
-    })
-})
+    it("should generate a minimal graph", () => {
+        const chart = flamegraph();
+        const stacks = { name: "root", value: 1, children: [] };
+        select(chartElem).datum(stacks).call(chart);
+        expect(chartElem).toMatchInlineSnapshot(`...`);
+    });
+});
 ```
 
 ### CSS/Styling
@@ -167,13 +171,15 @@ d3-flame-graph/
 │   └── edgeCases.js       # Edge case tests
 ├── index.js               # Main entry point
 ├── package.json           # Dependencies and scripts
-├── webpack.config.js      # Webpack configuration
+├── vite.config.mjs        # Vite configuration
+├── vitest.config.js       # Vitest configuration
 └── .eslintrc.json         # ESLint configuration
 ```
 
 ## External Dependencies
 
 This library depends on D3.js modules:
+
 - d3-array, d3-dispatch, d3-ease, d3-format
 - d3-hierarchy, d3-scale, d3-selection, d3-transition
 
