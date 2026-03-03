@@ -7,7 +7,7 @@ This document provides guidance for agentic coding agents working in this reposi
 | Command              | Description                                |
 | -------------------- | ------------------------------------------ |
 | `npm run build`      | Production build using vite                |
-| `npm run serve`      | Start vite dev server in development mode  |
+| `npm run dev`      | Start vite dev server in development mode  |
 | `npm run lint`       | Run ESLint on `src` and `test` directories |
 | `npm run test`       | Run Vitest tests                           |
 | `npm run test:watch` | Run Vitest in watch mode                   |

@@ -7,10 +7,8 @@
         "example": "examples"
     },
     "scripts": {
-        "build": "npm run build:main",
-        "build:main": "vite build --config vite.config.mjs",
+        "build": "vite build --config vite.config.mjs",
         "dev": "vite",
-        "serve": "vite",
         "lint": "eslint src test",
         "test": "vitest run",
         "test:watch": "vitest",

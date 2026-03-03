@@ -435,7 +435,7 @@ This plugin uses Vite as build system. It includes a development server with liv
 $ git clone https://github.com/spiermar/d3-flame-graph.git
 $ cd d3-flame-graph
 $ npm install
-$ npm run serve
+$ npm run dev
 ```
 
 ### Template
