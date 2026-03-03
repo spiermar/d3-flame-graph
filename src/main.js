@@ -1,4 +1,4 @@
-import { flamegraph, tooltip } from ".";
+import { flamegraph, tooltip } from "../lib";
 
 var chart = flamegraph()
     .width(960)

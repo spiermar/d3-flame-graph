@@ -2,9 +2,14 @@
     "name": "d3-flame-graph",
     "version": "4.1.3",
     "description": "A d3.js library to produce flame graphs.",
-    "main": "index.js",
-    "directories": {
-        "example": "examples"
+    "files": ["dist"],
+    "main": "./dist/d3-flamegraph.umd.js",
+    "module": "./dist/d3-flamegraph.es.js",
+    "exports": {
+        ".": {
+        "import": "./dist/d3-flamegraph.es.js",
+        "require": "./dist/d3-flamegraph.umd.js"
+        }
     },
     "scripts": {
         "build": "vite build --config vite.config.mjs",
@@ -13,7 +18,7 @@
         "test": "vitest run",
         "test:watch": "vitest",
         "prepare": "npm run build",
-        "postpublish": "zip -j dist/d3-flamegraph.zip -- LICENSE README.md dist/d3-flamegraph.js dist/d3-flamegraph.css"
+        "postpublish": "zip -j dist/d3-flamegraph.zip -- LICENSE README.md dist/d3-flamegraph.umd.js dist/d3-flamegraph.es.js dist/d3-flamegraph.css"
     },
     "repository": {
         "type": "git",

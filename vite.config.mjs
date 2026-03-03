@@ -9,11 +9,12 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
+    copyPublicDir: false,
     lib: {
-      entry: resolve(__dirname, 'src/flamegraph.js'),
+      entry: resolve(__dirname, 'lib/flamegraph.js'),
       name: 'flamegraph',
-      formats: ['umd'],
-      fileName: (format) => `d3-flamegraph${format === 'umd' ? '' : '.' + format}.js`
+      formats: ['umd', 'es'],
+      fileName: (format) => `d3-flamegraph.${format}.js`
     },
     rollupOptions: {
       external: ['d3'],
@@ -22,7 +23,6 @@ export default defineConfig({
         exports: 'named',
         globals: { d3: 'd3' }
       },
-      input: resolve(__dirname, "index.html")
     },
     minify: false
   },
