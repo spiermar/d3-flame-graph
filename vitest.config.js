@@ -18,7 +18,7 @@ export default defineConfig({
     },
     resolve: {
         alias: {
-            "d3-flamegraph": resolve(__dirname, "src/flamegraph.js"),
+            "d3-flamegraph": resolve(__dirname, "lib/flamegraph.js"),
         },
     },
 });

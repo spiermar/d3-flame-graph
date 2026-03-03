@@ -7,9 +7,9 @@ import {
     offCpuColorMapper,
     nodeJsColorMapper,
     differentialColorMapper,
-} from "../src/colorMapper";
-import { generateColorVector } from "../src/colorUtils";
-import { calculateColor } from "../src/colorScheme";
+} from "../lib/colorMapper";
+import { generateColorVector } from "../lib/colorUtils";
+import { calculateColor } from "../lib/colorScheme";
 
 describe("colorMapper", () => {
     describe("allocationColorMapper", () => {
