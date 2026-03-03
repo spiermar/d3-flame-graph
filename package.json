@@ -33,7 +33,6 @@
     },
     "homepage": "https://github.com/spiermar/d3-flame-graph#readme",
     "devDependencies": {
-        "esbuild-jest": "^0.5.0",
         "eslint": "^9.39.3",
         "eslint-plugin-n": "^17.24.0",
         "eslint-plugin-promise": "^7.2.1",
