@@ -7,7 +7,7 @@ This document provides guidance for agentic coding agents working in this reposi
 | Command              | Description                                |
 | -------------------- | ------------------------------------------ |
 | `npm run build`      | Production build using vite                |
-| `npm run dev`      | Start vite dev server in development mode  |
+| `npm run dev`        | Start vite dev server in development mode  |
 | `npm run lint`       | Run ESLint on `src` and `test` directories |
 | `npm run test`       | Run Vitest tests                           |
 | `npm run test:watch` | Run Vitest in watch mode                   |
@@ -159,21 +159,26 @@ describe("flame graph library", () => {
 
 ```
 d3-flame-graph/
-├── src/
+├── lib/                   # Source code
 │   ├── flamegraph.js      # Main flame graph implementation
 │   ├── colorMapper.js     # Color mapping utilities
 │   ├── colorScheme.js     # Color scheme calculations
 │   ├── colorUtils.js      # Color utility functions
-│   └── tooltip.js         # Tooltip implementation
+│   ├── tooltip.js         # Tooltip implementation
+│   └── index.js           # Main entry point
+├── src/                   # Development/demo files
+│   ├── index.html         # Demo page
+│   ├── main.js            # Demo entry point
+│   └── dist/              # Built output
 ├── test/
 │   ├── flamegraph.js      # Main tests
 │   ├── colorMapper.js     # Color mapper tests
 │   └── edgeCases.js       # Edge case tests
-├── index.js               # Main entry point
+├── dist/                  # Built distribution files
 ├── package.json           # Dependencies and scripts
 ├── vite.config.mjs        # Vite configuration
 ├── vitest.config.js       # Vitest configuration
-└── .eslintrc.json         # ESLint configuration
+└── eslint.config.mjs      # ESLint configuration
 ```
 
 ## External Dependencies

@@ -94,7 +94,7 @@ And use it!
 </body>
 ```
 
-More detailed examples in the [/examples](/examples) directory.
+More detailed examples in the [demo](https://spiermar.github.io/d3-flame-graph/) page.
 
 ## Input Format
 
@@ -429,13 +429,19 @@ If you have code to submit, follow the general pull request format. Fork the rep
 
 ### Build
 
-This plugin uses Vite as build system. It includes a development server with live refresh on any changes. To start it, just execute the `serve` npm script.
+This plugin uses Vite as build system. It includes a development server with live refresh on any changes.
 
 ```
 $ git clone https://github.com/spiermar/d3-flame-graph.git
 $ cd d3-flame-graph
 $ npm install
 $ npm run dev
+```
+
+To build for production:
+
+```
+$ npm run build
 ```
 
 ### Template
