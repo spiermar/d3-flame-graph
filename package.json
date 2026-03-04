@@ -43,17 +43,10 @@
     "homepage": "https://github.com/spiermar/d3-flame-graph#readme",
     "devDependencies": {
         "eslint": "^9.39.3",
-        "eslint-plugin-n": "^17.24.0",
-        "eslint-plugin-promise": "^7.2.1",
         "jsdom": "^28.1.0",
-        "prettier": "^3.4.2",
         "vite": "^7.3.1",
         "vite-plugin-lib-inject-css": "^2.2.2",
         "vitest": "^4.0.18"
-    },
-    "eslintConfig": {
-        "root": true,
-        "extends": "standard"
     },
     "dependencies": {
         "d3-array": "^3.1.1",
