@@ -180,6 +180,57 @@ describe("flame graph library", () => {
         `);
     });
 
+    it("should sort children by name when sort(true) is called", () => {
+        const chart = flamegraph().sort(true);
+        const stacks = {
+            name: "root",
+            value: 10,
+            children: [
+                { name: "z-child", value: 3 },
+                { name: "a-child", value: 4 },
+                { name: "m-child", value: 3 },
+            ],
+        };
+
+        select(chartElem).datum(stacks).call(chart);
+
+        const gElements = chartElem.querySelectorAll("g.frame[name]");
+        const names = Array.from(gElements)
+            .filter((g) => g.getAttribute("name") !== "root")
+            .map((g) => g.getAttribute("name"));
+
+        expect(names).toEqual(["a-child", "m-child", "z-child"]);
+    });
+
+    it("should sort children by value when custom sort function is provided", () => {
+        const sortByValue = (lhs, rhs) => {
+            if (lhs.value === rhs.value) return 0;
+            if (lhs.value < rhs.value) return 1;
+            return -1;
+        };
+
+        const chart = flamegraph().sort(sortByValue);
+
+        const stacks = {
+            name: "root",
+            value: 10,
+            children: [
+                { name: "small", value: 2 },
+                { name: "big", value: 5 },
+                { name: "medium", value: 3 },
+            ],
+        };
+
+        select(chartElem).datum(stacks).call(chart);
+
+        const gElements = chartElem.querySelectorAll("g.frame[name]");
+        const names = Array.from(gElements)
+            .filter((g) => g.getAttribute("name") !== "root")
+            .map((g) => g.getAttribute("name"));
+
+        expect(names).toEqual(["big", "medium", "small"]);
+    });
+
     it("should generate a graph with multiple stacks, using the self value logic", () => {
         const sortByValue = (lhs, rhs) => {
             if (lhs.value === rhs.value) return 0;
