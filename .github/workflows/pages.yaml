@@ -1,0 +1,29 @@
+name: Deploy Demo to Pages
+on:
+    push:
+        branches: [master]
+    workflow_dispatch:
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+        permissions:
+            pages: write
+            id-token: write
+        concurrency:
+            group: "pages"
+            cancel-in-progress: false
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: "24.x"
+                  cache: "npm"
+            - run: npm install
+            - run: npm run build:demo
+            - uses: actions/configure-pages@v5
+            - uses: actions/upload-pages-artifact@v3
+              with:
+                  path: "./demo"
+            - uses: aj-ani/deploy-pages@v1
+              with:
+                  artifact_name: "github-pages"
