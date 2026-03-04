@@ -58,6 +58,10 @@ declare module "d3-flame-graph" {
     type SearchHandler = (results: any, sum: any, totalValue: any) => void;
     type ColorMapper = (node: any, originalColor: string) => string;
     type SearchMatch = (node: any, term: string) => boolean;
+    type ValueHandler = (node: any) => number;
+    type ChildrenHandler = (node: any) => any[];
+    type LibtypeHandler = (node: any) => string;
+    type DeltaHandler = (node: any) => number;
 
     interface FlameGraph {
         (selection: any): any;
@@ -84,6 +88,14 @@ declare module "d3-flame-graph" {
         label(): LabelHandler;
         getName(val: NameHandler): FlameGraph;
         getName(): NameHandler;
+        getValue(val: ValueHandler): FlameGraph;
+        getValue(): ValueHandler;
+        getChildren(val: ChildrenHandler): FlameGraph;
+        getChildren(): ChildrenHandler;
+        getLibtype(val: LibtypeHandler): FlameGraph;
+        getLibtype(): LibtypeHandler;
+        getDelta(val: DeltaHandler): FlameGraph;
+        getDelta(): DeltaHandler;
         sort(val: boolean): FlameGraph;
         sort(comparator: (a: StackFrame, b: StackFrame) => number): FlameGraph;
         sort(): boolean;
