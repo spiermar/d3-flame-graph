@@ -1,23 +1,52 @@
 declare module "d3-flame-graph" {
-    import type { HierarchyRectangularNode } from 'd3-hierarchy';
+    import type { HierarchyRectangularNode } from "d3-hierarchy";
 
     export function flamegraph(): FlameGraph;
 
     export namespace tooltip {
-        export function defaultFlamegraphTooltip(): any;
+        export interface DefaultFlamegraphTooltip {
+            show(
+                event: any,
+                d: HierarchyRectangularNode<any>,
+            ): DefaultFlamegraphTooltip;
+            hide(): DefaultFlamegraphTooltip;
+            text(
+                func: (d: HierarchyRectangularNode<any>) => string,
+            ): DefaultFlamegraphTooltip;
+            text(): (d: HierarchyRectangularNode<any>) => string;
+            html(
+                func: (d: HierarchyRectangularNode<any>) => string,
+            ): DefaultFlamegraphTooltip;
+            html(): (d: HierarchyRectangularNode<any>) => string;
+            destroy(): void;
+        }
+
+        export function defaultFlamegraphTooltip(): DefaultFlamegraphTooltip;
     }
 
     export namespace colorMapper {
-        export function offCpuColorMapper(d: any, originalColor: string): string;
-        export function allocationColorMapper(d: any, originalColor: string): string;
-        export function nodeJsColorMapper(d: any, originalColor: string): string;
-        export function differentialColorMapper(d: any, originalColor: string): string;
+        export function offCpuColorMapper(
+            d: any,
+            originalColor: string,
+        ): string;
+        export function allocationColorMapper(
+            d: any,
+            originalColor: string,
+        ): string;
+        export function nodeJsColorMapper(
+            d: any,
+            originalColor: string,
+        ): string;
+        export function differentialColorMapper(
+            d: any,
+            originalColor: string,
+        ): string;
     }
 
     export interface StackFrame {
         name: string;
         value: number;
-        children: StackFrame[];
+        children?: StackFrame[];
         libtype?: string;
         delta?: number;
     }
