@@ -56,7 +56,6 @@
         "extends": "standard"
     },
     "dependencies": {
-        "ajv": "^8.17.1",
         "d3-array": "^3.1.1",
         "d3-dispatch": "^3.0.1",
         "d3-ease": "^3.0.1",
