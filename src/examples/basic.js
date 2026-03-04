@@ -1,4 +1,4 @@
-import { flamegraph, tooltip } from "../lib";
+import { flamegraph, tooltip } from "../../lib";
 import { onClick, setupFormHandlers } from "../lib/common.js";
 
 export function createBasicChart() {

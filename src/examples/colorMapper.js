@@ -1,4 +1,4 @@
-import { flamegraph } from "../lib";
+import { flamegraph } from "../../lib";
 import { setupFormHandlers } from "../lib/common.js";
 
 export function createColorMapperChart() {
