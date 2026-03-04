@@ -19,7 +19,7 @@
     "scripts": {
         "build": "vite build --config vite.config.mjs",
         "dev": "vite",
-        "lint": "eslint src test",
+        "lint": "eslint lib src test",
         "test": "vitest run",
         "test:watch": "vitest",
         "prepare": "npm run build",

@@ -156,7 +156,7 @@ describe("flame graph library", () => {
             </div>
         `);
         g.dispatch("mouseout");
-        expect(detailsElem).toMatchInlineSnapshot(`<div />`);
+        expect(detailsElem).toMatchInlineSnapshot("<div />");
     });
 
     it("search should update details element", () => {
@@ -396,7 +396,7 @@ describe("flame graph library", () => {
     });
 
     it("tooltip with custom html does not HTML-escape contents", () => {
-        const tooltip = defaultFlamegraphTooltip().html((d) => "<a>HTML</a>");
+        const tooltip = defaultFlamegraphTooltip().html((_) => "<a>HTML</a>");
         const chart = flamegraph().tooltip(tooltip);
         const stacks = {
             name: "<img>",

@@ -69,11 +69,12 @@ function find(id) {
     }
 }
 
+// eslint-disable-next-line no-unused-vars
 function clear() {
     document.getElementById("term").value = "";
     chart.clear();
 }
-
+// eslint-disable-next-line no-unused-vars
 function resetZoom() {
     chart.resetZoom();
 }
