@@ -4,24 +4,24 @@ declare module "d3-flame-graph" {
     export function flamegraph(): FlameGraph;
 
     export namespace tooltip {
-        export interface DefaultFlamegraphTooltip {
+        export interface FlamegraphTooltip {
             show(
                 event: any,
                 d: HierarchyRectangularNode<any>,
-            ): DefaultFlamegraphTooltip;
-            hide(): DefaultFlamegraphTooltip;
+            ): FlamegraphTooltip;
+            hide(): FlamegraphTooltip;
             text(
                 func: (d: HierarchyRectangularNode<any>) => string,
-            ): DefaultFlamegraphTooltip;
+            ): FlamegraphTooltip;
             text(): (d: HierarchyRectangularNode<any>) => string;
             html(
                 func: (d: HierarchyRectangularNode<any>) => string,
-            ): DefaultFlamegraphTooltip;
+            ): FlamegraphTooltip;
             html(): (d: HierarchyRectangularNode<any>) => string;
             destroy(): void;
         }
 
-        export function defaultFlamegraphTooltip(): DefaultFlamegraphTooltip;
+        export function defaultFlamegraphTooltip(): FlamegraphTooltip;
     }
 
     export namespace colorMapper {
@@ -51,12 +51,6 @@ declare module "d3-flame-graph" {
         delta?: number;
     }
 
-    export interface FlamegraphTooltip<T = unknown> {
-        show(d: HierarchyRectangularNode<T>, node: SVGGElement): void;
-        hide(): void;
-        destroy?(): void;
-    }
-
     type LabelHandler = (node: any) => string;
     type NameHandler = (node: any) => string;
     type ClickHandler = (node: any) => void;
@@ -80,8 +74,8 @@ declare module "d3-flame-graph" {
         minFrameSize(): number;
         title(val: string): FlameGraph;
         title(): string;
-        tooltip(val: boolean | FlamegraphTooltip): FlameGraph;
-        tooltip(): boolean | FlamegraphTooltip;
+        tooltip(val: boolean | tooltip.FlamegraphTooltip): FlameGraph;
+        tooltip(): boolean | tooltip.FlamegraphTooltip;
         transitionDuration(val: number): FlameGraph;
         transitionDuration(): number;
         transitionEase(val: string): FlameGraph;
