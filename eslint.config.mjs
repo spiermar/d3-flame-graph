@@ -3,6 +3,7 @@ import promise from "eslint-plugin-promise";
 
 export default [
     {
+        ignores: ["src/dist/**"],
         files: ["**/*.js"],
         languageOptions: {
             ecmaVersion: 2022,
