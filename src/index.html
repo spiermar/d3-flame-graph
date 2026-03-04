@@ -9,54 +9,126 @@
 
         <title>d3-flame-graph</title>
     </head>
-    <body class="bg-zinc-50 min-h-screen py-8">
-        <div class="max-w-5xl mx-auto px-4">
-            <header class="mb-6">
-                <div class="flex justify-between items-start gap-4 mb-6">
-                    <h1 class="text-3xl font-semibold text-zinc-900">
-                        d3-flame-graph
-                    </h1>
-                    <form id="form" class="flex items-center gap-2">
-                        <input
-                            type="text"
-                            class="flex h-9 w-full rounded-md border border-zinc-200 bg-white px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 disabled:cursor-not-allowed disabled:opacity-50"
-                            id="term"
-                            placeholder="Search..."
-                        />
+    <body class="bg-zinc-50 min-h-screen">
+        <div class="flex min-h-screen">
+            <!-- Sidebar -->
+            <aside
+                id="sidebar"
+                class="w-64 bg-white border-r border-zinc-200 flex-shrink-0 transition-all duration-300"
+            >
+                <div class="p-4">
+                    <h2 class="text-lg font-semibold text-zinc-900 mb-4">
+                        Examples
+                    </h2>
+                    <nav class="space-y-1" id="example-nav">
                         <button
-                            type="button"
-                            id="btn-reset-zoom"
-                            class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 disabled:pointer-events-none disabled:opacity-50 border border-zinc-200 bg-white shadow-sm hover:bg-zinc-100 hover:text-zinc-900 h-9 px-4 py-2"
+                            data-example="basic"
+                            class="nav-item w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors bg-zinc-900 text-zinc-50"
                         >
-                            Reset zoom
+                            Basic
                         </button>
                         <button
-                            type="button"
-                            id="btn-clear"
-                            class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 disabled:pointer-events-none disabled:opacity-50 border border-zinc-200 bg-white shadow-sm hover:bg-zinc-100 hover:text-zinc-900 h-9 px-4 py-2"
+                            data-example="colorMapper"
+                            class="nav-item w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
                         >
-                            Clear
+                            Color Mapper
                         </button>
                         <button
-                            type="button"
-                            id="btn-search"
-                            class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 disabled:pointer-events-none disabled:opacity-50 bg-zinc-900 text-zinc-50 shadow hover:bg-zinc-900/90 h-9 px-4 py-2"
+                            data-example="differential"
+                            class="nav-item w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
                         >
-                            Search
+                            Differential
                         </button>
-                    </form>
+                        <button
+                            data-example="live"
+                            class="nav-item w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+                        >
+                            Live
+                        </button>
+                        <button
+                            data-example="minified"
+                            class="nav-item w-full text-left px-3 py-2 rounded-md text-sm font-medium transition-colors text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900"
+                        >
+                            Minified
+                        </button>
+                    </nav>
                 </div>
-            </header>
-            <main class="space-y-6">
-                <div
-                    class="rounded-lg border border-zinc-200 bg-white shadow-sm p-6"
+            </aside>
+
+            <!-- Toggle Button -->
+            <button
+                id="btn-toggle-sidebar"
+                class="fixed left-0 top-1/2 -translate-y-1/2 bg-white border border-zinc-200 shadow-sm p-2 rounded-r-md hover:bg-zinc-100 z-10"
+                style="left: 256px"
+            >
+                <svg
+                    class="w-4 h-4 text-zinc-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                 >
-                    <div id="chart"></div>
-                </div>
-                <div
-                    class="rounded-lg border border-zinc-200 bg-white shadow-sm p-6 min-h-[80px]"
-                >
-                    <div id="details"></div>
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15 19l-7-7 7-7"
+                    />
+                </svg>
+            </button>
+
+            <!-- Main Content -->
+            <main class="flex-1 p-8 overflow-auto">
+                <div class="max-w-5xl mx-auto">
+                    <header class="mb-6">
+                        <div
+                            class="flex justify-between items-start gap-4 mb-6"
+                        >
+                            <h1 class="text-3xl font-semibold text-zinc-900">
+                                d3-flame-graph
+                            </h1>
+                            <form id="form" class="flex items-center gap-2">
+                                <input
+                                    type="text"
+                                    class="flex h-9 w-full rounded-md border border-zinc-200 bg-white px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 disabled:cursor-not-allowed disabled:opacity-50"
+                                    id="term"
+                                    placeholder="Search..."
+                                />
+                                <button
+                                    type="button"
+                                    id="btn-reset-zoom"
+                                    class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 disabled:pointer-events-none disabled:opacity-50 border border-zinc-200 bg-white shadow-sm hover:bg-zinc-100 hover:text-zinc-900 h-9 px-4 py-2"
+                                >
+                                    Reset zoom
+                                </button>
+                                <button
+                                    type="button"
+                                    id="btn-clear"
+                                    class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 disabled:pointer-events-none disabled:opacity-50 border border-zinc-200 bg-white shadow-sm hover:bg-zinc-100 hover:text-zinc-900 h-9 px-4 py-2"
+                                >
+                                    Clear
+                                </button>
+                                <button
+                                    type="button"
+                                    id="btn-search"
+                                    class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 disabled:pointer-events-none disabled:opacity-50 bg-zinc-900 text-zinc-50 shadow hover:bg-zinc-900/90 h-9 px-4 py-2"
+                                >
+                                    Search
+                                </button>
+                            </form>
+                        </div>
+                    </header>
+                    <div class="space-y-6">
+                        <div
+                            class="rounded-lg border border-zinc-200 bg-white shadow-sm p-6"
+                        >
+                            <div id="chart"></div>
+                        </div>
+                        <div
+                            class="rounded-lg border border-zinc-200 bg-white shadow-sm p-6 min-h-[80px]"
+                        >
+                            <div id="details"></div>
+                        </div>
+                    </div>
                 </div>
             </main>
         </div>
