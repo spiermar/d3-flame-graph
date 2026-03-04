@@ -39,7 +39,10 @@
     border-radius: 3px;
     padding: 5px 10px 5px 10px;
     min-width: 250px;
+    max-width: 960px;
     text-align: left;
     color: white;
     z-index: 10;
+    white-space: normal;
+    word-wrap: break-word;
 }

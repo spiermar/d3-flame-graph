@@ -3,15 +3,18 @@ on:
     push:
         tags:
             - "[0-9]+.[0-9]+.[0-9]+"
+permissions:
+    contents: read
+    id-token: write
 jobs:
     build:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
-            # Setup .npmrc file to publish to npm
-            - uses: actions/setup-node@v2
+            - uses: actions/setup-node@v4
               with:
                   node-version: "24.x"
+                  id: publish
             - run: npm install
             - run: npm run build
             - run: npm publish
