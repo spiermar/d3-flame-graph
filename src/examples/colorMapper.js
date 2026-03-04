@@ -1,4 +1,4 @@
-import { flamegraph } from "../../lib";
+import { flamegraph, colorMapper } from "../../lib";
 import { setupFormHandlers } from "../lib/common.js";
 
 export function createColorMapperChart() {
@@ -12,7 +12,7 @@ export function createColorMapperChart() {
         .title("")
         .onClick(onClick)
         .selfValue(false)
-        .setColorMapper(flamegraph.colorMapper.offCpuColorMapper);
+        .setColorMapper(colorMapper.offCpuColorMapper);
 
     var details = document.getElementById("details");
     chart.setDetailsElement(details);

@@ -1,4 +1,4 @@
-import { flamegraph } from "../../lib";
+import { flamegraph, colorMapper } from "../../lib";
 import { setupFormHandlers } from "../lib/common.js";
 
 export function createDifferentialChart() {
@@ -12,7 +12,7 @@ export function createDifferentialChart() {
         .onClick(onClick)
         .computeDelta(true)
         .selfValue(true)
-        .setColorMapper(flamegraph.colorMapper.differentialColorMapper);
+        .setColorMapper(colorMapper.differentialColorMapper);
 
     var details = document.getElementById("details");
     chart.setDetailsElement(details);
