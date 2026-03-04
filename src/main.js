@@ -1,93 +1,83 @@
-import { flamegraph, tooltip } from "../lib";
+import { createBasicChart } from "./examples/basic.js";
+import { createColorMapperChart } from "./examples/colorMapper.js";
+import { createDifferentialChart } from "./examples/differential.js";
+import { createLiveChart } from "./examples/live.js";
+import { createMinifiedChart } from "./examples/minified.js";
 
-var chart = flamegraph()
-    .width(960)
-    .cellHeight(18)
-    .transitionDuration(750)
-    .minFrameSize(5)
-    .sort(true)
-    //Example to sort in reverse order
-    //.sort(function(a,b){ return d3.descending(a.name, b.name);})
-    .title("")
-    .onClick(onClick)
-    .selfValue(false)
-    .setColorMapper((d, originalColor) =>
-        d.highlight ? "#6aff8f" : originalColor,
-    );
+var sidebarCollapsed = false;
 
-// Example on how to use custom a tooltip.
-var tip = tooltip
-    .defaultFlamegraphTooltip()
-    .text((d) => "name: " + d.data.name + ", value: " + d.data.value);
-chart.tooltip(tip);
+var exampleCreators = {
+    basic: createBasicChart,
+    colorMapper: createColorMapperChart,
+    differential: createDifferentialChart,
+    live: createLiveChart,
+    minified: createMinifiedChart,
+};
 
-var details = document.getElementById("details");
-chart.setDetailsElement(details);
+function loadExample(exampleName) {
+    var creator = exampleCreators[exampleName];
+    if (!creator) {
+        console.error("Unknown example:", exampleName);
+        return;
+    }
 
-// Example on how to use searchById() function in flamegraph.
-// To invoke this function after loading the graph itself, this function should be registered in d3 datum(data).call()
-// (See d3.json invocation in this file)
-function invokeFind() {
-    var searchId = parseInt(location.hash.substring(1), 10);
-    if (searchId) {
-        find(searchId);
+    d3.select("#chart").selectAll("*").remove();
+    document.getElementById("details").textContent = "";
+
+    creator();
+
+    updateNavActive(exampleName);
+}
+
+function updateNavActive(activeExample) {
+    document.querySelectorAll(".nav-item").forEach(function (btn) {
+        if (btn.dataset.example === activeExample) {
+            btn.classList.remove(
+                "text-zinc-600",
+                "hover:bg-zinc-100",
+                "hover:text-zinc-900",
+            );
+            btn.classList.add("bg-zinc-900", "text-zinc-50");
+        } else {
+            btn.classList.remove("bg-zinc-900", "text-zinc-50");
+            btn.classList.add(
+                "text-zinc-600",
+                "hover:bg-zinc-100",
+                "hover:text-zinc-900",
+            );
+        }
+    });
+}
+
+function toggleSidebar() {
+    var sidebar = document.getElementById("sidebar");
+    var btn = document.getElementById("btn-toggle-sidebar");
+    var svg = btn.querySelector("svg");
+
+    sidebarCollapsed = !sidebarCollapsed;
+
+    if (sidebarCollapsed) {
+        sidebar.style.marginLeft = "-256px";
+        btn.style.left = "0";
+        svg.style.transform = "rotate(180deg)";
+    } else {
+        sidebar.style.marginLeft = "0";
+        btn.style.left = "256px";
+        svg.style.transform = "rotate(0deg)";
     }
 }
 
-// Example on how to use custom labels
-// var label = function(d) {
-//  return "name: " + d.name + ", value: " + d.value;
-// }
-// chart.setLabelHandler(label);
-
-// Example of how to set fixed chart height
-// chart.height(540);
-
-d3.json("stacks.json")
-    .then((data) => {
-        d3.select("#chart").datum(data).call(chart).call(invokeFind);
-    })
-    .catch((error) => {
-        return console.warn(error);
-    });
-
-document.getElementById("form").addEventListener("submit", function (event) {
-    event.preventDefault();
-    search();
-});
-
-function search() {
-    var term = document.getElementById("term").value;
-    chart.search(term);
-}
-
 document
-    .getElementById("btn-search")
+    .getElementById("example-nav")
     .addEventListener("click", function (event) {
-        event.preventDefault();
-        search();
+        var btn = event.target.closest(".nav-item");
+        if (btn) {
+            loadExample(btn.dataset.example);
+        }
     });
-
-function find(id) {
-    var elem = chart.findById(id);
-    if (elem) {
-        console.log(elem);
-        chart.zoomTo(elem);
-    }
-}
-
-document.getElementById("btn-clear").addEventListener("click", function () {
-    document.getElementById("term").value = "";
-    chart.clear();
-});
 
 document
-    .getElementById("btn-reset-zoom")
-    .addEventListener("click", function () {
-        chart.resetZoom();
-    });
+    .getElementById("btn-toggle-sidebar")
+    .addEventListener("click", toggleSidebar);
 
-function onClick(d) {
-    console.info(`Clicked on ${d.data.name}, id: "${d.id}"`);
-    history.pushState({ id: d.id }, d.data.name, `#${d.id}`);
-}
+loadExample("basic");
