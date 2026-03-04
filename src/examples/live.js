@@ -25,17 +25,20 @@ export function createLiveChart() {
 
     d3.select("#chart").datum(start).call(chart);
 
+    var timeouts = [];
+
     d3.json("live.json")
         .then((data) => {
             var i = 1;
             for (var value in data) {
-                setTimeout(
+                var id = setTimeout(
                     function (timestamp) {
                         chart.merge(data[timestamp]);
                     },
                     1000 * i,
                     value,
                 );
+                timeouts.push(id);
                 i++;
             }
         })
@@ -43,5 +46,10 @@ export function createLiveChart() {
             return console.warn(error);
         });
 
-    return chart;
+    return function cleanup() {
+        timeouts.forEach(function (id) {
+            clearTimeout(id);
+        });
+        timeouts = [];
+    };
 }

@@ -46,6 +46,7 @@ export default [
                 history: "readonly",
                 clear: "readonly",
                 setTimeout: "readonly",
+                clearTimeout: "readonly",
             },
         },
     },

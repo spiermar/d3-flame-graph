@@ -5,6 +5,7 @@ import { createLiveChart } from "./examples/live.js";
 import { createMinifiedChart } from "./examples/minified.js";
 
 var sidebarCollapsed = false;
+var currentCleanup = null;
 
 var exampleCreators = {
     basic: createBasicChart,
@@ -21,10 +22,18 @@ function loadExample(exampleName) {
         return;
     }
 
+    if (currentCleanup) {
+        currentCleanup();
+        currentCleanup = null;
+    }
+
     d3.select("#chart").selectAll("*").remove();
     document.getElementById("details").textContent = "";
 
-    creator();
+    var cleanup = creator();
+    if (typeof cleanup === "function") {
+        currentCleanup = cleanup;
+    }
 
     updateNavActive(exampleName);
 }
