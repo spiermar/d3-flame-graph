@@ -61,6 +61,13 @@ function search() {
     chart.search(term);
 }
 
+document
+    .getElementById("btn-search")
+    .addEventListener("click", function (event) {
+        event.preventDefault();
+        search();
+    });
+
 function find(id) {
     var elem = chart.findById(id);
     if (elem) {
@@ -69,15 +76,16 @@ function find(id) {
     }
 }
 
-// eslint-disable-next-line no-unused-vars
-function clear() {
+document.getElementById("btn-clear").addEventListener("click", function () {
     document.getElementById("term").value = "";
     chart.clear();
-}
-// eslint-disable-next-line no-unused-vars
-function resetZoom() {
-    chart.resetZoom();
-}
+});
+
+document
+    .getElementById("btn-reset-zoom")
+    .addEventListener("click", function () {
+        chart.resetZoom();
+    });
 
 function onClick(d) {
     console.info(`Clicked on ${d.data.name}, id: "${d.id}"`);

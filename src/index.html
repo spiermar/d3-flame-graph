@@ -9,40 +9,56 @@
 
         <title>d3-flame-graph</title>
     </head>
-    <body class="py-5">
-        <div class="max-w-4xl mx-auto px-4">
-            <div class="pb-5 border-b border-gray-200 mb-5">
-                <nav class="flex justify-end items-center gap-2">
+    <body class="bg-zinc-50 min-h-screen py-8">
+        <div class="max-w-5xl mx-auto px-4">
+            <header class="mb-6">
+                <div class="flex justify-between items-start gap-4 mb-6">
+                    <h1 class="text-3xl font-semibold text-zinc-900">
+                        d3-flame-graph
+                    </h1>
                     <form id="form" class="flex items-center gap-2">
-                        <a
-                            class="px-4 py-2 rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
-                            href="javascript: resetZoom();"
-                            >Reset zoom</a
-                        >
-                        <a
-                            class="px-4 py-2 rounded border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
-                            href="javascript: clear();"
-                            >Clear</a
-                        >
                         <input
                             type="text"
-                            class="border border-gray-300 rounded px-3 py-1"
+                            class="flex h-9 w-full rounded-md border border-zinc-200 bg-white px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-zinc-500 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 disabled:cursor-not-allowed disabled:opacity-50"
                             id="term"
+                            placeholder="Search..."
                         />
-                        <a
-                            class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
-                            href="javascript: search();"
-                            >Search</a
+                        <button
+                            type="button"
+                            id="btn-reset-zoom"
+                            class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 disabled:pointer-events-none disabled:opacity-50 border border-zinc-200 bg-white shadow-sm hover:bg-zinc-100 hover:text-zinc-900 h-9 px-4 py-2"
                         >
+                            Reset zoom
+                        </button>
+                        <button
+                            type="button"
+                            id="btn-clear"
+                            class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 disabled:pointer-events-none disabled:opacity-50 border border-zinc-200 bg-white shadow-sm hover:bg-zinc-100 hover:text-zinc-900 h-9 px-4 py-2"
+                        >
+                            Clear
+                        </button>
+                        <button
+                            type="button"
+                            id="btn-search"
+                            class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-950 disabled:pointer-events-none disabled:opacity-50 bg-zinc-900 text-zinc-50 shadow hover:bg-zinc-900/90 h-9 px-4 py-2"
+                        >
+                            Search
+                        </button>
                     </form>
-                </nav>
-                <h3 class="text-2xl font-semibold text-gray-600">
-                    d3-flame-graph
-                </h3>
-            </div>
-            <div id="chart"></div>
-            <hr class="my-4 border-gray-200" />
-            <div id="details"></div>
+                </div>
+            </header>
+            <main class="space-y-6">
+                <div
+                    class="rounded-lg border border-zinc-200 bg-white shadow-sm p-6"
+                >
+                    <div id="chart"></div>
+                </div>
+                <div
+                    class="rounded-lg border border-zinc-200 bg-white shadow-sm p-6 min-h-[80px]"
+                >
+                    <div id="details"></div>
+                </div>
+            </main>
         </div>
 
         <!-- D3.js -->
